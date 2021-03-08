@@ -1,0 +1,33 @@
+{
+  "implicitDependencies": {
+    "angular.json": "*",
+    "package.json": { "dependencies": "*", "devDependencies": "*" },
+    "tsconfig.base.json": "*",
+    "tslint.json": "*",
+    ".eslintrc.json": "*",
+    "nx.json": "*"
+  },
+  "affected": { "defaultBase": "master" },
+  "npmScope": "rumble-player",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "accessToken": "YjI0ZTE4M2UtMWU4OC00YTA5LWE2YjctNzUzMzEyOWZmNTQ1fHJlYWQtd3JpdGU=",
+        "canTrackAnalytics": false,
+        "showUsageWarnings": true
+      }
+    }
+  },
+  "projects": {
+    "demo-angular": { "tags": [] },
+    "demo-angular-e2e": {
+      "tags": [],
+      "implicitDependencies": ["demo-angular"]
+    },
+    "demo-react": { "tags": [] },
+    "demo-react-e2e": { "tags": [], "implicitDependencies": ["demo-react"] },
+    "rp": { "tags": [] }
+  }
+}
