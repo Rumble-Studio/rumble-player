@@ -1,36 +1,51 @@
-// Will contain all the basic logic of the player
+// Will contain all the basic logic of the audio
+import { Simulate } from 'react-dom/test-utils';
+import play = Simulate.play;
 
-export class PlayerElement extends HTMLElement {
+const audioUrl = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fenergetic%2FEnergetic-1.mp3?alt=media&token=a3f78303-bc9f-4624-ba0d-13bb183d017d'
+export class RumblePlayer extends HTMLElement {
   public static observedAttributes = ['title'];
-  play;
-  record;
-  pause;
-  stop;
-  download;
-  player;
-  source;
-  private playList : string[];
+  playButton;
+  recordButton;
+  pauseButton;
+  stopButton;
+  downloadButton;
+  private _index : number;
+  get index (){
+    return this._index
+  }
+  set index (value: number){
+    if (value!=this._index){
+      this._index = value
+      const eventIndexChange = new CustomEvent('indexChange',{detail:value})
+      this.dispatchEvent(eventIndexChange)
+      this._updateAudioPlayerSrc()
+    }
+  }
+  audio : HTMLAudioElement;
+  source; // User input linked to audio src
+  private playlist : string[];
 
   constructor(){
     super();
-    this.playList = []
-    // this.init()
+    this.setInnerHTML()
+    this.index = -1
+    this.playlist = []
+    this.bindHTMLElements();
+    this.setAudioSource(audioUrl)
+
   }
-  connectedCallback(){
+  /*connectedCallback(){
     //
   }
   disconnectedCallback(){
-    this.stopPlaying()
+    //
   }
   adoptedCallback(){
-    this.stopPlaying()
-  }
-
-
-  attributeChangedCallback(attrName, oldVal, newVal) {
-
-    this.innerHTML =
-      `<h1>Welcome to Rumble Studio ${this.title}!</h1>
+    //
+  }*/
+  setInnerHTML(){
+    this.innerHTML =`
         <div>
           <button id="play">play</button>
           <button id="pause">pause</button>
@@ -39,66 +54,77 @@ export class PlayerElement extends HTMLElement {
           <button id="next">next</button>
           <button id="prev">prev</button>
           <button id="download">download</button>
-          <audio id="player" /></div>`;
+          <audio id="audio"  /></div>`;
+  }
+
+
+  /*attributeChangedCallback(attrName, oldVal, newVal) {
+
     if (attrName==='source'){
-      this.init()
-      this.startPlaying()
-      this.player.setAttribute('src',newVal)
+      this.audio.setAttribute('src',newVal)
     }
   }
-  init() {
-    this.play = document.getElementById('play');
-    this.record = document.getElementById('record');
-    this.pause = document.getElementById('pause');
-    this.stop = document.getElementById('stop');
-    this.download = document.getElementById('download');
-    this.player = document.getElementById('player');
-    this.player.setAttribute('src',this.getAttribute('source'))
-    // this.idleMode();
+   */
+  bindHTMLElements() {
+    this.playButton = document.getElementById('play');
+    this.recordButton = document.getElementById('record');
+    this.pauseButton = document.getElementById('pause');
+    this.stopButton = document.getElementById('stop');
+    this.downloadButton = document.getElementById('download');
+    this.audio = document.getElementById('audio') as HTMLAudioElement;
+  }
+  public play(): Promise<void>{
+    if(this.playlist.length===0) return;
+    return this.audio.play()
+  }
+  public pause (){
+    if(this.playlist.length===0) return;
+    return this.audio.pause()
+    //
+  }
+  public resume (){
+    if(this.playlist.length===0) return;
+    //
+  }
+  public stop (){
+    //
+  }
+  public next(){
+    if(this.playlist.length===0) return;
+    this.index+=1
+    if (this.index>=this.playlist.length){
+      this.index = 0
+    }
+  }
+  public prev(){
+    if(this.playlist.length===0) return;
+    this.index-=1
+    if (this.index < 0){
+      this.index = this.playlist.length-1
+    }
+  }
+  public seek(position: number){
+    if(this.playlist.length===0) return;
+    // Move player head to a given time position(seconde)
+  }
+  public setAudioSource(value: string){
+    // To accept one audio url
+    this.setPlaylist([value])
+  }
+  public setPlaylist(playlist: string[]){
+    // To accept several audio urls
+    this.index = -1
+    this.playlist = playlist
+    this.index = this.playlist.length > 0 ? 0 : -1
+    this.stop()
+  }
+  private _updateAudioPlayerSrc(){
+    this.audio.setAttribute('src',this.playlist[this.index])
+  }
 
-  }
-  startPlaying = () => {
-    this.playingMode();
-  }
-  pausePlaying = () => {
-    this.playingPauseMode();
-  }
-  resumePlaying = () => {
-    this.playingResumeMode();
-  }
-  stopPlaying = () => {
-    this.playingStopMode();
-  }
-  downloadTrack = () => {
+  downloadTrack (){
     // whateverCode
   }
-  idleMode = () => {
-    this.player.style.visibility = 'hidden';
-    this.record.classList = ['control'];
-    this.play.classList.add('disabled');
-    this.pause.classList.add('disabled');
-    this.stop.classList.add('disabled');
-    this.download.classList.add('disabled');
-  }
-  playingMode = () => {
-    this.player.style.visibility = 'hidden';
-    this.pause.classList = ['control'];
-    this.stop.classList = ['control'];
-    this.record.classList.add('disabled');
-  }
-  playingPauseMode = () => {
-    this.play.classList = ['control'];
-    this.pause.classList.add('disabled');
-  }
-  playingResumeMode = () => {
-    this.pause.classList = ['control'];
-    this.play.classList.add('disabled');
-  }
-  playingStopMode = () => {
-    this.idleMode();
-    this.player.style.visibility = 'visible';
-  }
-
 }
 
-customElements.define('rs-player', PlayerElement);
+customElements.define('rs-player', RumblePlayer);
