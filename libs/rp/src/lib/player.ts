@@ -137,7 +137,7 @@ export class RumblePlayer extends HTMLElement {
   public stop (){
     if(this.playlist.length===0) return;
     this.audio.pause()
-    this.audio.fastSeek(0)
+    this.audio.currentTime=0
 
     //
   }
