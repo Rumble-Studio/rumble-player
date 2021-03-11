@@ -1,7 +1,8 @@
 // Will contain all the basic logic of the audio
 
 const audioUrlPartOne = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fenergetic%2FEnergetic-1.mp3?alt=media&token=a3f78303-bc9f-4624-ba0d-13bb183d017d'
-const audioUrlPartTwo = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fenergetic%2FEnergetic-1.mp3?alt=media&token=a3f78303-bc9f-4624-ba0d-13bb183d017d'
+const audioUrlPartTwo = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fuplifting%2FUplifting-1.mp3?alt=media&token=60b80935-4468-425a-9a1a-bf84d443d2e2,'+
+  'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fclassical%2FClassical-2.mp3?alt=media&token=1192b959-52da-4bfa-8345-ae51cd5d2f15'
 const audioUrl = audioUrlPartOne + ',' + audioUrlPartTwo
 export class RumblePlayer extends HTMLElement {
   public static observedAttributes = ['title'];
@@ -32,13 +33,13 @@ export class RumblePlayer extends HTMLElement {
   constructor(){
     super();
     this.playlist = []
+    this._index = -1
 
   }
   connectedCallback(){
     //
     this.setInnerHTML()
     this.bindHTMLElements();
-    this.index = -1
     this.setAudioSource(audioUrl)
   }
   /*
@@ -50,26 +51,18 @@ export class RumblePlayer extends HTMLElement {
   }*/
   setInnerHTML(){
     this.playButton = document.createElement('button')
-    this.playButton.setAttribute('id', 'rs-play')
     this.playButton.innerText = 'play'
     this.pauseButton = document.createElement('button')
-    this.pauseButton.setAttribute('id', 'rs-pause')
     this.pauseButton.innerText = 'pause'
     this.stopButton = document.createElement('button')
-    this.stopButton.setAttribute('id', 'rs-stop')
     this.stopButton.innerText = 'stop'
     this.downloadButton = document.createElement('button')
-    this.downloadButton.setAttribute('id', 'rs-download')
     this.downloadButton.innerText = 'download'
     this.nextButton = document.createElement('button')
-    this.nextButton.setAttribute('id', 'rs-next')
     this.nextButton.innerText = 'next'
     this.prevButton = document.createElement('button')
-    this.prevButton.setAttribute('id', 'rs-next')
     this.prevButton.innerText = 'prev'
     this.audio = document.createElement('audio')
-    this.audio.setAttribute('id', 'rs-audio')
-
 
     this.appendChild(this.playButton)
     this.appendChild(this.pauseButton)
@@ -84,16 +77,6 @@ export class RumblePlayer extends HTMLElement {
 
  /* attributeChangedCallback(attrName, oldVal, newVal) {
 
-    this.innerHTML =`
-        <div>
-          <button id="play">play</button>
-          <button id="pause">pause</button>
-          <button id="resume">resume</button>
-          <button id="stop">stop</button>
-          <button id="next">next</button>
-          <button id="prev">prev</button>
-          <button id="download">download</button>
-          <audio id="audio"  /></div>`;
   }
   */
   bindHTMLElements() {
@@ -120,17 +103,24 @@ export class RumblePlayer extends HTMLElement {
       this.prev()
       if(wasPlaying) return this.play()
     })
+
     this.audio.onplay = () =>{
       this.isPlaying = true
-      console.log('playing started')
+      console.log('playing started', this.index ,this.audio.currentTime)
+      const event = new CustomEvent('play',{detail:{index:this.index, position: this.audio.currentTime}})
+      this.dispatchEvent(event)
     }
     this.audio.onended = () => {
       this.isPlaying = false
       console.log('playing ended')
+      const event = new CustomEvent('stop',{detail:{index:this.index}})
+      this.dispatchEvent(event)
     }
     this.audio.onpause = () =>{
       this.isPlaying = false
       console.log('playing paused')
+      const event = new CustomEvent('pause',{detail:{index:this.index, position: this.audio.currentTime}})
+      this.dispatchEvent(event)
     }
   }
   public play(): Promise<void>{
@@ -149,7 +139,7 @@ export class RumblePlayer extends HTMLElement {
   public stop (){
     if(this.playlist.length===0) return;
     this.audio.pause()
-    this.audio.currentTime=0
+    this.seek(0)
 
     //
   }
@@ -159,17 +149,28 @@ export class RumblePlayer extends HTMLElement {
     if (this.index>=this.playlist.length){
       this.index = 0
     }
+    const event = new CustomEvent('next',{detail:{index:this.index, playingState: this.isPlaying}})
+    this.dispatchEvent(event)
   }
   public prev(){
     if(this.playlist.length===0) return;
+    if(this.audio.currentTime>=2){
+      this.seek(0)
+      return
+    }
     this.index-=1
     if (this.index < 0){
       this.index = this.playlist.length-1
     }
+    const event = new CustomEvent('previous',{detail:{index:this.index, playingState: this.isPlaying}})
+    this.dispatchEvent(event)
   }
   public seek(position: number){
     if(this.playlist.length===0) return;
     // Move player head to a given time position(seconde)
+    this.audio.currentTime = position
+    const event = new CustomEvent('seek',{detail:{index:this.index, playingState: this.isPlaying, position}})
+    this.dispatchEvent(event)
   }
   public setAudioSource(value: string){
     // To accept one audio url

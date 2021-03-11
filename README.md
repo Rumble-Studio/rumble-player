@@ -13,6 +13,7 @@
 ### Contents
 * [Quick Start](#quick-start)
 * [Examples](#examples)
+* [Events](#events)
 
 ### Quick Start
 
