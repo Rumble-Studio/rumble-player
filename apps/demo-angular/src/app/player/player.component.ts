@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
+import { RumblePlayer } from '@rumble-player/rp';
+import { $e } from '@angular/compiler/src/chars';
 
 @Component({
   selector: 'rumble-player-player',
@@ -6,10 +8,19 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./player.component.scss']
 })
 export class PlayerComponent implements OnInit {
-
-  constructor() { }
+  private player: RumblePlayer
+  private EVENTLIST = ['seek','play','pause','stop','next','previous']
+  public eventsHistory: string[]
+  constructor(private ref : ElementRef){}
 
   ngOnInit(): void {
+    this.eventsHistory = []
+    this.player = (this.ref.nativeElement as HTMLElement).childNodes[0] as RumblePlayer
+    this.EVENTLIST.forEach(value => {
+      this.player.addEventListener(value, ($event:CustomEvent)=>{
+        this.eventsHistory.push('Event type: ' + value + ', data : ' + JSON.stringify($event.detail))
+      })
+    })
   }
 
 }
