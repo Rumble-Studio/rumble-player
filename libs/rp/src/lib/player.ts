@@ -11,6 +11,7 @@ export class RumblePlayer extends HTMLElement {
   downloadButton : HTMLButtonElement;
   nextButton : HTMLButtonElement;
   prevButton : HTMLButtonElement;
+  isPlaying: boolean;
   private _index : number;
   get index (){
     return this._index
@@ -110,13 +111,27 @@ export class RumblePlayer extends HTMLElement {
       return this.download()
     })
     this.nextButton.addEventListener('click', ()=>{
+      const wasPlaying = this.isPlaying
       this.next()
-      return this.play()
+      if(wasPlaying) return this.play()
     })
     this.prevButton.addEventListener('click', ()=>{
+      const wasPlaying = this.isPlaying
       this.prev()
-      return this.play()
+      if(wasPlaying) return this.play()
     })
+    this.audio.onplay = () =>{
+      this.isPlaying = true
+      console.log('playing started')
+    }
+    this.audio.onended = () => {
+      this.isPlaying = false
+      console.log('playing ended')
+    }
+    this.audio.onpause = () =>{
+      this.isPlaying = false
+      console.log('playing paused')
+    }
   }
   public play(): Promise<void>{
     if(this.playlist.length===0) return;
@@ -176,16 +191,40 @@ export class RumblePlayer extends HTMLElement {
   }
 
   private download() {
-    const element = document.createElement('a');
-    element.setAttribute('href',  encodeURIComponent(this.playlist[this._index]));
-    element.setAttribute('download', 'rs-player-file.mp3');
+    return this.downloadUrl(this.playlist[this.index],'rs-player-file.mp3','audio/*')
+  }
 
-    element.style.display = 'none';
-    this.appendChild(element);
 
-    element.click();
-
-    this.removeChild(element);
+  async downloadUrl(url: string, filename: string, mimeType: string) {
+    this.downloadFile(await this.urlToFile(url, filename, mimeType))
+  }
+  urlToFile(url: string, filename: string, mimeType: string): Promise<File> {
+    return (fetch(url)
+        .then(function (res) { return res.arrayBuffer(); })
+        .then(function (buf) { return new File([buf], filename, { type: mimeType }); })
+    );
+  }
+  downloadFile(file: File) {
+    // Convert your blob into a Blob URL (a special url that points to an object in the browser’s memory)
+    const blobUrl = URL.createObjectURL(file);
+    // Create a link element
+    const link = document.createElement('a');
+    // Set link’s href to point to the Blob URL
+    link.href = blobUrl;
+    link.download = file.name;
+    // Append link to the body
+    document.body.appendChild(link);
+    // Dispatch click event on the link
+    // This is necessary as link.click() does not work on the latest firefox
+    link.dispatchEvent(
+      new MouseEvent('click', {
+      bubbles: true,
+        cancelable: true,
+        view: window
+    })
+  );
+    // Remove link from body
+    document.body.removeChild(link);
   }
 }
 
