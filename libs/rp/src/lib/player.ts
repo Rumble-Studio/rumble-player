@@ -1,25 +1,30 @@
 // Will contain all the basic logic of the audio
 import { Simulate } from 'react-dom/test-utils';
 import play = Simulate.play;
+import { tryCatch } from 'rxjs/internal-compatibility';
 
-const audioUrl = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fenergetic%2FEnergetic-1.mp3?alt=media&token=a3f78303-bc9f-4624-ba0d-13bb183d017d'
+const audioUrlPartOne = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fenergetic%2FEnergetic-1.mp3?alt=media&token=a3f78303-bc9f-4624-ba0d-13bb183d017d'
+const audioUrlPartTwo = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fenergetic%2FEnergetic-1.mp3?alt=media&token=a3f78303-bc9f-4624-ba0d-13bb183d017d'
+const audioUrl = audioUrlPartOne + ',' + audioUrlPartTwo
 export class RumblePlayer extends HTMLElement {
   public static observedAttributes = ['title'];
-  playButton;
-  recordButton;
-  pauseButton;
-  stopButton;
-  downloadButton;
+  playButton : HTMLButtonElement;
+  pauseButton : HTMLButtonElement;
+  stopButton : HTMLButtonElement;
+  downloadButton : HTMLButtonElement;
+  nextButton : HTMLButtonElement;
+  prevButton : HTMLButtonElement;
   private _index : number;
   get index (){
     return this._index
   }
   set index (value: number){
     if (value!=this._index){
+      console.log('index changed from ', this._index, ' ',value)
       this._index = value
       const eventIndexChange = new CustomEvent('indexChange',{detail:value})
       this.dispatchEvent(eventIndexChange)
-      this._updateAudioPlayerSrc()
+     this._updateAudioPlayerSrc()
     }
   }
   audio : HTMLAudioElement;
@@ -28,16 +33,17 @@ export class RumblePlayer extends HTMLElement {
 
   constructor(){
     super();
-    this.setInnerHTML()
-    this.index = -1
     this.playlist = []
-    this.bindHTMLElements();
-    this.setAudioSource(audioUrl)
 
   }
-  /*connectedCallback(){
+  connectedCallback(){
     //
+    this.setInnerHTML()
+    this.bindHTMLElements();
+    this.index = -1
+    this.setAudioSource(audioUrl)
   }
+  /*
   disconnectedCallback(){
     //
   }
@@ -45,6 +51,41 @@ export class RumblePlayer extends HTMLElement {
     //
   }*/
   setInnerHTML(){
+    this.playButton = document.createElement('button')
+    this.playButton.setAttribute('id', 'rs-play')
+    this.playButton.innerText = 'play'
+    this.pauseButton = document.createElement('button')
+    this.pauseButton.setAttribute('id', 'rs-pause')
+    this.pauseButton.innerText = 'pause'
+    this.stopButton = document.createElement('button')
+    this.stopButton.setAttribute('id', 'rs-stop')
+    this.stopButton.innerText = 'stop'
+    this.downloadButton = document.createElement('button')
+    this.downloadButton.setAttribute('id', 'rs-download')
+    this.downloadButton.innerText = 'download'
+    this.nextButton = document.createElement('button')
+    this.nextButton.setAttribute('id', 'rs-next')
+    this.nextButton.innerText = 'next'
+    this.prevButton = document.createElement('button')
+    this.prevButton.setAttribute('id', 'rs-next')
+    this.prevButton.innerText = 'prev'
+    this.audio = document.createElement('audio')
+    this.audio.setAttribute('id', 'rs-audio')
+
+
+    this.appendChild(this.playButton)
+    this.appendChild(this.pauseButton)
+    this.appendChild(this.stopButton)
+    this.appendChild(this.downloadButton)
+    this.appendChild(this.nextButton)
+    this.appendChild(this.prevButton)
+    this.appendChild(this.audio)
+
+  }
+
+
+ /* attributeChangedCallback(attrName, oldVal, newVal) {
+
     this.innerHTML =`
         <div>
           <button id="play">play</button>
@@ -56,22 +97,29 @@ export class RumblePlayer extends HTMLElement {
           <button id="download">download</button>
           <audio id="audio"  /></div>`;
   }
-
-
-  /*attributeChangedCallback(attrName, oldVal, newVal) {
-
-    if (attrName==='source'){
-      this.audio.setAttribute('src',newVal)
-    }
-  }
-   */
+  */
   bindHTMLElements() {
-    this.playButton = document.getElementById('play');
-    this.recordButton = document.getElementById('record');
-    this.pauseButton = document.getElementById('pause');
-    this.stopButton = document.getElementById('stop');
-    this.downloadButton = document.getElementById('download');
-    this.audio = document.getElementById('audio') as HTMLAudioElement;
+    // Bind event to buttons
+    this.playButton.addEventListener('click', ()=>{
+      return this.play()
+    })
+    this.pauseButton.addEventListener('click', ()=>{
+      return this.pause()
+    })
+    this.stopButton.addEventListener('click', ()=>{
+      return this.stop()
+    })
+    this.downloadButton.addEventListener('click', ()=>{
+      return this.download()
+    })
+    this.nextButton.addEventListener('click', ()=>{
+      this.next()
+      return this.play()
+    })
+    this.prevButton.addEventListener('click', ()=>{
+      this.prev()
+      return this.play()
+    })
   }
   public play(): Promise<void>{
     if(this.playlist.length===0) return;
@@ -87,6 +135,10 @@ export class RumblePlayer extends HTMLElement {
     //
   }
   public stop (){
+    if(this.playlist.length===0) return;
+    this.audio.pause()
+    this.audio.fastSeek(0)
+
     //
   }
   public next(){
@@ -109,7 +161,7 @@ export class RumblePlayer extends HTMLElement {
   }
   public setAudioSource(value: string){
     // To accept one audio url
-    this.setPlaylist([value])
+    this.setPlaylist(value.split(','))
   }
   public setPlaylist(playlist: string[]){
     // To accept several audio urls
@@ -124,6 +176,19 @@ export class RumblePlayer extends HTMLElement {
 
   downloadTrack (){
     // whateverCode
+  }
+
+  private download() {
+    const element = document.createElement('a');
+    element.setAttribute('href',  encodeURIComponent(this.playlist[this._index]));
+    element.setAttribute('download', 'rs-player-file.mp3');
+
+    element.style.display = 'none';
+    this.appendChild(element);
+
+    element.click();
+
+    this.removeChild(element);
   }
 }
 
