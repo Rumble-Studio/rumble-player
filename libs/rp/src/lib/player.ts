@@ -1,7 +1,4 @@
 // Will contain all the basic logic of the audio
-import { Simulate } from 'react-dom/test-utils';
-import play = Simulate.play;
-import { tryCatch } from 'rxjs/internal-compatibility';
 
 const audioUrlPartOne = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fenergetic%2FEnergetic-1.mp3?alt=media&token=a3f78303-bc9f-4624-ba0d-13bb183d017d'
 const audioUrlPartTwo = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fenergetic%2FEnergetic-1.mp3?alt=media&token=a3f78303-bc9f-4624-ba0d-13bb183d017d'
