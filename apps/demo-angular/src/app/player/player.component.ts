@@ -9,7 +9,7 @@ import { $e } from '@angular/compiler/src/chars';
 })
 export class PlayerComponent implements OnInit {
   private player: RumblePlayer
-  private EVENTLIST = ['seek','play','pause','stop','next','previous']
+  private EVENTLIST = ['seek','play','pause','stop','next','previous','indexChange']
   public eventsHistory: string[]
   constructor(private ref : ElementRef){}
 

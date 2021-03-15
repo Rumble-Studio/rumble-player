@@ -1,10 +1,9 @@
 import {  RumblePlayer } from './player';
-import set = Reflect.set;
-import { Simulate } from 'react-dom/test-utils';
-import error = Simulate.error;
+
+
 
 const playlist = ['song1','song2','song3',]
-const songDurations = [120,650,2000,]
+const songDurations = [5,10,2000,]
 
 window.HTMLMediaElement.prototype.play = () => { return Promise.resolve() };
 window.HTMLMediaElement.prototype.pause = () => { /* do nothing */ };
@@ -87,9 +86,24 @@ describe('Playing behaviors',()=>{
 
 
 
-it('should play next song automatically', () => {
-
+it('should play next song automatically', async() => {
+  const player = new RumblePlayer()
+  const deltaT = 2
+  player.setPlaylist(playlist)
+  await player.play()
+  expect(player.index).toEqual(0)
+  setTimeout(()=>{
+    expect(player.index).toEqual(1)
+    expect(player.isPlaying).toEqual(true)
+  },songDurations[0]+deltaT)
+  setTimeout(()=>{
+    // because HTMLAudioPlayer is not implemented in testing environment
+    // We trigger ourselves the onended event
+    const event = new Event('onended')
+    player.audio.dispatchEvent(event)
+  },songDurations[0])
 });
+
 
 
 describe('Seeking behaviors',()=>{
@@ -121,8 +135,12 @@ describe('Seeking behaviors',()=>{
     expect(player.getSeekingTime()).toBeGreaterThan(timeSeek)
     //
   })
-  it('should go to the end of the song if seeking time over song duration', () => {
-    //
+  it('should go to the end of the song if seeking time over song duration', async () => {
+    const player = new RumblePlayer()
+
+    player.setPlaylist(playlist)
+    await player.play()
   })
 })
+
 
