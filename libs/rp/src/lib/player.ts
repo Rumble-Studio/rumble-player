@@ -12,7 +12,7 @@ export class RumblePlayer extends HTMLElement {
   downloadButton : HTMLButtonElement;
   nextButton : HTMLButtonElement;
   prevButton : HTMLButtonElement;
-  isPlaying: boolean;
+  isPlaying = false;
   private _index : number;
   get index (){
     return this._index
@@ -41,6 +41,8 @@ export class RumblePlayer extends HTMLElement {
     this.setInnerHTML()
     this.bindHTMLElements();
     // this.setPlaylistFromString(audioUrl)
+    console.log('mounted')
+    this.setInnerHTML()
   }
   getPlaylist(){
     return this._playlist
