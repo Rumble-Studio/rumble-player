@@ -1,5 +1,7 @@
 import {  RumblePlayer } from './player';
 import set = Reflect.set;
+import { Simulate } from 'react-dom/test-utils';
+import error = Simulate.error;
 
 const playlist = ['song1','song2','song3',]
 const songDurations = [120,650,2000,]
@@ -71,22 +73,52 @@ describe('Playing behaviors',()=>{
 
   });
   it('should stop playing when click on stop', async () => {
-    //
+    const player = new RumblePlayer()
+
+    player.setPlaylist(playlist)
+    await player.play();
+    expect(player.isPlaying).toEqual(true)
+    setTimeout(()=>{
+      player.stop();
+      expect(player.isPlaying).toEqual(false)
+    },3000)
   });
 })
 
 
-/*
+
 it('should play next song automatically', () => {
 
 });
- */
+
 
 describe('Seeking behaviors',()=>{
-  it('should not change the playing status when seeking', () => {
+  it('should not change the playing status when seeking', async () => {
+    const player = new RumblePlayer()
+
+    player.setPlaylist(playlist)
+    await player.play()
+    expect(player.isPlaying).toEqual(true)
+    player.seek(6)
+    expect(player.isPlaying).toEqual(true)
+    player.pause()
+    expect(player.isPlaying).toEqual(false)
+    player.seek(30)
+    expect(player.isPlaying).toEqual(false)
+
+
     //
   })
-  it('should change the position when seeking', () => {
+  it('should change the position when seeking', async () => {
+    const player = new RumblePlayer()
+
+    player.setPlaylist(playlist)
+    await player.play()
+    player.pause()
+    const timeSeek = player.getSeekingTime()
+    expect(player.getSeekingTime()).toEqual(timeSeek)
+    player.seek(40)
+    expect(player.getSeekingTime()).toBeGreaterThan(timeSeek)
     //
   })
   it('should go to the end of the song if seeking time over song duration', () => {
