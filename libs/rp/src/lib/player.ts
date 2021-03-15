@@ -1,6 +1,6 @@
 // Will contain all the basic logic of the audio
 
-const audioUrlPartOne = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fenergetic%2FEnergetic-1.mp3?alt=media&token=a3f78303-bc9f-4624-ba0d-13bb183d017d'
+const audioUrlPartOne = '../../assets/Energetic-1.mp3'
 const audioUrlPartTwo = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fuplifting%2FUplifting-1.mp3?alt=media&token=60b80935-4468-425a-9a1a-bf84d443d2e2,'+
   'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fclassical%2FClassical-2.mp3?alt=media&token=1192b959-52da-4bfa-8345-ae51cd5d2f15'
 const audioUrl = audioUrlPartOne + ',' + audioUrlPartTwo
@@ -28,11 +28,11 @@ export class RumblePlayer extends HTMLElement {
   }
   audio : HTMLAudioElement;
   source; // User input linked to audio src
-  private playlist : string[];
+  private _playlist : string[];
 
   constructor(){
     super();
-    this.playlist = []
+    this._playlist = []
     this._index = -1
 
   }
@@ -40,7 +40,10 @@ export class RumblePlayer extends HTMLElement {
     //
     this.setInnerHTML()
     this.bindHTMLElements();
-    this.setAudioSource(audioUrl)
+    // this.setPlaylistFromString(audioUrl)
+  }
+  getPlaylist(){
+    return this._playlist
   }
   /*
   disconnectedCallback(){
@@ -123,68 +126,72 @@ export class RumblePlayer extends HTMLElement {
       this.dispatchEvent(event)
     }
   }
+  getSeekingTime():number{
+    return this.audio.currentTime
+  }
   public play(): Promise<void>{
-    if(this.playlist.length===0) return;
+    if(this._playlist.length===0) return;
     return this.audio.play()
   }
   public pause (){
-    if(this.playlist.length===0) return;
+    if(this._playlist.length===0) return;
     return this.audio.pause()
     //
   }
   public resume (){
-    if(this.playlist.length===0) return;
+    if(this._playlist.length===0) return;
     //
   }
   public stop (){
-    if(this.playlist.length===0) return;
+    if(this._playlist.length===0) return;
+    if(!this.isPlaying) return;
     this.audio.pause()
     this.seek(0)
 
     //
   }
   public next(){
-    if(this.playlist.length===0) return;
+    if(this._playlist.length===0) return;
     this.index+=1
-    if (this.index>=this.playlist.length){
+    if (this.index>=this._playlist.length){
       this.index = 0
     }
     const event = new CustomEvent('next',{detail:{index:this.index, playingState: this.isPlaying}})
     this.dispatchEvent(event)
   }
   public prev(){
-    if(this.playlist.length===0) return;
+    if(this._playlist.length===0) return;
     if(this.audio.currentTime>=2){
       this.seek(0)
       return
     }
     this.index-=1
     if (this.index < 0){
-      this.index = this.playlist.length-1
+      this.index = this._playlist.length-1
     }
     const event = new CustomEvent('previous',{detail:{index:this.index, playingState: this.isPlaying}})
     this.dispatchEvent(event)
   }
   public seek(position: number){
-    if(this.playlist.length===0) return;
+    if(this._playlist.length===0) return;
     // Move player head to a given time position(seconde)
     this.audio.currentTime = position
     const event = new CustomEvent('seek',{detail:{index:this.index, playingState: this.isPlaying, position}})
     this.dispatchEvent(event)
   }
-  public setAudioSource(value: string){
+  public setPlaylistFromString(value: string){
     // To accept one audio url
     this.setPlaylist(value.split(','))
   }
   public setPlaylist(playlist: string[]){
     // To accept several audio urls
     this.index = -1
-    this.playlist = playlist
-    this.index = this.playlist.length > 0 ? 0 : -1
+    this._playlist = playlist
+    this.index = this._playlist.length > 0 ? 0 : -1
     this.stop()
   }
   private _updateAudioPlayerSrc(){
-    this.audio.setAttribute('src',this.playlist[this.index])
+    this.audio.setAttribute('src',this._playlist[this.index])
   }
 
   downloadTrack (){
@@ -192,7 +199,7 @@ export class RumblePlayer extends HTMLElement {
   }
 
   private download() {
-    return this.downloadUrl(this.playlist[this.index],'rs-player-file.mp3','audio/*')
+    return this.downloadUrl(this._playlist[this.index],'rs-player-file.mp3','audio/*')
   }
 
 
