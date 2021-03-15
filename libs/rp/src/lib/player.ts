@@ -1,6 +1,6 @@
 // Will contain all the basic logic of the audio
 
-const audioUrlPartOne = '../../assets/Energetic-1.mp3'
+const audioUrlPartOne = '../assets/Energetic-1.mp3'
 const audioUrlPartTwo = 'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fuplifting%2FUplifting-1.mp3?alt=media&token=60b80935-4468-425a-9a1a-bf84d443d2e2,'+
   'https://firebasestorage.googleapis.com/v0/b/rumble-studio-alpha.appspot.com/o/assets%2Faudio%2Fjingles%2Fclassical%2FClassical-2.mp3?alt=media&token=1192b959-52da-4bfa-8345-ae51cd5d2f15'
 const audioUrl = audioUrlPartOne + ',' + audioUrlPartTwo
@@ -34,15 +34,15 @@ export class RumblePlayer extends HTMLElement {
     super();
     this._playlist = []
     this._index = -1
+    this.setInnerHTML()
+    this.bindHTMLElements();
+    console.log('Constructed')
 
   }
   connectedCallback(){
     //
-    this.setInnerHTML()
-    this.bindHTMLElements();
+
     // this.setPlaylistFromString(audioUrl)
-    console.log('mounted')
-    this.setInnerHTML()
   }
   getPlaylist(){
     return this._playlist
@@ -109,7 +109,7 @@ export class RumblePlayer extends HTMLElement {
       if(wasPlaying) return this.play()
     })
 
-    this.audio.onplay = () =>{
+    /*this.audio.onplay = () =>{
       this.isPlaying = true
       console.log('playing started', this.index ,this.audio.currentTime)
       const event = new CustomEvent('play',{detail:{index:this.index, position: this.audio.currentTime}})
@@ -126,7 +126,7 @@ export class RumblePlayer extends HTMLElement {
       console.log('playing paused')
       const event = new CustomEvent('pause',{detail:{index:this.index, position: this.audio.currentTime}})
       this.dispatchEvent(event)
-    }
+    }*/
   }
   getSeekingTime():number{
     return this.audio.currentTime
@@ -134,20 +134,31 @@ export class RumblePlayer extends HTMLElement {
   public play(): Promise<void>{
     if(this._playlist.length===0) return;
     return this.audio.play()
+      .then(()=>{
+        this.isPlaying = true
+        console.log('playing started', this.index ,this.audio.currentTime)
+        const event = new CustomEvent('play',{detail:{index:this.index, position: this.audio.currentTime}})
+        this.dispatchEvent(event)
+      })
+      .catch(err=>{
+        console.error('Error when asked to play',err)
+        this.isPlaying=false
+      })
   }
   public pause (){
     if(this._playlist.length===0) return;
-    return this.audio.pause()
-    //
-  }
-  public resume (){
-    if(this._playlist.length===0) return;
+    this.audio.pause()
+    this.isPlaying = false
+    console.log('playing paused')
+    const event = new CustomEvent('pause',{detail:{index:this.index, position: this.audio.currentTime}})
+    this.dispatchEvent(event)
     //
   }
   public stop (){
     if(this._playlist.length===0) return;
-    if(!this.isPlaying) return;
-    this.audio.pause()
+    if(this.isPlaying){
+      this.pause()
+    }
     this.seek(0)
 
     //
@@ -176,7 +187,7 @@ export class RumblePlayer extends HTMLElement {
   }
   public seek(position: number){
     if(this._playlist.length===0) return;
-    // Move player head to a given time position(seconde)
+    // Move player head to a given time position(in seconds)
     this.audio.currentTime = position
     const event = new CustomEvent('seek',{detail:{index:this.index, playingState: this.isPlaying, position}})
     this.dispatchEvent(event)

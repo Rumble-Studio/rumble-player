@@ -1,0 +1,47 @@
+
+/*
+describe('rumble player', () => {
+  it('It should call play method and change playing status to true', () => {
+    const rp = new RumblePlayer()
+    // rp.connectedCallback()
+    expect(rp.isPlaying).toEqual(false);
+    rp.play()
+    expect(rp.isPlaying).toEqual(true);
+  });
+});
+
+
+
+describe('rumble player', () => {
+  it('calling pause method while playing should change playing status to false', () => {
+    const rp = new RumblePlayer()
+    // rp.connectedCallback()
+    rp.play()
+    rp.pause()
+    expect(rp.isPlaying).toEqual(false);
+  });
+});
+
+
+describe('rumble player', () => {
+  it('calling seek method while being pause should change seeking time and keep playing status to “false”', () => {
+
+    const rp = new RumblePlayer()
+
+    rp.play()
+    rp.pause()
+    const seekingTime = rp.getSeekingTime()
+    rp.seek(4)
+    expect(rp.isPlaying).toEqual(false);
+    expect(rp.getSeekingTime()).toEqual(seekingTime);
+  });
+});
+*/
+/*
+describe('rumble player instance', () => {
+
+
+
+
+});
+*/
