@@ -2,6 +2,121 @@
 
 # RumblePlayer
 
+
+### Features
+* Single audio file or playlist
+* Accept all audio codecs / formats
+
+
+# Documentation
+
+### Contents
+* [Quick Start](#quick-start)
+* [Examples](#examples)
+* [Events](#events)
+
+### Quick Start
+
+Several options to get up and running:
+
+* Clone the repo: `git clone https://github.com/Rumble-Studio/rumble-player.git`
+* Install with [npm](https://www.npmjs.com/package/howler): `npm install rumble-player`
+* Install with [Yarn](https://yarnpkg.com/en/package/howler): `yarn add rumble-player`
+
+In the browser:
+
+Using pure HTML
+```html
+<rs-player
+  id="rs-player-id"
+  title="My player"
+  darkMode
+  source="https://link.to.json or mp3"/>
+```
+Using js 
+
+```html
+<div id="rs-player-id"></div>
+<script>
+    let sound = new RSPlayer({
+      source: ['sound.webm', 'sound.mp3'],
+      darkMode: true,
+      title: 'My Player',
+      parentId: 'rs-player-id'
+    });
+    sound.play();
+</script>
+```
+
+As a dependency using React:
+
+in main.tsx or main.js:
+````javascript
+import '@rumble-player/rp'
+````
+in your component
+```jsx
+export default class MyComponent extends React.Component{
+  render(){
+  return(
+        <rs-player config={
+                    {source: ['sound.webm', 'sound.mp3'],
+                     darkMode: true,
+                     title: 'My Player',
+                     }}
+              onLoad={this._onLoadCallback()}
+              onPlay={this._onPlayCallback()}
+              onNext={this._onNextCallback()}
+              onPrev={this._onPrevCallback()}
+  
+          />)
+}
+}
+```
+
+As a dependency using Angular:
+
+in main.tsx:
+````javascript
+import '@rumble-player/rp'
+````
+in app.module :
+```javascript
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'; // add this import
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    RouterModule.forRoot([], { initialNavigation: 'enabled' }),
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA], // ADD this line
+})
+
+```
+in your template
+```angular2html
+<rs-player
+  id="rs-player-id"
+  [title]="'My player'"
+  [darkMode]="true"
+  (onPlay)="onPlayCallback()"
+  (onNext)="onNextCallback()"
+  (onPrev)="onPrevCallback()"
+  (onLoad)="onLoadCallback()"
+  source="https://link.to.json or mp3"/>
+```
+
+### Known issues 
+ Template parse errors:
+    'rumble-player-player' is not a known element:
+    1. If 'rumble-player-player' is an Angular component, then verify that it is part of this module.
+    2. If 'rumble-player-player' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<rumble-player-player></rumble-player-player>
+
+https://stackoverflow.com/questions/39428132/custom-elements-schema-added-to-ngmodule-schemas-still-showing-error
+
 This project was generated using [Nx](https://nx.dev).
 
 <p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
@@ -9,6 +124,7 @@ This project was generated using [Nx](https://nx.dev).
 🔎 **Nx is a set of Extensible Dev Tools for Monorepos.**
 
 ## Quick Start & Documentation
+
 
 [Nx Documentation](https://nx.dev/angular)
 

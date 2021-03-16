@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './app';
 
 describe('App', () => {
-  it('should render successfully', () => {
+  it('should render App successfully', () => {
     const { baseElement } = render(
       <BrowserRouter>
         <App />
@@ -16,13 +16,13 @@ describe('App', () => {
     expect(baseElement).toBeTruthy();
   });
 
-  it('should have a greeting as the title', () => {
-    const { getByText } = render(
+  it('Should render player element', () => {
+    const { container } = render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
     );
 
-    expect(getByText('Welcome to demo-react!')).toBeTruthy();
+    expect(container.querySelector('rs-player')).toBeDefined();
   });
 });

@@ -1,7 +1,8 @@
 {
   "version": 1,
   "cli": {
-    "defaultCollection": "@nrwl/angular"
+    "defaultCollection": "@nrwl/angular",
+    "analytics": false
   },
   "defaultProject": "demo-angular",
   "schematics": {
@@ -54,7 +55,9 @@
               "apps/demo-angular/src/favicon.ico",
               "apps/demo-angular/src/assets"
             ],
-            "styles": ["apps/demo-angular/src/styles.scss"],
+            "styles": [
+              "apps/demo-angular/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -115,7 +118,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/demo-angular"],
+          "outputs": [
+            "coverage/apps/demo-angular"
+          ],
           "options": {
             "jestConfig": "apps/demo-angular/jest.config.js",
             "passWithNoTests": true
@@ -144,7 +149,9 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/demo-angular-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": [
+              "apps/demo-angular-e2e/**/*.{js,ts}"
+            ]
           }
         }
       }
@@ -156,7 +163,9 @@
       "architect": {
         "build": {
           "builder": "@nrwl/web:build",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/apps/demo-react",
             "index": "apps/demo-react/src/index.html",
@@ -167,7 +176,9 @@
               "apps/demo-react/src/favicon.ico",
               "apps/demo-react/src/assets"
             ],
-            "styles": ["apps/demo-react/src/styles.scss"],
+            "styles": [
+              "apps/demo-react/src/styles.scss"
+            ],
             "scripts": [],
             "webpackConfig": "@nrwl/react/plugins/webpack"
           },
@@ -210,12 +221,16 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/demo-react/**/*.{ts,tsx,js,jsx}"]
+            "lintFilePatterns": [
+              "apps/demo-react/**/*.{ts,tsx,js,jsx}"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/demo-react"],
+          "outputs": [
+            "coverage/apps/demo-react"
+          ],
           "options": {
             "jestConfig": "apps/demo-react/jest.config.js",
             "passWithNoTests": true
@@ -244,7 +259,9 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/demo-react-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": [
+              "apps/demo-react-e2e/**/*.{js,ts}"
+            ]
           }
         }
       }
@@ -257,12 +274,16 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/rp/**/*.ts"]
+            "lintFilePatterns": [
+              "libs/rp/**/*.ts"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/rp"],
+          "outputs": [
+            "coverage/libs/rp"
+          ],
           "options": {
             "jestConfig": "libs/rp/jest.config.js",
             "passWithNoTests": true
