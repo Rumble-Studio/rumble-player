@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import styles from './app.module.scss';
 
-import { ReactComponent as Logo } from './logo.svg';
-import star from './star.svg';
-
 import { Route, Link } from 'react-router-dom';
+import { fakePlaylist } from './player.Config';
+import { RumblePlayer } from '@rumble-player/rp';
 
 export function App() {
+  const playerRef = React.createRef();
+  useEffect(() => {
+    const player = playerRef.current as RumblePlayer
+    console.log(playerRef.current)
+  });
+
   return (
     <div className={styles.app}>
 
@@ -17,7 +22,7 @@ export function App() {
       <br />
       <hr />
       <br />
-      <rs-player title={'rs player react'}/>
+      <rs-player ref={playerRef}  title={'rs player react'}/>
       <Route
         path="/"
         exact

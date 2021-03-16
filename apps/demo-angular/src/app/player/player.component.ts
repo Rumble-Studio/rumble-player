@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { RumblePlayer } from '@rumble-player/rp';
+import { fakePlaylist } from '../player.Config';
 
 @Component({
   selector: 'rumble-player-player',
@@ -14,7 +15,8 @@ export class PlayerComponent implements OnInit {
 
   ngOnInit(): void {
     this.eventsHistory = []
-    this.player = (this.ref.nativeElement as HTMLElement).childNodes[0] as RumblePlayer
+    this.player = (this.ref.nativeElement as HTMLElement).childNodes[0] as RumblePlayer;
+    this.player.setPlaylist(fakePlaylist)
     this.EVENTLIST.forEach(value => {
       this.player.addEventListener(value, ($event:CustomEvent)=>{
         this.eventsHistory.push('Event type: ' + value + ', data : ' + JSON.stringify($event.detail))
