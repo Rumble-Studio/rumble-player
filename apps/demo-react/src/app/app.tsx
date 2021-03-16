@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 import styles from './app.module.scss';
 
 import { Route, Link } from 'react-router-dom';
-import { fakePlaylist } from './player.Config';
+import { fakePlaylist } from '../config/dummyAudioData.config';
 import { RumblePlayer } from '@rumble-player/rp';
 
 export function App() {
   const playerRef = React.createRef();
   useEffect(() => {
     const player = playerRef.current as RumblePlayer
-    console.log(playerRef.current)
+    player.setPlaylist(fakePlaylist)
   });
 
   return (

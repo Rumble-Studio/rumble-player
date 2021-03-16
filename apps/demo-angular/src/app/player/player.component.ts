@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { RumblePlayer } from '@rumble-player/rp';
-import { fakePlaylist } from '../player.Config';
+import { fakePlaylist } from '../../config/dummyAudioData.config';
 
 @Component({
   selector: 'rumble-player-player',
