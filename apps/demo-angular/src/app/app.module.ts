@@ -11,6 +11,7 @@ import { PlayerComponent } from './player/player.component';
     BrowserModule,
     RouterModule.forRoot([], { initialNavigation: 'enabled' }),
   ],
+  exports:[PlayerComponent],
   providers: [],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

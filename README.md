@@ -109,6 +109,13 @@ in your template
   source="https://link.to.json or mp3"/>
 ```
 
+### Known issues 
+ Template parse errors:
+    'rumble-player-player' is not a known element:
+    1. If 'rumble-player-player' is an Angular component, then verify that it is part of this module.
+    2. If 'rumble-player-player' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<rumble-player-player></rumble-player-player>
+
+https://stackoverflow.com/questions/39428132/custom-elements-schema-added-to-ngmodule-schemas-still-showing-error
 
 This project was generated using [Nx](https://nx.dev).
 

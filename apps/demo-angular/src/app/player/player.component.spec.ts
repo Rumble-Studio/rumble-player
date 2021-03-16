@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PlayerComponent } from './player.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { AppComponent } from '../app.component';
 
 describe('PlayerComponent', () => {
   let component: PlayerComponent;
@@ -8,7 +10,10 @@ describe('PlayerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PlayerComponent ]
+      declarations: [ PlayerComponent ],
+      schemas: [
+        CUSTOM_ELEMENTS_SCHEMA
+      ],
     })
     .compileComponents();
   });
@@ -19,7 +24,11 @@ describe('PlayerComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create Angular component', () => {
     expect(component).toBeTruthy();
+  });
+  it('should create custom player component', () => {
+    const compiled = fixture.nativeElement;
+    expect(compiled.querySelector('rs-player')).toBeDefined()
   });
 });
