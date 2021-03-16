@@ -3,7 +3,7 @@ import {  RumblePlayer } from './player';
 
 
 const playlist = ['song1','song2','song3',]
-const songDurations = [5,10,2000,]
+const songDurations = [50,100,2000,]
 
 window.HTMLMediaElement.prototype.play = () => { return Promise.resolve() };
 window.HTMLMediaElement.prototype.pause = () => { /* do nothing */ };
@@ -82,27 +82,28 @@ describe('Playing behaviors',()=>{
       expect(player.isPlaying).toEqual(false)
     },3000)
   });
+  it('should play next song automatically', async() => {
+    const player = new RumblePlayer()
+    const deltaT = 2
+    player.setPlaylist(playlist)
+    await player.play()
+    expect(player.index).toEqual(0)
+    setTimeout(()=>{
+      expect(player.index).toEqual(1)
+      expect(player.isPlaying).toEqual(true)
+    },songDurations[0]+deltaT)
+    setTimeout(()=>{
+      // because HTMLAudioPlayer is not implemented in testing environment
+      // We trigger ourselves the onended event
+      const event = new Event('onended')
+      player.audio.dispatchEvent(event)
+    },songDurations[0])
+  });
+
 })
 
 
 
-it('should play next song automatically', async() => {
-  const player = new RumblePlayer()
-  const deltaT = 2
-  player.setPlaylist(playlist)
-  await player.play()
-  expect(player.index).toEqual(0)
-  setTimeout(()=>{
-    expect(player.index).toEqual(1)
-    expect(player.isPlaying).toEqual(true)
-  },songDurations[0]+deltaT)
-  setTimeout(()=>{
-    // because HTMLAudioPlayer is not implemented in testing environment
-    // We trigger ourselves the onended event
-    const event = new Event('onended')
-    player.audio.dispatchEvent(event)
-  },songDurations[0])
-});
 
 
 
@@ -125,21 +126,40 @@ describe('Seeking behaviors',()=>{
   })
   it('should change the position when seeking', async () => {
     const player = new RumblePlayer()
-
     player.setPlaylist(playlist)
     await player.play()
     player.pause()
-    const timeSeek = player.getSeekingTime()
-    expect(player.getSeekingTime()).toEqual(timeSeek)
-    player.seek(40)
-    expect(player.getSeekingTime()).toBeGreaterThan(timeSeek)
+    // seeking in pause mode only as audio player is not mocked in testing env:
+    const timeToSeek = 40
+    player.seek(timeToSeek)
+    expect(player.getSeekingTime()).toEqual(timeToSeek)
     //
   })
   it('should go to the end of the song if seeking time over song duration', async () => {
+    const deltaT = 10
     const player = new RumblePlayer()
-
+    const mockSeekFunction = jest.fn((index: number, seconds:number) =>
+    {
+      if (seconds > songDurations[index]){
+        player.next()
+      }
+      else{
+        player.seek(seconds)
+      }
+    });
     player.setPlaylist(playlist)
     await player.play()
+    player.pause()
+
+    // first lets try with a value lesser than song duration
+    const index = player.index
+    mockSeekFunction(index,songDurations[index])
+    expect(player.index).toEqual(index)
+
+    // Then let's try with a value greather than song duration
+    mockSeekFunction(index,songDurations[index]+deltaT)
+    expect(player.index).toEqual(index+1)
+
   })
 })
 
