@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { RumblePlayer } from '@rumble-player/rp';
-import { $e } from '@angular/compiler/src/chars';
 
 @Component({
   selector: 'rumble-player-player',

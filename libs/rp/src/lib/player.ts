@@ -41,24 +41,13 @@ export class RumblePlayer extends HTMLElement {
     this.createHTMLChildren()
     this.bindHTMLElements();
     console.log('Constructed')
-
-
   }
   connectedCallback(){
-    //
     this.addChildren()
-    // this.setPlaylistFromString(audioUrl)
   }
   getPlaylist(){
     return this._playlist
   }
-  /*
-  disconnectedCallback(){
-    //
-  }
-  adoptedCallback(){
-    //
-  }*/
   createHTMLChildren(){
     this.playButton = document.createElement('button')
     this.playButton.innerText = 'play'
@@ -74,7 +63,6 @@ export class RumblePlayer extends HTMLElement {
     this.prevButton.innerText = 'prev'
     this.audio = document.createElement('audio')
 
-
   }
   addChildren(){
     this.appendChild(this.playButton)
@@ -86,11 +74,6 @@ export class RumblePlayer extends HTMLElement {
     this.appendChild(this.audio)
   }
 
-
- /* attributeChangedCallback(attrName, oldVal, newVal) {
-
-  }
-  */
   bindHTMLElements() {
     // Bind event to buttons
     this.playButton.addEventListener('click', ()=>{
@@ -156,7 +139,6 @@ export class RumblePlayer extends HTMLElement {
     console.log('playing paused')
     const event = new CustomEvent('pause',{detail:{index:this.index, position: this.audio.currentTime}})
     this.dispatchEvent(event)
-    //
   }
   public stop (){
     if(this._playlist.length===0) return;
@@ -164,8 +146,6 @@ export class RumblePlayer extends HTMLElement {
       this.pause()
     }
     this.seek(0)
-
-    //
   }
   public next(){
     if(this._playlist.length===0) return;
@@ -206,10 +186,6 @@ export class RumblePlayer extends HTMLElement {
     const event = new CustomEvent('seek',{detail:{index:this.index, playingState: this.isPlaying, position}})
     this.dispatchEvent(event)
   }
-  public setPlaylistFromString(value: string){
-    // To accept one audio url
-    this.setPlaylist(value.split(','))
-  }
   public setPlaylist(playlist: string[]){
     // To accept several audio urls
     this.index = -1
@@ -220,10 +196,6 @@ export class RumblePlayer extends HTMLElement {
   private _updateAudioPlayerSrc(){
     if (this.audio.getAttribute('src')===this._playlist[this.index]) return
     this.audio.setAttribute('src',this._playlist[this.index])
-  }
-
-  downloadTrack (){
-    // whateverCode
   }
 
   private download() {

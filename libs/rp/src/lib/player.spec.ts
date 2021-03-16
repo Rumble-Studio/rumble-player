@@ -1,7 +1,5 @@
 import {  RumblePlayer } from './player';
 
-
-
 const playlist = ['song1','song2','song3',]
 const songDurations = [50,100,2000,]
 
@@ -34,18 +32,15 @@ describe('Instanciation',()=>{
     expect(document.getElementById(playerID)).toBeDefined()
 
   });
-
 })
 
 describe('Playing behaviors',()=>{
-
   it('should fill the player with a playlist', () => {
     const player = new RumblePlayer()
     player.setPlaylist(playlist)
 
     expect(player.getPlaylist()).toEqual(playlist)
   });
-
   it('should be playing when when we click on play', async () => {
     const player = new RumblePlayer()
     // Testing to play without a playlist
@@ -87,7 +82,9 @@ describe('Playing behaviors',()=>{
     const deltaT = 2
     player.setPlaylist(playlist)
     await player.play()
+    // Playing song index should be 0 in the playlist
     expect(player.index).toEqual(0)
+    // Simulate playing song until end and check if auto play next has changed playlist index
     setTimeout(()=>{
       expect(player.index).toEqual(1)
       expect(player.isPlaying).toEqual(true)
@@ -102,12 +99,18 @@ describe('Playing behaviors',()=>{
 
 })
 
-
-
-
-
-
 describe('Seeking behaviors',()=>{
+  it('should change the position when seeking', async () => {
+    const player = new RumblePlayer()
+    player.setPlaylist(playlist)
+    await player.play()
+    player.pause()
+    // seeking in pause mode only as audio player is not mocked in testing env:
+    const timeToSeek = 40
+    player.seek(timeToSeek)
+    expect(player.getSeekingTime()).toEqual(timeToSeek)
+    //
+  })
   it('should not change the playing status when seeking', async () => {
     const player = new RumblePlayer()
 
@@ -122,17 +125,6 @@ describe('Seeking behaviors',()=>{
     expect(player.isPlaying).toEqual(false)
 
 
-    //
-  })
-  it('should change the position when seeking', async () => {
-    const player = new RumblePlayer()
-    player.setPlaylist(playlist)
-    await player.play()
-    player.pause()
-    // seeking in pause mode only as audio player is not mocked in testing env:
-    const timeToSeek = 40
-    player.seek(timeToSeek)
-    expect(player.getSeekingTime()).toEqual(timeToSeek)
     //
   })
   it('should go to the end of the song if seeking time over song duration', async () => {
