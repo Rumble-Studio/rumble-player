@@ -15,6 +15,7 @@ export class PlayerComponent implements OnInit {
 
   ngOnInit(): void {
     this.eventsHistory = []
+    this.player = new RumblePlayer()
     this.player = (this.ref.nativeElement as HTMLElement).childNodes[0] as RumblePlayer;
     this.player.setPlaylist(fakePlaylist)
     this.EVENTLIST.forEach(value => {

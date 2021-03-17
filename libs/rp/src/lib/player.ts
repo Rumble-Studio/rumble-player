@@ -178,7 +178,7 @@ export class RumblePlayer extends HTMLElement {
     const event = new CustomEvent('seek',{detail:{index:this.index, playingState: this.isPlaying, position}})
     this.dispatchEvent(event)
   }
-  public setPlaylist(playlist: string[]){
+  public setPlaylist(playlist: string[]): void{
     // To accept several audio urls
     this.index = -1
     this._playlist = playlist
