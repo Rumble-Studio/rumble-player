@@ -9,7 +9,8 @@ import { RumblePlayer } from '@rumble-player/rp';
 export function App() {
   const playerRef = React.createRef();
   useEffect(() => {
-    const player = playerRef.current as RumblePlayer
+    let player = new RumblePlayer()
+    player = playerRef.current as RumblePlayer
     player.setPlaylist(fakePlaylist)
   });
 
