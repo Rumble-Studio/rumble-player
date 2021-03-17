@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { PlayerComponent } from './player.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
 describe('PlayerComponent', () => {
   let component: PlayerComponent;
   let fixture: ComponentFixture<PlayerComponent>;
@@ -26,7 +26,7 @@ describe('PlayerComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should create custom player component', () => {
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('rs-player')).toBeDefined()
+    const nativeElement = fixture.nativeElement;
+    expect(nativeElement.querySelector('rs-player')).toBeDefined()
   });
 });

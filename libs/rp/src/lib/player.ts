@@ -1,4 +1,5 @@
-// Will contain all the basic logic of the audio
+
+export const EVENTLIST = ['seek','play','pause','stop','next','previous','indexChange']
 
 export class RumblePlayer extends HTMLElement {
   public static observedAttributes = ['title'];
@@ -26,13 +27,15 @@ export class RumblePlayer extends HTMLElement {
   source; // User input linked to audio src
   private _playlist : string[];
 
-  constructor(){
+  constructor(title?:string){
     super();
     this._playlist = []
     this._index = -1
     this.createHTMLChildren()
     this.bindHTMLElements();
-    console.log('Constructed')
+    if (title){
+      this.title = title
+    }
   }
   connectedCallback(){
     this.addChildren()
