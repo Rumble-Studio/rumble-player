@@ -9,6 +9,7 @@
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
+    "test:all": "nx test rp && nx test demo-angular && nx test demo-react",
     "lint": "nx workspace-lint && ng lint",
     "e2e": "ng e2e",
     "affected:apps": "nx affected:apps",
