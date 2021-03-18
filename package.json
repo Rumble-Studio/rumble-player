@@ -28,7 +28,7 @@
 		"dep-graph": "nx dep-graph",
 		"help": "nx help",
 		"prepare": "husky install",
-		"pretty-quick": "pretty-quick"
+		"pretty-quick": "pretty-quick --stagged"
 	},
 	"husky": {
 		"hooks": {
