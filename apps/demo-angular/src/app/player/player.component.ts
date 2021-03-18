@@ -9,7 +9,7 @@ import { fakePlaylist } from '../../config/dummyAudioData.config';
 })
 export class PlayerComponent implements OnInit {
 	public player: RumblePlayer;
-	public eventsHistory: string[];
+	public eventsHistory: string[]
 
 	constructor(private ref: ElementRef) {
 		this.eventsHistory = []
