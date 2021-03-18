@@ -3,35 +3,40 @@ import { EVENTLIST, RumblePlayer } from '@rumble-player/rp';
 import { fakePlaylist } from '../../config/dummyAudioData.config';
 
 @Component({
-  selector: 'rumble-player-player',
-  templateUrl: './player.component.html',
-  styleUrls: ['./player.component.scss']
+	selector: 'rumble-player-player',
+	templateUrl: './player.component.html',
+	styleUrls: ['./player.component.scss'],
 })
 export class PlayerComponent implements OnInit {
+	public player: RumblePlayer;
+	public eventsHistory: string[];
 
-  public player: RumblePlayer;
-  public eventsHistory: string[];
+	constructor(private ref: ElementRef) {
+		this.eventsHistory = [];
+		this.player = new RumblePlayer();
+		this.ref.nativeElement.appendChild(this.player);
 
-  constructor(private ref: ElementRef) {
+		EVENTLIST.forEach((value) => {
+			this.player.addEventListener(value, ($event: CustomEvent) => {
+				this.eventsHistory.push(
+					'Event type: ' +
+						value +
+						', data : ' +
+						JSON.stringify($event.detail)
+				);
+			});
+		});
+	}
 
-    this.eventsHistory = [];
-    this.player = new RumblePlayer();
-    this.ref.nativeElement.appendChild(this.player);
+	ngOnInit(): void {
+		this.player.setPlaylist(fakePlaylist);
+	}
 
-    EVENTLIST.forEach(value => {
-      this.player.addEventListener(value, ($event: CustomEvent) => {
-        this.eventsHistory.push('Event type: ' + value + ', data : ' + JSON.stringify($event.detail))
-      })
-    })
-  }
-
-  ngOnInit(): void {
-    this.player.setPlaylist(fakePlaylist)
-  }
-
-  togglePlayer() {
-    if (this.player.isPlaying) { this.player.pause() }
-    else { this.player.play() }
-  }
-
+	togglePlayer() {
+		if (this.player.isPlaying) {
+			this.player.pause();
+		} else {
+			this.player.play();
+		}
+	}
 }

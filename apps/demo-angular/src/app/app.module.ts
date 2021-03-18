@@ -6,14 +6,14 @@ import { RouterModule } from '@angular/router';
 import { PlayerComponent } from './player/player.component';
 
 @NgModule({
-  declarations: [AppComponent, PlayerComponent],
-  imports: [
-    BrowserModule,
-    RouterModule.forRoot([], { initialNavigation: 'enabled' }),
-  ],
-  exports:[PlayerComponent],
-  providers: [],
-  bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	declarations: [AppComponent, PlayerComponent],
+	imports: [
+		BrowserModule,
+		RouterModule.forRoot([], { initialNavigation: 'enabled' }),
+	],
+	exports: [PlayerComponent],
+	providers: [],
+	bootstrap: [AppComponent],
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}
