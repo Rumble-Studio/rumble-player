@@ -12,9 +12,9 @@ export class PlayerComponent implements OnInit {
 	public eventsHistory: string[];
 
 	constructor(private ref: ElementRef) {
-		this.eventsHistory = [];
-		this.player = new RumblePlayer();
-		this.ref.nativeElement.appendChild(this.player);
+		this.eventsHistory = []
+		this.player=new RumblePlayer()
+		this.ref.nativeElement.appendChild(this.player)
 
 		EVENTLIST.forEach((value) => {
 			this.player.addEventListener(value, ($event: CustomEvent) => {
