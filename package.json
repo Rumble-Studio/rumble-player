@@ -79,7 +79,7 @@
 		"@nrwl/workspace": "11.4.0",
 		"@testing-library/react": "11.1.2",
 		"@types/jest": "26.0.8",
-		"@types/node": "12.12.38",
+		"@types/node": "^12.12.38",
 		"@types/react": "16.9.56",
 		"@types/react-dom": "16.9.9",
 		"@types/react-router-dom": "5.1.6",
