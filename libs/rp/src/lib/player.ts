@@ -21,6 +21,16 @@ interface Song {
 	position?: number | null; // current seeking of position of the howl
 }
 
+interface Layout{
+	// from input
+	nbRows:number;
+	nbColumns:number;	
+
+
+	// computed
+		
+}
+
 function downloadFile(file: File) {
 	// Convert your blob into a Blob URL (a special url that points to an object in the browser’s memory)
 	const blobUrl = URL.createObjectURL(file);
