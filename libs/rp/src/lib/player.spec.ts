@@ -1,8 +1,7 @@
-import { RumblePlayer } from './player';
+import { UPDATE_DELAY, RumblePlayer } from './player';
 
 const playlist = ['song1', 'song2', 'song3'];
 const songDurations = [50, 100, 2000];
-import { fakePlaylist } from '../config/dummyAudioData.config';
 
 window.HTMLMediaElement.prototype.play = () => {
 	return Promise.resolve();
@@ -19,7 +18,7 @@ describe('Instanciation', () => {
 		const player = new RumblePlayer();
 		expect(player).toBeDefined();
 		expect(player.index).toEqual(-1);
-		expect(player.getPlaylistAsString()).toEqual([]);
+		expect(player.playlist).toEqual([]);
 		expect(player.isPlaying).toEqual(false);
 	});
 
@@ -44,12 +43,12 @@ describe('Instanciation', () => {
 describe('Playing behaviors', () => {
 	it('should fill the player with a playlist', () => {
 		const player = new RumblePlayer();
-		player.setPlaylistFromString(playlist);
+		player.setPlaylistFromUrls(playlist);
 
-		expect(player.getPlaylistAsString()).toEqual(playlist);
+		expect(player.playlist.map((x) => x.file)).toEqual(playlist);
 	});
 
-	it('should be playing when when we click on play', async () => {
+	it('should be playing when when we call to play', async () => {
 		const player = new RumblePlayer();
 
 		// Testing to play without a playlist
@@ -57,14 +56,14 @@ describe('Playing behaviors', () => {
 		expect(player.isPlaying).toEqual(false);
 
 		// Testing with a playlist
-		player.setPlaylistFromString(playlist);
+		player.setPlaylistFromUrls(playlist);
 		await player.play();
 		expect(player.isPlaying).toEqual(true);
 	});
 
-	it('should stop playing when click on pause', async () => {
+	it('should stop playing when call to pause', async () => {
 		const player = new RumblePlayer();
-		player.setPlaylistFromString(playlist);
+		player.setPlaylistFromUrls(playlist);
 
 		await player.play();
 		expect(player.isPlaying).toEqual(true);
@@ -74,10 +73,10 @@ describe('Playing behaviors', () => {
 		}, 3000);
 	});
 
-	it('should stop playing when click on stop', async () => {
+	it('should stop playing when call to stop', async () => {
 		const player = new RumblePlayer();
 
-		player.setPlaylistFromString(playlist);
+		player.setPlaylistFromUrls(playlist);
 		await player.play();
 		expect(player.isPlaying).toEqual(true);
 		setTimeout(() => {
@@ -89,7 +88,7 @@ describe('Playing behaviors', () => {
 	it('should play next song automatically', async () => {
 		const player = new RumblePlayer();
 		const deltaT = 2;
-		player.setPlaylistFromString(playlist);
+		player.setPlaylistFromUrls(playlist);
 		await player.play();
 		// Playing song index should be 0 in the playlist
 		expect(player.index).toEqual(0);
@@ -102,8 +101,7 @@ describe('Playing behaviors', () => {
 		// because HTMLAudioPlayer is not implemented in testing environment
 		// We trigger ourselves the onended event
 		setTimeout(() => {
-			const event = new Event('onended');
-			player.audio.dispatchEvent(event);
+			player.playlist[player.index].howl.stop();
 		}, songDurations[0]);
 	});
 });
@@ -111,7 +109,7 @@ describe('Playing behaviors', () => {
 describe('Seeking behaviors', () => {
 	it('should change the position when seeking', async () => {
 		const player = new RumblePlayer();
-		player.setPlaylistFromString(fakePlaylist);
+		player.setPlaylistFromUrls(playlist);
 
 		await player.play();
 
@@ -119,12 +117,15 @@ describe('Seeking behaviors', () => {
 		player.pause();
 		const timeToSeek = 7;
 		player.seek(timeToSeek);
-		expect(player.getSeekingTime()).toEqual(timeToSeek);
+
+		setTimeout(() => {
+			expect(player.position).toEqual(timeToSeek);
+		}, UPDATE_DELAY);
 	});
 
 	it('should not change the playing status when seeking', async () => {
 		const player = new RumblePlayer();
-		player.setPlaylistFromString(playlist);
+		player.setPlaylistFromUrls(playlist);
 		await player.play();
 		expect(player.isPlaying).toEqual(true);
 
@@ -149,7 +150,7 @@ describe('Seeking behaviors', () => {
 				player.seek(seconds);
 			}
 		});
-		player.setPlaylistFromString(playlist);
+		player.setPlaylistFromUrls(playlist);
 		await player.play();
 		player.pause();
 

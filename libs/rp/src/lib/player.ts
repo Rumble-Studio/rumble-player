@@ -11,6 +11,8 @@ export const EVENTLIST = [
 	'indexChange',
 ];
 
+export const UPDATE_DELAY:number = 100;
+
 async function urlToFile(
 	url: string,
 	filename: string,
@@ -111,7 +113,7 @@ export class RumblePlayer extends HTMLElement {
 
 		setInterval(() => {
 			this.updatePositions();
-		}, 100);
+		}, UPDATE_DELAY);
 	}
 
 	// getPlaylistAsString() {
@@ -127,11 +129,17 @@ export class RumblePlayer extends HTMLElement {
 	}
 
 	updatePositions() {
+		if (this._playlist.length === 0) return;
+
 		this._playlist.forEach((song: Song, songIndex: number) => {
 			if (song.howl) {
 				song.position = song.howl.seek() as number;
+			} else {
+				song.position = -1
 			}
 		});
+
+		this.position = this.playlist[this.index].position
 	}
 
 	createHowlWithBindings(song: Song) {
@@ -229,6 +237,7 @@ export class RumblePlayer extends HTMLElement {
 				}
 			});
 		}
+		this.updatePositions();
 	}
 
 	public stop(index?: number) {
