@@ -17,19 +17,16 @@ export class PlayerComponent implements OnInit {
 		this.ref.nativeElement.appendChild(this.player);
 
 		EVENTLIST.forEach((value) => {
-			this.player.addEventListener(value, ($event: CustomEvent) => {
+			this.player.addEventListener(value, (event: Event) => {
 				this.eventsHistory.push(
-					'Event type: ' +
-						value +
-						', data : ' +
-						JSON.stringify($event.detail)
+					'Event type: ' + value + ', data : ' + JSON.stringify(event)
 				);
 			});
 		});
 	}
 
 	ngOnInit(): void {
-		this.player.setPlaylistFromString(fakePlaylist);
+		this.player.setPlaylistFromUrls(fakePlaylist);
 	}
 
 	togglePlayer() {

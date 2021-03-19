@@ -10,8 +10,47 @@ export const EVENTLIST = [
 	'indexChange',
 ];
 
+async function urlToFile(
+	url: string,
+	filename: string,
+	mimeType: string
+): Promise<File> {
+	const res = await fetch(url);
+	const buf = await res.arrayBuffer();
+	return new File([buf], filename, { type: mimeType });
+}
+
+interface Song {
+	title: string;
+	file: string;
+	howl: Howl | null;
+	position?:number | null;
+}
+
+function downloadFile(file: File) {
+	// Convert your blob into a Blob URL (a special url that points to an object in the browser’s memory)
+	const blobUrl = URL.createObjectURL(file);
+	// Create a link element
+	const link = document.createElement('a');
+	// Set link’s href to point to the Blob URL
+	link.href = blobUrl;
+	link.download = file.name;
+	// Append link to the body
+	document.body.appendChild(link);
+	// Dispatch click event on the link
+	// This is necessary as link.click() does not work on the latest firefox
+	link.dispatchEvent(
+		new MouseEvent('click', {
+			bubbles: true,
+			cancelable: true,
+			view: window,
+		})
+	);
+	// Remove link from body
+	document.body.removeChild(link);
+}
+
 export class RumblePlayer extends HTMLElement {
-	public static observedAttributes = ['title'];
 	playButton: HTMLButtonElement;
 	pauseButton: HTMLButtonElement;
 	stopButton: HTMLButtonElement;
@@ -19,6 +58,14 @@ export class RumblePlayer extends HTMLElement {
 	nextButton: HTMLButtonElement;
 	prevButton: HTMLButtonElement;
 	isPlaying = false;
+	playingOn() {
+		this.isPlaying = true;
+	}
+	playingOff() {
+		this.isPlaying = false;
+	}
+
+	// index in playlist
 	private _index: number;
 	get index() {
 		return this._index;
@@ -30,36 +77,234 @@ export class RumblePlayer extends HTMLElement {
 			const eventIndexChange = new CustomEvent('indexChange', {
 				detail: value,
 			});
-			this.dispatchEvent(eventIndexChange);
 			//this._updateAudioPlayerSrc();
+			this.dispatchEvent(eventIndexChange);
 		}
 	}
-	audio: HTMLAudioElement;
-	private _playlist: Song[];
 
-	constructor(title?: string) {
+	// playlist
+	private _playlist: Song[];
+	get playlist() {
+		return this._playlist;
+	}
+	set playlist(playlist: Song[]) {
+		this.stop(); // stop before doing anything else
+		this.index = -1;
+		this._playlist = playlist;
+		this.index = this._playlist.length > 0 ? 0 : -1;
+	}
+
+	// current position
+	private _position: number;
+	get position() {
+		return this._position;
+	}
+	set position(value: number) {
+		this._position = value;
+	}
+
+	constructor() {
 		super();
 		this._playlist = [];
 		this._index = -1;
+		this._position = 0;
 		this.createHTMLChildren();
 		this.bindHTMLElements();
-		if (title) {
-			this.title = title;
+	}
+
+	// getPlaylistAsString() {
+	// 	const songArray = [] as string[];
+	// 	this._playlist.forEach((value) => {
+	// 		songArray.push(value.file);
+	// 	});
+	// 	return songArray;
+	// }
+
+	createHowlWithBindings(song: Song) {
+		const that = this;
+		const howl = new Howl({
+			src: [song.file],
+			onplayerror: function (error) {
+				console.log('error howler playing', error);
+				that.playingOff();
+			},
+			onloaderror: function (error) {
+				console.log('error howler loading', error);
+				that.playingOff();
+			},
+			onend: () => {
+				console.log('%cend.', 'color:cyan');
+				that.playingOff();
+
+			},
+			onpause: () => {
+				console.log('%cpause.', 'color:cyan');
+
+				// const event = new CustomEvent('pause', {
+				// 	detail: {
+				// 		index: this.index,
+				// 		position: song.howl.seek(),
+				// 	},
+				// });
+				// that.dispatchEvent(event);
+				that.playingOff();
+			},
+			onplay: () => {
+				console.log('%cplay.', 'color:cyan');
+				// const event = new CustomEvent('play', {
+				// 	detail: {
+				// 		index: this.index,
+				// 		position: song.howl.seek(),
+				// 	},
+				// });
+				// that.dispatchEvent(event);
+				that.playingOn();
+			},
+			onseek: () => {
+				// const event = new CustomEvent('seek', {
+				// 	detail: {
+				// 		index: this.index,
+				// 		position: song.howl.seek(),
+				// 	},
+				// });
+				// that.dispatchEvent(event);
+				console.log('%cseek.', 'color:cyan');
+			},
+		});
+
+		return howl;
+	}
+
+	// should return as a promise the current index asked to be played
+	public play(index?: number): Promise<number> {
+		// if no playlist index is -1
+		if (this._playlist.length === 0) return Promise.resolve(-1);
+
+		const indexToPlay = index || this.index;
+
+		// Check howl instance to play
+		const song = this._playlist[indexToPlay];
+		if (!song.howl) {
+			song.howl = this.createHowlWithBindings(song);
+		}
+
+		// Check if howl is already playing
+		if (song.howl.playing()) {
+			return Promise.resolve(indexToPlay);
+		} else {
+			song.howl.play();
+			return Promise.resolve(indexToPlay);
 		}
 	}
+
+	public pause(index?: number) {
+		if (this._playlist.length === 0) return;
+
+		if (index) {
+			const song = this._playlist[index];
+			song.howl.pause();
+		} else {
+			// we pause all item in the playlist (several can play together)
+			this._playlist.forEach((song: Song, songIndex: number) => {
+				if (song.howl) {
+					song.howl.pause();
+				}
+			});
+		}
+	}
+
+	public stop(index?: number) {
+		if (this._playlist.length === 0) return;
+
+		if (index) {
+			const song = this._playlist[index];
+			song.howl.stop();
+		} else {
+			// we stop all item in the playlist (several can play together)
+			this._playlist.forEach((song: Song, songIndex: number) => {
+				if (song.howl) {
+					song.howl.stop();
+				}
+			});
+		}
+	}
+
+	public next() {
+		if (this._playlist.length === 0) return;
+
+		this.stop();
+
+		if (this.index + 1 >= this._playlist.length) {
+			this.index = 0;
+		} else {
+			this.index += 1;
+		}
+
+		// dispatch next event
+		const event = new CustomEvent('next', {
+			detail: { index: this.index, playingState: this.isPlaying },
+		});
+		this.dispatchEvent(event);
+		if (this.isPlaying) {
+			this.play();
+		}
+	}
+
+	public prev() {
+		if (this._playlist.length === 0) return;
+
+		this.stop();
+
+		if (this.index - 1 < 0) {
+			this.index = this._playlist.length - 1;
+		} else {
+			this.index -= 1;
+		}
+
+		// dispach previous event
+		const event = new CustomEvent('previous', {
+			detail: { index: this.index, playingState: this.isPlaying },
+		});
+		this.dispatchEvent(event);
+
+		if (this.isPlaying) {
+			this.play();
+		}
+	}
+
+	// Move player head to a given time position (s)
+	public seek(position: number, index?: number) {
+		if (this._playlist.length === 0) return;
+
+		const indexToSeek = index || this.index;
+		const song = this._playlist[indexToSeek];
+		if (!song.howl) {
+			song.howl = this.createHowlWithBindings(song);
+		}
+		song.howl.seek(position);
+	}
+
+	public setPlaylistFromUrls(urls: string[]) {
+		this.playlist = urls.map((url, index) => {
+			return {
+				title: 'Song ' + index,
+				file: url,
+				howl: null,
+			} as Song;
+		});
+	}
+
+	async download(index?: number) {
+		const indexToDowload = index || this.index;
+		const song = this.playlist[indexToDowload]
+		downloadFile(await urlToFile(song.file, song.title, 'application/octet-stream'));
+	}
+
+	/** FOR HTML SUPPORT */
 	connectedCallback() {
 		this.addChildren();
 	}
-	getPlaylist() {
-		return this._playlist;
-	}
-	getPlaylistAsString() {
-		const songArray = [] as string[];
-		this._playlist.forEach((value) => {
-			songArray.push(value.file);
-		});
-		return songArray;
-	}
+
 	createHTMLChildren() {
 		this.playButton = document.createElement('button');
 		this.playButton.innerText = 'play';
@@ -73,8 +318,8 @@ export class RumblePlayer extends HTMLElement {
 		this.nextButton.innerText = 'next';
 		this.prevButton = document.createElement('button');
 		this.prevButton.innerText = 'prev';
-		this.audio = document.createElement('audio');
 	}
+
 	addChildren() {
 		this.appendChild(this.playButton);
 		this.appendChild(this.pauseButton);
@@ -82,11 +327,9 @@ export class RumblePlayer extends HTMLElement {
 		this.appendChild(this.downloadButton);
 		this.appendChild(this.nextButton);
 		this.appendChild(this.prevButton);
-		this.appendChild(this.audio);
 	}
 
 	bindHTMLElements() {
-		// Bind event to buttons
 		this.playButton.addEventListener('click', () => {
 			return this.play();
 		});
@@ -105,223 +348,9 @@ export class RumblePlayer extends HTMLElement {
 		this.prevButton.addEventListener('click', () => {
 			this.prev();
 		});
-
-		// this.audio.onplay = () =>{
-		//   this.isPlaying = true
-		//   console.log('playing started', this.index ,this.audio.currentTime)
-		//   const event = new CustomEvent('play',{detail:{index:this.index, position: this.audio.currentTime}})
-		//   this.dispatchEvent(event)
-		// }
-		this.audio.onended = () => {
-			this.next();
-			// this.isPlaying = false
-			// console.log('playing ended')
-			// const event = new CustomEvent('stop',{detail:{index:this.index}})
-			// this.dispatchEvent(event)
-		};
-		// this.audio.onpause = () =>{
-		//   this.isPlaying = false
-		//   console.log('playing paused')
-		//   const event = new CustomEvent('pause',{detail:{index:this.index, position: this.audio.currentTime}})
-		//   this.dispatchEvent(event)
-		// }
-	}
-	getSeekingTime(): number {
-		const data = this._playlist[this.index];
-		if (!data.howl) {
-			data.howl = new Howl({ src: data.file });
-		}
-		return data.howl.seek();
-	}
-	public play(): Promise<unknown> {
-		if (this._playlist.length === 0) return;
-		const data = this._playlist[this.index];
-		if (!data.howl) {
-			data.howl = new Howl({ src: data.file });
-		}
-		if (data.howl.playing()) return;
-		data.howl.play();
-		this.isPlaying = true;
-		console.log(
-			'playing started',
-			this.index,
-			'position : ' + data.howl.seek(),
-			'duration : ' + data.howl.duration()
-		);
-		const event = new CustomEvent('play', {
-			detail: {
-				index: this.index,
-				position: data.howl.seek(),
-			},
-		});
-		this.dispatchEvent(event);
-
-		return new Promise((resolve) => {
-			resolve(true);
-		}).catch((err) => {
-			console.error('Error when asked to play', err);
-			this.isPlaying = false;
-		});
-	}
-	public pause() {
-		if (this._playlist.length === 0) return;
-		const data = this._playlist[this.index];
-		if (!data.howl) {
-			data.howl = new Howl({ src: data.file });
-		}
-		data.howl.pause();
-		this.isPlaying = false;
-		console.log(
-			'playing paused',
-			'position : ' + data.howl.seek(),
-			'duration : ' + data.howl.duration()
-		);
-		const event = new CustomEvent('pause', {
-			detail: {
-				index: this.index,
-				position: data.howl.seek(),
-			},
-		});
-		this.dispatchEvent(event);
-	}
-	public stop() {
-		if (this._playlist.length === 0) return;
-		const data = this._playlist[this.index];
-		if (!data.howl) {
-			data.howl = new Howl({ src: data.file });
-		}
-		this.isPlaying = false;
-		data.howl.stop();
-	}
-	private stopForMove() {
-		// To stop the actual playing song  before moving to the next
-		// Without affecting isPlaying
-		const data = this._playlist[this.index];
-		if (data.howl) {
-			data.howl.stop();
-		}
-	}
-	public next() {
-		if (this._playlist.length === 0) return;
-		this.stopForMove();
-		if (this.index + 1 >= this._playlist.length) {
-			this.index = 0;
-		} else {
-			this.index += 1;
-		}
-		const event = new CustomEvent('next', {
-			detail: { index: this.index, playingState: this.isPlaying },
-		});
-		this.dispatchEvent(event);
-		if (this.isPlaying) {
-			this.play();
-		}
-	}
-	public prev() {
-		if (this._playlist.length === 0) return;
-		const data = this._playlist[this.index];
-		if (!data.howl) {
-			data.howl = new Howl({ src: data.file });
-		}
-		if (data.howl.seek() >= 2) {
-			this.seek(0);
-			return;
-		}
-		this.stopForMove();
-		if (this.index - 1 < 0) {
-			this.index = this._playlist.length - 1;
-		} else {
-			this.index -= 1;
-		}
-		const event = new CustomEvent('previous', {
-			detail: { index: this.index, playingState: this.isPlaying },
-		});
-		this.dispatchEvent(event);
-		if (this.isPlaying) {
-			this.play();
-		}
-	}
-	public seek(position: number) {
-		if (this._playlist.length === 0) return;
-		// Move player head to a given time position(in seconds)
-		const data = this._playlist[this.index];
-		if (!data.howl) {
-			data.howl = new Howl({ src: data.file });
-		}
-		data.howl.seek(position);
-		console.log('seeked ', data.howl.seek());
-		const event = new CustomEvent('seek', {
-			detail: { index: this.index, playingState: this.isPlaying, position },
-		});
-		this.dispatchEvent(event);
-	}
-	public setPlaylistFromString(playlist: string[]) {
-		const songArray = [] as Song[];
-		playlist.forEach((value) => {
-			songArray.push({
-				title: value.slice(0, 5),
-				file: value,
-				howl: new Howl({ src: value }),
-			});
-		});
-		this.setPlaylist(songArray);
-	}
-	public setPlaylist(playlist: Song[]): void {
-		// To accept several audio urls
-		this.index = -1;
-		this._playlist = playlist;
-		this.index = this._playlist.length > 0 ? 0 : -1;
-		this.stop();
-	}
-
-	private download() {
-		return this.downloadUrl(
-			this._playlist[this.index].file,
-			'rs-player-file.mp3',
-			'audio/*'
-		);
-	}
-
-	async downloadUrl(url: string, filename: string, mimeType: string) {
-		this.downloadFile(await this.urlToFile(url, filename, mimeType));
-	}
-	urlToFile(url: string, filename: string, mimeType: string): Promise<File> {
-		return fetch(url)
-			.then(function (res) {
-				return res.arrayBuffer();
-			})
-			.then(function (buf) {
-				return new File([buf], filename, { type: mimeType });
-			});
-	}
-	downloadFile(file: File) {
-		// Convert your blob into a Blob URL (a special url that points to an object in the browser’s memory)
-		const blobUrl = URL.createObjectURL(file);
-		// Create a link element
-		const link = document.createElement('a');
-		// Set link’s href to point to the Blob URL
-		link.href = blobUrl;
-		link.download = file.name;
-		// Append link to the body
-		document.body.appendChild(link);
-		// Dispatch click event on the link
-		// This is necessary as link.click() does not work on the latest firefox
-		link.dispatchEvent(
-			new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-				view: window,
-			})
-		);
-		// Remove link from body
-		document.body.removeChild(link);
 	}
 }
 
 customElements.define('rs-player', RumblePlayer);
 
-interface Song {
-	title: string;
-	file: string;
-	howl: Howl | null;
-}
+

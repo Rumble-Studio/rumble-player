@@ -7,10 +7,22 @@ Current index: {{ player.index }} <br />
 
 <hr />
 
-<ul>
+<ol>
 	<li *ngFor="let event of eventsHistory">
 		{{ event }}
 	</li>
-</ul>
+</ol>
 
 <hr />
+
+
+<ol>
+	<li *ngFor="let song of player.playlist; let index = index">
+		
+		<ul>
+			<li><a [href]="song.file">File</a> &nbsp;<strong *ngIf="player.index == index">[selected]</strong> </li>
+			<li>position: {{song.position}}</li>
+			<li>playing: {{song.howl?.playing()}}</li>
+		</ul>
+	</li>
+</ol>

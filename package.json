@@ -79,6 +79,7 @@
 		"@nrwl/web": "11.4.0",
 		"@nrwl/workspace": "11.4.0",
 		"@testing-library/react": "11.1.2",
+		"@types/howler": "^2.2.1",
 		"@types/jest": "26.0.8",
 		"@types/node": "^12.12.38",
 		"@types/react": "16.9.56",

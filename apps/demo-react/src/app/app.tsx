@@ -9,7 +9,7 @@ import { Timestamp } from 'rxjs/internal-compatibility';
 const containerRef = React.createRef();
 const player = new RumblePlayer();
 const eventsHistory = [];
-player.setPlaylistFromString(fakePlaylist);
+player.setPlaylistFromUrls(fakePlaylist);
 
 export function App() {
 	const [isPlaying, setPlaying] = useState(false);
