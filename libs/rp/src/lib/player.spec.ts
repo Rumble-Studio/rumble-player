@@ -15,7 +15,7 @@ describe('Instanciation', () => {
 		const player = new RumblePlayer();
 		expect(player).toBeDefined();
 		expect(player.index).toEqual(-1);
-		expect(player.getPlaylist()).toEqual([]);
+		expect(player.getPlaylistAsString()).toEqual([]);
 		expect(player.isPlaying).toEqual(false);
 	});
 
@@ -40,9 +40,9 @@ describe('Instanciation', () => {
 describe('Playing behaviors', () => {
 	it('should fill the player with a playlist', () => {
 		const player = new RumblePlayer();
-		player.setPlaylist(playlist);
+		player.setPlaylistFromString(playlist);
 
-		expect(player.getPlaylist()).toEqual(playlist);
+		expect(player.getPlaylistAsString()).toEqual(playlist);
 	});
 
 	it('should be playing when when we click on play', async () => {
@@ -53,14 +53,14 @@ describe('Playing behaviors', () => {
 		expect(player.isPlaying).toEqual(false);
 
 		// Testing with a playlist
-		player.setPlaylist(playlist);
+		player.setPlaylistFromString(playlist);
 		await player.play();
 		expect(player.isPlaying).toEqual(true);
 	});
 
 	it('should stop playing when click on pause', async () => {
 		const player = new RumblePlayer();
-		player.setPlaylist(playlist);
+		player.setPlaylistFromString(playlist);
 
 		await player.play();
 		expect(player.isPlaying).toEqual(true);
@@ -73,7 +73,7 @@ describe('Playing behaviors', () => {
 	it('should stop playing when click on stop', async () => {
 		const player = new RumblePlayer();
 
-		player.setPlaylist(playlist);
+		player.setPlaylistFromString(playlist);
 		await player.play();
 		expect(player.isPlaying).toEqual(true);
 		setTimeout(() => {
@@ -85,7 +85,7 @@ describe('Playing behaviors', () => {
 	it('should play next song automatically', async () => {
 		const player = new RumblePlayer();
 		const deltaT = 2;
-		player.setPlaylist(playlist);
+		player.setPlaylistFromString(playlist);
 		await player.play();
 		// Playing song index should be 0 in the playlist
 		expect(player.index).toEqual(0);
@@ -107,7 +107,7 @@ describe('Playing behaviors', () => {
 describe('Seeking behaviors', () => {
 	it('should change the position when seeking', async () => {
 		const player = new RumblePlayer();
-		player.setPlaylist(playlist);
+		player.setPlaylistFromString(playlist);
 
 		await player.play();
 
@@ -120,7 +120,7 @@ describe('Seeking behaviors', () => {
 
 	it('should not change the playing status when seeking', async () => {
 		const player = new RumblePlayer();
-		player.setPlaylist(playlist);
+		player.setPlaylistFromString(playlist);
 		await player.play();
 		expect(player.isPlaying).toEqual(true);
 
@@ -145,7 +145,7 @@ describe('Seeking behaviors', () => {
 				player.seek(seconds);
 			}
 		});
-		player.setPlaylist(playlist);
+		player.setPlaylistFromString(playlist);
 		await player.play();
 		player.pause();
 

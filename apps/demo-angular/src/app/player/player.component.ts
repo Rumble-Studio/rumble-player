@@ -29,7 +29,7 @@ export class PlayerComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		this.player.setPlaylist(fakePlaylist);
+		this.player.setPlaylistFromString(fakePlaylist);
 	}
 
 	togglePlayer() {
