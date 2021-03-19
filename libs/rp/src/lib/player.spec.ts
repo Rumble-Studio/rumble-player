@@ -2,11 +2,15 @@ import { RumblePlayer } from './player';
 
 const playlist = ['song1', 'song2', 'song3'];
 const songDurations = [50, 100, 2000];
+import { fakePlaylist } from '../config/dummyAudioData.config';
 
 window.HTMLMediaElement.prototype.play = () => {
 	return Promise.resolve();
 };
 window.HTMLMediaElement.prototype.pause = () => {
+	/* do nothing */
+};
+window.HTMLMediaElement.prototype.load = () => {
 	/* do nothing */
 };
 
@@ -107,13 +111,13 @@ describe('Playing behaviors', () => {
 describe('Seeking behaviors', () => {
 	it('should change the position when seeking', async () => {
 		const player = new RumblePlayer();
-		player.setPlaylistFromString(playlist);
+		player.setPlaylistFromString(fakePlaylist);
 
 		await player.play();
 
 		// seeking in pause mode only as audio player is not mocked in testing env:
 		player.pause();
-		const timeToSeek = 40;
+		const timeToSeek = 7;
 		player.seek(timeToSeek);
 		expect(player.getSeekingTime()).toEqual(timeToSeek);
 	});

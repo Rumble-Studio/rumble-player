@@ -53,13 +53,13 @@ export class RumblePlayer extends HTMLElement {
 	getPlaylist() {
 		return this._playlist;
 	}
-  getPlaylistAsString() {
-    const songArray = [] as string[];
-    this._playlist.forEach(value => {
-      songArray.push(value.file)
-    })
-    return songArray
-  }
+	getPlaylistAsString() {
+		const songArray = [] as string[];
+		this._playlist.forEach((value) => {
+			songArray.push(value.file);
+		});
+		return songArray;
+	}
 	createHTMLChildren() {
 		this.playButton = document.createElement('button');
 		this.playButton.innerText = 'play';
@@ -140,24 +140,24 @@ export class RumblePlayer extends HTMLElement {
 			data.howl = new Howl({ src: data.file });
 		}
 		if (data.howl.playing()) return;
-    data.howl.play();
-    this.isPlaying = true;
-    console.log(
-      'playing started',
-      this.index,
-      'position : ' + data.howl.seek(),
-      'duration : ' + data.howl.duration()
-    );
-    const event = new CustomEvent('play', {
-      detail: {
-        index: this.index,
-        position: data.howl.seek(),
-      },
-    });
-    this.dispatchEvent(event);
+		data.howl.play();
+		this.isPlaying = true;
+		console.log(
+			'playing started',
+			this.index,
+			'position : ' + data.howl.seek(),
+			'duration : ' + data.howl.duration()
+		);
+		const event = new CustomEvent('play', {
+			detail: {
+				index: this.index,
+				position: data.howl.seek(),
+			},
+		});
+		this.dispatchEvent(event);
 
 		return new Promise((resolve) => {
-			resolve(true)
+			resolve(true);
 		}).catch((err) => {
 			console.error('Error when asked to play', err);
 			this.isPlaying = false;
@@ -249,6 +249,7 @@ export class RumblePlayer extends HTMLElement {
 			data.howl = new Howl({ src: data.file });
 		}
 		data.howl.seek(position);
+		console.log('seeked ', data.howl.seek());
 		const event = new CustomEvent('seek', {
 			detail: { index: this.index, playingState: this.isPlaying, position },
 		});
