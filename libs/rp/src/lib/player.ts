@@ -1,4 +1,5 @@
-import { Howl, Howler } from 'howler';
+import { Howl } from 'howler';
+import { v4 as uuidv4 } from 'uuid';
 
 export const EVENTLIST = [
 	'seek',
@@ -21,10 +22,11 @@ async function urlToFile(
 }
 
 interface Song {
+	id: string;
 	title: string;
 	file: string;
 	howl: Howl | null;
-	position?:number | null;
+	position?: number | null;
 }
 
 function downloadFile(file: File) {
@@ -51,12 +53,8 @@ function downloadFile(file: File) {
 }
 
 export class RumblePlayer extends HTMLElement {
-	playButton: HTMLButtonElement;
-	pauseButton: HTMLButtonElement;
-	stopButton: HTMLButtonElement;
-	downloadButton: HTMLButtonElement;
-	nextButton: HTMLButtonElement;
-	prevButton: HTMLButtonElement;
+	autoPlayNext = true;
+
 	isPlaying = false;
 	playingOn() {
 		this.isPlaying = true;
@@ -110,6 +108,10 @@ export class RumblePlayer extends HTMLElement {
 		this._position = 0;
 		this.createHTMLChildren();
 		this.bindHTMLElements();
+
+		setInterval(() => {
+			this.updatePositions();
+		}, 100);
 	}
 
 	// getPlaylistAsString() {
@@ -119,6 +121,18 @@ export class RumblePlayer extends HTMLElement {
 	// 	});
 	// 	return songArray;
 	// }
+
+	getRank(song) {
+		return this._playlist.indexOf(song.id);
+	}
+
+	updatePositions() {
+		this._playlist.forEach((song: Song, songIndex: number) => {
+			if (song.howl) {
+				song.position = song.howl.seek() as number;
+			}
+		});
+	}
 
 	createHowlWithBindings(song: Song) {
 		const that = this;
@@ -134,8 +148,10 @@ export class RumblePlayer extends HTMLElement {
 			},
 			onend: () => {
 				console.log('%cend.', 'color:cyan');
-				that.playingOff();
-
+				if (that.autoPlayNext) that.next();
+				else {
+					that.stop();
+				}
 			},
 			onpause: () => {
 				console.log('%cpause.', 'color:cyan');
@@ -181,6 +197,8 @@ export class RumblePlayer extends HTMLElement {
 		if (this._playlist.length === 0) return Promise.resolve(-1);
 
 		const indexToPlay = index || this.index;
+
+		console.log('Asked to play:', indexToPlay);
 
 		// Check howl instance to play
 		const song = this._playlist[indexToPlay];
@@ -253,8 +271,14 @@ export class RumblePlayer extends HTMLElement {
 	public prev() {
 		if (this._playlist.length === 0) return;
 
-		this.stop();
+		const song = this._playlist[this.index];
+		const currentPosition = song.howl.seek() as number;
+		if (currentPosition > 2) {
+			this.seek(0);
+			return;
+		}
 
+		this.stop();
 		if (this.index - 1 < 0) {
 			this.index = this._playlist.length - 1;
 		} else {
@@ -290,17 +314,27 @@ export class RumblePlayer extends HTMLElement {
 				title: 'Song ' + index,
 				file: url,
 				howl: null,
+				id: uuidv4(),
 			} as Song;
 		});
 	}
 
 	async download(index?: number) {
 		const indexToDowload = index || this.index;
-		const song = this.playlist[indexToDowload]
-		downloadFile(await urlToFile(song.file, song.title, 'application/octet-stream'));
+		const song = this.playlist[indexToDowload];
+		downloadFile(
+			await urlToFile(song.file, song.title, 'application/octet-stream')
+		);
 	}
 
 	/** FOR HTML SUPPORT */
+	playButton: HTMLButtonElement;
+	pauseButton: HTMLButtonElement;
+	stopButton: HTMLButtonElement;
+	downloadButton: HTMLButtonElement;
+	nextButton: HTMLButtonElement;
+	prevButton: HTMLButtonElement;
+
 	connectedCallback() {
 		this.addChildren();
 	}
@@ -352,5 +386,3 @@ export class RumblePlayer extends HTMLElement {
 }
 
 customElements.define('rs-player', RumblePlayer);
-
-

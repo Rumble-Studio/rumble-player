@@ -21,7 +21,7 @@ Current index: {{ player.index }} <br />
 		
 		<ul>
 			<li><a [href]="song.file">File</a> &nbsp;<strong *ngIf="player.index == index">[selected]</strong> </li>
-			<li>position: {{song.position}}</li>
+			<li>position: {{song.position|number: '1.1-1'}}</li>
 			<li>playing: {{song.howl?.playing()}}</li>
 		</ul>
 	</li>
