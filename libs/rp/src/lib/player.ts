@@ -1,5 +1,6 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
+import { LinearSeekBar } from './seekbar';
 
 export const EVENTLIST = [
 	'seek',
@@ -11,7 +12,7 @@ export const EVENTLIST = [
 	'indexChange',
 ];
 
-export const UPDATE_DELAY: number = 100;
+export const UPDATE_DELAY = 100;
 
 interface Song {
 	id: string; // unique id to identify the song even when we add new song to the playlist
@@ -21,14 +22,12 @@ interface Song {
 	position?: number | null; // current seeking of position of the howl
 }
 
-interface Layout{
+interface Layout {
 	// from input
-	nbRows:number;
-	nbColumns:number;	
-
+	nbRows: number;
+	nbColumns: number;
 
 	// computed
-		
 }
 
 function downloadFile(file: File) {
@@ -67,6 +66,7 @@ export class RumblePlayer extends HTMLElement {
 	autoPlayNext = true; // do we play automatically next song
 
 	isPlaying = false;
+	private progressCallback: number;
 	playingOn() {
 		this.isPlaying = true;
 	}
@@ -86,6 +86,11 @@ export class RumblePlayer extends HTMLElement {
 				detail: value,
 			});
 			this.dispatchEvent(eventIndexChange);
+			// if (value >= 0){
+			//   this.playlist[value].howl.onload = function () {
+			//     console.log('Song loaded index ', value);
+			//   }
+			// }
 		}
 	}
 
@@ -104,6 +109,9 @@ export class RumblePlayer extends HTMLElement {
 		this.dispatchEvent(eventIndexChange);
 	}
 
+	// seekbar
+	private _seekbar: LinearSeekBar;
+	// seekbar progress
 	// current position
 	private _position: number;
 	get position() {
@@ -124,6 +132,9 @@ export class RumblePlayer extends HTMLElement {
 		setInterval(() => {
 			this.updatePositions();
 		}, UPDATE_DELAY);
+		this.progressCallback = setInterval(() => {
+			this.updateProgress();
+		}, 300);
 	}
 
 	// getPlaylistAsString() {
@@ -136,6 +147,11 @@ export class RumblePlayer extends HTMLElement {
 
 	getRank(song: Song) {
 		return this._playlist.map((s) => s.id).indexOf(song.id);
+	}
+	updateProgress() {
+		if (this.playlist[this.index].howl) {
+			this._seekbar.setBarProgression(this.playlist[this.index].howl.seek());
+		}
 	}
 
 	updatePositions() {
@@ -153,55 +169,64 @@ export class RumblePlayer extends HTMLElement {
 	}
 
 	createHowlWithBindings(song: Song) {
-		const that = this;
 		const howl = new Howl({
 			src: [song.file],
-			onplayerror: function (error) {
+			onplayerror: (error) => {
 				console.log('error howler playing', error);
-				that.playingOff();
+				this.playingOff();
 			},
-			onloaderror: function (error) {
+			onload: () => {
+				console.log('Song loaded, duration is ', song.howl.duration());
+				this._seekbar.setTotalDuration(song.howl.duration());
+			},
+			onloaderror: (error) => {
 				console.log('error howler loading', error);
-				that.playingOff();
+				this.playingOff();
 			},
 			onend: () => {
 				console.log('%cend.', 'color:cyan');
-				console.log('%cBLA%cBLI%cBLOU.', 'color:blue', 'color:white', 'color:red');
-				if (that.autoPlayNext) that.next();
+				console.log(
+					'%cBLA%cBLI%cBLOU.',
+					'color:blue',
+					'color:white',
+					'color:red'
+				);
+				if (this.autoPlayNext) this.next();
 				else {
-					that.stop();
+					this.stop();
 				}
 			},
 			onpause: () => {
 				console.log('%cpause.', 'color:cyan');
 				const event = new CustomEvent('pause', {
 					detail: {
-						index: that.getRank(song),
+						index: this.getRank(song),
 						position: song.howl.seek(),
 					},
 				});
-				that.dispatchEvent(event);
-				that.playingOff();
+				this.dispatchEvent(event);
+				this.playingOff();
 			},
 			onplay: () => {
 				console.log('%cplay.', 'color:cyan');
 				const event = new CustomEvent('play', {
 					detail: {
-						index: that.getRank(song),
+						index: this.getRank(song),
 						position: song.howl.seek(),
 					},
 				});
-				that.dispatchEvent(event);
-				that.playingOn();
+				this.dispatchEvent(event);
+				this.playingOn();
 			},
 			onseek: () => {
+				//clearInterval(that.progressCallback)
 				const event = new CustomEvent('seek', {
 					detail: {
-						index: that.getRank(song),
+						index: this.getRank(song),
 						position: song.howl.seek(),
 					},
 				});
-				that.dispatchEvent(event);
+				this.dispatchEvent(event);
 				console.log('%cseek.', 'color:cyan');
 			},
 		});
@@ -222,7 +247,6 @@ export class RumblePlayer extends HTMLElement {
 		if (!song.howl) {
 			song.howl = this.createHowlWithBindings(song);
 		}
-
 		// Check if howl is already playing
 		if (song.howl.playing()) {
 			return Promise.resolve(indexToPlay);
@@ -230,6 +254,7 @@ export class RumblePlayer extends HTMLElement {
 			song.howl.play();
 			return Promise.resolve(indexToPlay);
 		}
+		//set seekbar duration
 	}
 
 	public pause(index?: number) {
@@ -329,13 +354,26 @@ export class RumblePlayer extends HTMLElement {
 	// Move player head to a given time position (s)
 	public seek(position: number, index?: number) {
 		if (this._playlist.length === 0) return;
-
 		const indexToSeek = index || this.index;
 		const song = this._playlist[indexToSeek];
+		console.log('position is ', position);
 		if (!song.howl) {
 			song.howl = this.createHowlWithBindings(song);
 		}
-		song.howl.seek(position);
+		if (song.howl.state() === 'unloaded') {
+			song.howl.once('load', () => {
+				song.howl.seek(position);
+				console.log('loaded ', song.howl.seek(), song.howl.duration());
+			});
+			song.howl.load();
+		} else if (song.howl.state() === 'loading') {
+			song.howl.once('load', () => {
+				song.howl.seek(position);
+				console.log('loaded ', song.howl.seek(), song.howl.duration());
+			});
+		} else {
+			song.howl.seek(position);
+		}
 	}
 
 	public setPlaylistFromUrls(urls: string[]) {
@@ -382,6 +420,11 @@ export class RumblePlayer extends HTMLElement {
 		this.nextButton.innerText = 'next';
 		this.prevButton = document.createElement('button');
 		this.prevButton.innerText = 'prev';
+		this._seekbar = new LinearSeekBar(0, 'black', 0);
+		this._seekbar.addEventListener('seek', (event: CustomEvent) => {
+			console.log('seeking player head to ', event.detail.position);
+			this.seek(event.detail.position);
+		});
 	}
 
 	addChildren() {
@@ -391,6 +434,8 @@ export class RumblePlayer extends HTMLElement {
 		this.appendChild(this.downloadButton);
 		this.appendChild(this.nextButton);
 		this.appendChild(this.prevButton);
+		this.appendChild(document.createElement('br'));
+		this.appendChild(this._seekbar);
 	}
 
 	bindHTMLElements() {
