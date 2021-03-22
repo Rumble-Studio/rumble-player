@@ -150,7 +150,18 @@ export class RumblePlayer extends HTMLElement {
 	}
 	updateProgress() {
 		if (this.playlist[this.index].howl) {
-			this._seekbar.setBarProgression(this.playlist[this.index].howl.seek());
+			const howl = this.playlist[this.index].howl;
+			const percentage = (100 * howl.seek()) / howl.duration();
+			console.log(
+				'%cUPDATING PROGRESS',
+				'color:blue',
+				percentage,
+				howl.seek(),
+				howl.duration()
+			);
+			if (!isNaN(percentage)) {
+				this._seekbar.setBarProgression(percentage);
+			}
 		}
 	}
 
@@ -219,7 +230,6 @@ export class RumblePlayer extends HTMLElement {
 				this.playingOn();
 			},
 			onseek: () => {
-				//clearInterval(that.progressCallback)
 				const event = new CustomEvent('seek', {
 					detail: {
 						index: this.getRank(song),
@@ -321,6 +331,7 @@ export class RumblePlayer extends HTMLElement {
 	}
 
 	public prev() {
+		console.log('PREV BUTTON CALLED');
 		if (this._playlist.length === 0) return;
 
 		const song = this._playlist[this.index];
@@ -351,6 +362,29 @@ export class RumblePlayer extends HTMLElement {
 		}
 	}
 
+	public seekPerPercentage(percentage: number, index?: number) {
+		// Seek to a given percentage of actual song
+		// get current song
+		const song = this.playlist[this._index];
+		//check if song is initialised
+		if (!song.howl) {
+			song.howl = this.createHowlWithBindings(song);
+			if (song.howl.state() === 'loading') {
+				song.howl.once('load', () => {
+					song.howl.seek((percentage * song.howl.duration()) / 100);
+				});
+			} else if (song.howl.state() === 'loaded') {
+				song.howl.seek((percentage * song.howl.duration()) / 100);
+			}
+		} else {
+			song.howl.seek((percentage * song.howl.duration()) / 100);
+		}
+		// console.log('song status ', song.howl.state())
+		//get song duration
+		// convert percentage to position
+		// seek
+		//play if playing
+	}
 	// Move player head to a given time position (s)
 	public seek(position: number, index?: number) {
 		if (this._playlist.length === 0) return;
@@ -360,20 +394,22 @@ export class RumblePlayer extends HTMLElement {
 		if (!song.howl) {
 			song.howl = this.createHowlWithBindings(song);
 		}
-		if (song.howl.state() === 'unloaded') {
-			song.howl.once('load', () => {
-				song.howl.seek(position);
-				console.log('loaded ', song.howl.seek(), song.howl.duration());
-			});
-			song.howl.load();
-		} else if (song.howl.state() === 'loading') {
-			song.howl.once('load', () => {
-				song.howl.seek(position);
-				console.log('loaded ', song.howl.seek(), song.howl.duration());
-			});
-		} else {
-			song.howl.seek(position);
-		}
+		song.howl.seek(position);
+		//
+		// if (song.howl.state() === 'unloaded') {
+		// 	song.howl.once('load', () => {
+		// 		song.howl.seek(position);
+		// 		console.log('loaded ', song.howl.seek(), song.howl.duration());
+		// 	});
+		// 	song.howl.load();
+		// } else if (song.howl.state() === 'loading') {
+		// 	song.howl.once('load', () => {
+		// 		song.howl.seek(position);
+		// 		console.log('loaded ', song.howl.seek(), song.howl.duration());
+		// 	});
+		// } else {
+		// 	song.howl.seek(position);
+		// }
 	}
 
 	public setPlaylistFromUrls(urls: string[]) {
@@ -420,10 +456,10 @@ export class RumblePlayer extends HTMLElement {
 		this.nextButton.innerText = 'next';
 		this.prevButton = document.createElement('button');
 		this.prevButton.innerText = 'prev';
-		this._seekbar = new LinearSeekBar(0, 'black', 0);
+		this._seekbar = new LinearSeekBar(10, 'gray', 0);
 		this._seekbar.addEventListener('seek', (event: CustomEvent) => {
-			console.log('seeking player head to ', event.detail.position);
-			this.seek(event.detail.position);
+			console.log('seeking player head to ', event.detail.percentage);
+			this.seekPerPercentage(event.detail.percentage);
 		});
 	}
 

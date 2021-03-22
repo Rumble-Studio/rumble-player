@@ -15,11 +15,11 @@ export class GenericSeekbar extends HTMLElement {
 		this.totalDuration = duration;
 		console.log('New song duration is: ', duration);
 	}
-	seek(position: number): void {
-		this.position = position;
-		const event = new CustomEvent('seek', { detail: { position } });
+
+	seek(percentage: number): void {
+		const event = new CustomEvent('seek', { detail: { percentage } });
 		this.dispatchEvent(event);
-		console.log('seeked position: ', position);
+		console.log('seeked percentage: ', percentage);
 	}
 }
 export class LinearSeekBar extends GenericSeekbar {
@@ -39,8 +39,12 @@ export class LinearSeekBar extends GenericSeekbar {
 		this.totalDuration = duration ? duration : 0;
 		this.bar = new LinearBar(this.barThickness, this.barColor);
 		this.bar.addEventListener('seekTo', (evt: CustomEvent) => {
-			console.log('total duration is ', this.totalDuration);
-			super.seek((evt.detail.percentage * this.totalDuration) / 100);
+			console.log(
+				'%cLINEAR SEEKBAR GOT SEEK EVENT',
+				'color:red',
+				evt.detail.percentage
+			);
+			super.seek(evt.detail.percentage);
 		});
 	}
 	connectedCallback() {
@@ -51,7 +55,7 @@ export class LinearSeekBar extends GenericSeekbar {
 		this.appendChild(this.bar);
 	}
 	setBarProgression(value: number) {
-		this.bar.progress = (100 * value) / this.totalDuration;
+		this.bar.progress = value;
 	}
 }
 
@@ -63,8 +67,9 @@ class GenericBar extends HTMLElement {
 		this.barThickness = barThickness;
 		this.barColor = barColor;
 	}
+
 	protected seek(percentage: number) {
-		console.log(percentage);
+		console.log('%cNEW PERCENTAGE IS', 'color:red', percentage);
 		const e = new CustomEvent('seekTo', { detail: { percentage } });
 		this.dispatchEvent(e);
 	}
@@ -77,6 +82,7 @@ export class LinearBar extends GenericBar {
 		return this._progress;
 	}
 	set progress(value: number) {
+		console.log('received value for progress ', value);
 		this.progressDiv.style.width = value.toString() + '%';
 	}
 	constructor(barThickness: number, barColor: string) {
@@ -91,7 +97,8 @@ export class LinearBar extends GenericBar {
 		this.div = document.createElement('div');
 		this.progressDiv = document.createElement('div');
 		this.progressDiv.style.height = '100%';
-		this.progressDiv.style.backgroundColor = 'red';
+		this.progressDiv.style.backgroundColor = 'blue';
+		this.div.style.cursor = 'pointer';
 		this.div.appendChild(this.progressDiv);
 		this.appendChild(this.div);
 		this.updateStyle();
