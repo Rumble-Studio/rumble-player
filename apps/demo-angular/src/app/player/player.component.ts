@@ -1,7 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { EVENTLIST, RumblePlayer, LinearSeekBar } from '@rumble-player/rp';
+import { RumblePlayerHTML, RumblePlayerService } from '@rumble-player/rp';
+
 import { fakePlaylist } from '../../config/dummyAudioData.config';
-import {BUTTONS} from '../../config/layoutParser';
+import { BUTTONS } from '../../config/layoutParser';
 
 @Component({
 	selector: 'rumble-player-player',
@@ -9,29 +10,24 @@ import {BUTTONS} from '../../config/layoutParser';
 	styleUrls: ['./player.component.scss'],
 })
 export class PlayerComponent implements OnInit {
-	public player: RumblePlayer;
+	public player: RumblePlayerService;
+
+	// @ViewChild('myname') input:ElementRef = new ElementRef(''); 
+
+	playerHTML: RumblePlayerHTML = new RumblePlayerHTML();
+
 	public eventsHistory: string[];
 
 	constructor(private ref: ElementRef) {
-	  console.log('%cButtons are : ','color:red', BUTTONS)
+		console.log('%cButtons are : ', 'color:red', BUTTONS);
 		this.eventsHistory = [];
-		this.player = new RumblePlayer(BUTTONS);
-		this.ref.nativeElement.appendChild(this.player);
-
-		EVENTLIST.forEach((value) => {
-			this.player.addEventListener(value, (event: CustomEvent) => {
-				this.eventsHistory.push(
-					'Event type: ' +
-						value +
-						', data : ' +
-						JSON.stringify(event.detail)
-				);
-			});
-		});
+		this.player = new RumblePlayerService();
+		this.ref.nativeElement.appendChild(this.playerHTML);
 	}
 
 	ngOnInit(): void {
 		this.player.setPlaylistFromUrls(fakePlaylist);
+		this.playerHTML.setPlayer(this.player);
 	}
 
 	togglePlayer() {

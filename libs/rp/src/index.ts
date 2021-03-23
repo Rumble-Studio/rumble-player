@@ -1,3 +1,4 @@
 export * from './lib/rp';
-export * from './lib/player';
+export * from './lib/playerService';
+export * from './lib/playerHTML';
 export * from './lib/seekbar';

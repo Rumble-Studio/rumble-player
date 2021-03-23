@@ -1,16 +1,5 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
-import { LinearSeekBar } from './seekbar';
-
-export const EVENTLIST = [
-	'seek',
-	'play',
-	'pause',
-	'stop',
-	'next',
-	'previous',
-	'indexChange',
-];
 
 export const UPDATE_DELAY = 100;
 
@@ -20,14 +9,6 @@ interface Song {
 	file: string;
 	howl: Howl | null;
 	position?: number | null; // current seeking of position of the howl
-}
-
-interface Layout {
-	// from input
-	nbRows: number;
-	nbColumns: number;
-
-	// computed
 }
 
 function downloadFile(file: File) {
@@ -62,11 +43,11 @@ async function urlToFile(
 	return new File([buf], filename, { type: mimeType });
 }
 
-export class RumblePlayer extends HTMLElement {
+export class RumblePlayerService {
 	autoPlayNext = true; // do we play automatically next song
 
 	isPlaying = false;
-	private progressCallback: number;
+
 	playingOn() {
 		this.isPlaying = true;
 	}
@@ -82,15 +63,6 @@ export class RumblePlayer extends HTMLElement {
 	set index(value: number) {
 		if (value != this._index) {
 			this._index = value;
-			const eventIndexChange = new CustomEvent('indexChange', {
-				detail: value,
-			});
-			this.dispatchEvent(eventIndexChange);
-			// if (value >= 0){
-			//   this.playlist[value].howl.onload = function () {
-			//     console.log('Song loaded index ', value);
-			//   }
-			// }
 		}
 	}
 
@@ -106,13 +78,10 @@ export class RumblePlayer extends HTMLElement {
 		const eventIndexChange = new CustomEvent('newPlaylist', {
 			detail: playlist.length,
 		});
-		this.dispatchEvent(eventIndexChange);
 	}
 
-	// seekbar
-	private _seekbar: LinearSeekBar;
-	// seekbar progress
 	// current position
+	percentage: number;
 	private _position: number;
 	get position() {
 		return this._position;
@@ -120,51 +89,20 @@ export class RumblePlayer extends HTMLElement {
 	set position(value: number) {
 		this._position = value;
 	}
-	private customButtons: string[] = [];
 
-	constructor(customButtons?: string[]) {
-		super();
+	constructor() {
 		this._playlist = [];
 		this._index = -1;
 		this._position = 0;
-		this.createHTMLChildren();
-		this.bindHTMLElements();
-		this.customButtons = customButtons;
+		this.percentage = 0;
 
 		setInterval(() => {
 			this.updatePositions();
 		}, UPDATE_DELAY);
-		this.progressCallback = setInterval(() => {
-			this.updateProgress();
-		}, 300);
 	}
-
-	// getPlaylistAsString() {
-	// 	const songArray = [] as string[];
-	// 	this._playlist.forEach((value) => {
-	// 		songArray.push(value.file);
-	// 	});
-	// 	return songArray;
-	// }
 
 	getRank(song: Song) {
 		return this._playlist.map((s) => s.id).indexOf(song.id);
-	}
-	updateProgress() {
-		if (this.playlist[this.index].howl) {
-			const howl = this.playlist[this.index].howl;
-			const percentage = (100 * howl.seek()) / howl.duration();
-			console.log(
-				'%cUPDATING PROGRESS',
-				'color:blue',
-				percentage,
-				howl.seek(),
-				howl.duration()
-			);
-			if (!isNaN(percentage)) {
-				this._seekbar.setBarProgression(percentage);
-			}
-		}
 	}
 
 	updatePositions() {
@@ -179,6 +117,8 @@ export class RumblePlayer extends HTMLElement {
 		});
 
 		this.position = this.playlist[this.index].position;
+		this.percentage = 0; // TODO compute percentage based on current file being played
+		this.newPositionCallback(this.position, this.percentage);
 	}
 
 	createHowlWithBindings(song: Song) {
@@ -190,7 +130,6 @@ export class RumblePlayer extends HTMLElement {
 			},
 			onload: () => {
 				console.log('Song loaded, duration is ', song.howl.duration());
-				this._seekbar.setTotalDuration(song.howl.duration());
 			},
 			onloaderror: (error) => {
 				console.log('error howler loading', error);
@@ -198,12 +137,6 @@ export class RumblePlayer extends HTMLElement {
 			},
 			onend: () => {
 				console.log('%cend.', 'color:cyan');
-				console.log(
-					'%cBLA%cBLI%cBLOU.',
-					'color:blue',
-					'color:white',
-					'color:red'
-				);
 				if (this.autoPlayNext) this.next();
 				else {
 					this.stop();
@@ -211,34 +144,13 @@ export class RumblePlayer extends HTMLElement {
 			},
 			onpause: () => {
 				console.log('%cpause.', 'color:cyan');
-				const event = new CustomEvent('pause', {
-					detail: {
-						index: this.getRank(song),
-						position: song.howl.seek(),
-					},
-				});
-				this.dispatchEvent(event);
 				this.playingOff();
 			},
 			onplay: () => {
 				console.log('%cplay.', 'color:cyan');
-				const event = new CustomEvent('play', {
-					detail: {
-						index: this.getRank(song),
-						position: song.howl.seek(),
-					},
-				});
-				this.dispatchEvent(event);
 				this.playingOn();
 			},
 			onseek: () => {
-				const event = new CustomEvent('seek', {
-					detail: {
-						index: this.getRank(song),
-						position: song.howl.seek(),
-					},
-				});
-				this.dispatchEvent(event);
 				console.log('%cseek.', 'color:cyan');
 			},
 		});
@@ -266,7 +178,6 @@ export class RumblePlayer extends HTMLElement {
 			song.howl.play();
 			return Promise.resolve(indexToPlay);
 		}
-		//set seekbar duration
 	}
 
 	public pause(index?: number) {
@@ -320,12 +231,6 @@ export class RumblePlayer extends HTMLElement {
 			this.index += 1;
 		}
 
-		// dispatch next event
-		const event = new CustomEvent('next', {
-			detail: { index: this.index, playingState: this.isPlaying },
-		});
-		this.dispatchEvent(event);
-
 		// re-use value from before stop
 		if (isPlaying) {
 			this.play();
@@ -352,12 +257,6 @@ export class RumblePlayer extends HTMLElement {
 		} else {
 			this.index -= 1;
 		}
-
-		// dispach previous event
-		const event = new CustomEvent('previous', {
-			detail: { index: this.index, playingState: this.isPlaying },
-		});
-		this.dispatchEvent(event);
 
 		if (isPlaying) {
 			this.play();
@@ -433,90 +332,7 @@ export class RumblePlayer extends HTMLElement {
 		);
 	}
 
-	/** FOR HTML SUPPORT */
-	playButton: HTMLButtonElement;
-	pauseButton: HTMLButtonElement;
-	stopButton: HTMLButtonElement;
-	downloadButton: HTMLButtonElement;
-	nextButton: HTMLButtonElement;
-	prevButton: HTMLButtonElement;
-
-	connectedCallback() {
-		this.addChildren();
-	}
-
-	createHTMLChildren() {
-		this.playButton = document.createElement('button');
-		this.playButton.innerText = 'play';
-		this.pauseButton = document.createElement('button');
-		this.pauseButton.innerText = 'pause';
-		this.stopButton = document.createElement('button');
-		this.stopButton.innerText = 'stop';
-		this.downloadButton = document.createElement('button');
-		this.downloadButton.innerText = 'download';
-		this.nextButton = document.createElement('button');
-		this.nextButton.innerText = 'next';
-		this.prevButton = document.createElement('button');
-		this.prevButton.innerText = 'prev';
-		this._seekbar = new LinearSeekBar(10, 'gray', 0);
-		this._seekbar.addEventListener('seek', (event: CustomEvent) => {
-			console.log('seeking player head to ', event.detail.percentage);
-			this.seekPerPercentage(event.detail.percentage);
-		});
-	}
-
-	addChildren() {
-		if (!this.customButtons) {
-			this.appendChild(this.playButton);
-			this.appendChild(this.pauseButton);
-			this.appendChild(this.stopButton);
-			this.appendChild(this.downloadButton);
-			this.appendChild(this.nextButton);
-			this.appendChild(this.prevButton);
-		} else {
-			const addedChildren: HTMLButtonElement[] = [];
-			// addedChildren helps us make sure a button is only added once
-			// thus prevent any duplicate
-			const customKeyValue = {
-				'[play]': this.playButton,
-				'[pause]': this.pauseButton,
-				'[stop]': this.stopButton,
-				'[next]': this.nextButton,
-				'[prev]': this.prevButton,
-				'[download]': this.downloadButton,
-			} as { [key: string]: HTMLButtonElement };
-			this.customButtons.forEach((value) => {
-				const button = customKeyValue[value];
-				if (!addedChildren.includes(button)) {
-					this.appendChild(button);
-					addedChildren.push(button);
-				}
-			});
-		}
-		this.appendChild(document.createElement('br'));
-		this.appendChild(this._seekbar);
-	}
-
-	bindHTMLElements() {
-		this.playButton.addEventListener('click', () => {
-			return this.play();
-		});
-		this.pauseButton.addEventListener('click', () => {
-			return this.pause();
-		});
-		this.stopButton.addEventListener('click', () => {
-			return this.stop();
-		});
-		this.downloadButton.addEventListener('click', () => {
-			return this.download();
-		});
-		this.nextButton.addEventListener('click', () => {
-			this.next();
-		});
-		this.prevButton.addEventListener('click', () => {
-			this.prev();
-		});
+	public newPositionCallback(position: number, percentage: number) {
+		console.log(position, percentage);
 	}
 }
-
-customElements.define('rs-player', RumblePlayer);
