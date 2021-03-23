@@ -12,7 +12,7 @@ const text =
 	'#     Rumble Player      #\n' +
 	'#                        #\n' +
 	'# [play] [pause] [stop]  #\n' +
-	'#                        #\n' +
+	'# [play]                 #\n' +
 	'#                        #\n' +
 	'#                        #\n' +
 	'#                        #\n' +
@@ -50,4 +50,4 @@ function getTitle(arr: string[]): string | boolean {
 	}
 	return false;
 }
-export const BUTTONS = text.match(buttonExpress)
+export const BUTTONS = text.match(buttonExpress);

@@ -120,7 +120,7 @@ export class RumblePlayer extends HTMLElement {
 	set position(value: number) {
 		this._position = value;
 	}
-	private customButtons: string[] = []
+	private customButtons: string[] = [];
 
 	constructor(customButtons?: string[]) {
 		super();
@@ -129,7 +129,7 @@ export class RumblePlayer extends HTMLElement {
 		this._position = 0;
 		this.createHTMLChildren();
 		this.bindHTMLElements();
-		this.customButtons = customButtons
+		this.customButtons = customButtons;
 
 		setInterval(() => {
 			this.updatePositions();
@@ -466,27 +466,33 @@ export class RumblePlayer extends HTMLElement {
 	}
 
 	addChildren() {
-	  if(!this.customButtons){
-      this.appendChild(this.playButton);
-      this.appendChild(this.pauseButton);
-      this.appendChild(this.stopButton);
-      this.appendChild(this.downloadButton);
-      this.appendChild(this.nextButton);
-      this.appendChild(this.prevButton);
-    }
-		else{
-		  const customKeyValue  = {
-		    '[play]':this.playButton,
-        '[pause]': this.pauseButton,
-        '[stop]' : this.stopButton,
-        '[next]' : this.nextButton,
-        '[prev]' : this.prevButton,
-        '[download]' : this.downloadButton
-      } as {[key: string] : HTMLButtonElement}
-      this.customButtons.forEach(value => {
-        this.appendChild(customKeyValue[value])
-      })
-    }
+		if (!this.customButtons) {
+			this.appendChild(this.playButton);
+			this.appendChild(this.pauseButton);
+			this.appendChild(this.stopButton);
+			this.appendChild(this.downloadButton);
+			this.appendChild(this.nextButton);
+			this.appendChild(this.prevButton);
+		} else {
+			const addedChildren: HTMLButtonElement[] = [];
+			// addedChildren helps us make sure a button is only added once
+			// thus prevent any duplicate
+			const customKeyValue = {
+				'[play]': this.playButton,
+				'[pause]': this.pauseButton,
+				'[stop]': this.stopButton,
+				'[next]': this.nextButton,
+				'[prev]': this.prevButton,
+				'[download]': this.downloadButton,
+			} as { [key: string]: HTMLButtonElement };
+			this.customButtons.forEach((value) => {
+				const button = customKeyValue[value];
+				if (!addedChildren.includes(button)) {
+					this.appendChild(button);
+					addedChildren.push(button);
+				}
+			});
+		}
 		this.appendChild(document.createElement('br'));
 		this.appendChild(this._seekbar);
 	}
