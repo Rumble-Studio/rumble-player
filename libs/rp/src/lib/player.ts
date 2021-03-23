@@ -120,14 +120,16 @@ export class RumblePlayer extends HTMLElement {
 	set position(value: number) {
 		this._position = value;
 	}
+	private customButtons: string[] = []
 
-	constructor() {
+	constructor(customButtons?: string[]) {
 		super();
 		this._playlist = [];
 		this._index = -1;
 		this._position = 0;
 		this.createHTMLChildren();
 		this.bindHTMLElements();
+		this.customButtons = customButtons
 
 		setInterval(() => {
 			this.updatePositions();
@@ -464,12 +466,27 @@ export class RumblePlayer extends HTMLElement {
 	}
 
 	addChildren() {
-		this.appendChild(this.playButton);
-		this.appendChild(this.pauseButton);
-		this.appendChild(this.stopButton);
-		this.appendChild(this.downloadButton);
-		this.appendChild(this.nextButton);
-		this.appendChild(this.prevButton);
+	  if(!this.customButtons){
+      this.appendChild(this.playButton);
+      this.appendChild(this.pauseButton);
+      this.appendChild(this.stopButton);
+      this.appendChild(this.downloadButton);
+      this.appendChild(this.nextButton);
+      this.appendChild(this.prevButton);
+    }
+		else{
+		  const customKeyValue  = {
+		    '[play]':this.playButton,
+        '[pause]': this.pauseButton,
+        '[stop]' : this.stopButton,
+        '[next]' : this.nextButton,
+        '[prev]' : this.prevButton,
+        '[download]' : this.downloadButton
+      } as {[key: string] : HTMLButtonElement}
+      this.customButtons.forEach(value => {
+        this.appendChild(customKeyValue[value])
+      })
+    }
 		this.appendChild(document.createElement('br'));
 		this.appendChild(this._seekbar);
 	}

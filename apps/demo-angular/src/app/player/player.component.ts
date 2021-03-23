@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { EVENTLIST, RumblePlayer, LinearSeekBar } from '@rumble-player/rp';
 import { fakePlaylist } from '../../config/dummyAudioData.config';
+import {BUTTONS} from '../../config/layoutParser';
 
 @Component({
 	selector: 'rumble-player-player',
@@ -12,8 +13,9 @@ export class PlayerComponent implements OnInit {
 	public eventsHistory: string[];
 
 	constructor(private ref: ElementRef) {
+	  console.log('%cButtons are : ','color:red', BUTTONS)
 		this.eventsHistory = [];
-		this.player = new RumblePlayer();
+		this.player = new RumblePlayer(BUTTONS);
 		this.ref.nativeElement.appendChild(this.player);
 
 		EVENTLIST.forEach((value) => {

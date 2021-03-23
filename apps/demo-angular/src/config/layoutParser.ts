@@ -50,3 +50,4 @@ function getTitle(arr: string[]): string | boolean {
 	}
 	return false;
 }
+export const BUTTONS = text.match(buttonExpress)
