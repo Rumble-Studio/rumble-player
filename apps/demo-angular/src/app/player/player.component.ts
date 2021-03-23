@@ -1,33 +1,37 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { RumblePlayerHTML, RumblePlayerService } from '@rumble-player/rp';
+import {
+	AfterViewInit,
+	Component,
+	ElementRef,
+	OnInit,
+	ViewChild,
+} from '@angular/core';
+import { HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
-import { BUTTONS } from '../../config/layoutParser';
 
 @Component({
 	selector: 'rumble-player-player',
 	templateUrl: './player.component.html',
 	styleUrls: ['./player.component.scss'],
 })
-export class PlayerComponent implements OnInit {
+export class PlayerComponent implements OnInit, AfterViewInit {
 	public player: RumblePlayerService;
 
-	// @ViewChild('myname') input:ElementRef = new ElementRef(''); 
+	@ViewChild('playerHTML')
+	playerHTML: ElementRef<HTMLRumblePlayer> | undefined;
 
-	playerHTML: RumblePlayerHTML = new RumblePlayerHTML();
+	// playerHTML: HTMLRumblePlayer = new HTMLRumblePlayer();
 
 	public eventsHistory: string[];
 
-	constructor(private ref: ElementRef) {
-		console.log('%cButtons are : ', 'color:red', BUTTONS);
+	constructor() {
 		this.eventsHistory = [];
 		this.player = new RumblePlayerService();
-		this.ref.nativeElement.appendChild(this.playerHTML);
+		this.player.setPlaylistFromUrls(fakePlaylist);
+		// this.ref.nativeElement.appendChild(this.playerHTML);
 	}
 
 	ngOnInit(): void {
-		this.player.setPlaylistFromUrls(fakePlaylist);
-		this.playerHTML.setPlayer(this.player);
 	}
 
 	togglePlayer() {
@@ -35,6 +39,13 @@ export class PlayerComponent implements OnInit {
 			this.player.pause();
 		} else {
 			this.player.play();
+		}
+	}
+
+	ngAfterViewInit() {
+		if (this.playerHTML) {
+			console.log(this.playerHTML)
+			this.playerHTML.nativeElement.setPlayer(this.player);
 		}
 	}
 }

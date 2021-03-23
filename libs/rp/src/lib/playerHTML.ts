@@ -1,6 +1,6 @@
 import { RumblePlayer } from './player';
 
-export class RumblePlayerHTML extends HTMLElement {
+export class HTMLRumblePlayer extends HTMLElement {
 	playButton: HTMLButtonElement;
 	pauseButton: HTMLButtonElement;
 	stopButton: HTMLButtonElement;
@@ -104,4 +104,4 @@ export class RumblePlayerHTML extends HTMLElement {
 	}
 }
 
-customElements.define('rs-player-html', RumblePlayerHTML);
+customElements.define('rumble-player', HTMLRumblePlayer);
