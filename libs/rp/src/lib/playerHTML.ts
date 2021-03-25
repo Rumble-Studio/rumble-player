@@ -1,5 +1,4 @@
-import { RumblePlayer } from './player';
-import { CircularSeekBar, LinearSeekBar } from './seekbar';
+import { GenericSeekbar } from './seekbar';
 import { RumblePlayerService } from './playerService';
 
 export class HTMLRumblePlayer extends HTMLElement {
@@ -8,60 +7,78 @@ export class HTMLRumblePlayer extends HTMLElement {
 	stopButton: HTMLButtonElement;
 	nextButton: HTMLButtonElement;
 	prevButton: HTMLButtonElement;
-	seekBar: CircularSeekBar
+	seekBar: GenericSeekbar;
 
-	player: RumblePlayerService | null;
+	playerService: RumblePlayerService | null;
 
-	constructor() {
+	constructor(playerService?: RumblePlayerService) {
 		super();
-		this.player = null;
-		this.createHTMLChildren();
+		if (playerService) {
+			this.playerService = playerService;
+		} else {
+			this.playerService = null;
+		}
+		this.createHTMLChildren(); // instanciate also seekBar
 		this.bindHTMLElements();
 	}
 
-	public setPlayer(player: RumblePlayerService) {
-		this.player = player;
-		this.player.newPositionCallback = this.updateVisualPosition
+	public setPlayer(playerService: RumblePlayerService) {
+		this.playerService = playerService;
+		this.playerService.newPercentageCallback = (newPercentage: number) =>
+			this.updatePerPercentage(newPercentage);
+		this.playerService.newPositionCallback = (newPosition: number) =>
+			this.updatePerPosition(newPosition);
 	}
 
-	updateVisualPosition = (position:number, percentage:number) => {
-	  // I had to change this function into an arrow function
-    // In order to access the right ``this`` context
-		console.log('LOG BY THE HTML ELEMENT',position, percentage)
-    this.seekBar.setBarProgression(percentage)
-
+	setSeekbar(seekbar:GenericSeekbar){
+		// remove old seekbar from the DOM
+		this.removeChild(this.seekBar)
+		this.removeChild(this.pauseButton)
+		// update seekbar
+		this.seekBar = seekbar;
+		// add new seekbar to dom
+		this.appendChild(this.seekBar)
+		this.connectedCallback();
 	}
 
 	// should return as a promise the current index asked to be played
 	public play() {
-		console.log('PLAY',this.player)
-		if (!this.player) return;
-		this.player.play();
+		console.log('PLAY', this.playerService);
+		if (!this.playerService) return;
+		this.playerService.play();
 	}
 
 	public pause() {
-		if (!this.player) return;
-		this.player.pause();
+		if (!this.playerService) return;
+		this.playerService.pause();
 	}
 
 	public stop() {
-		if (!this.player) return;
-		this.player.stop();
+		if (!this.playerService) return;
+		this.playerService.stop();
 	}
 
 	public next() {
-		if (!this.player) return;
-		this.player.next();
+		if (!this.playerService) return;
+		this.playerService.next();
 	}
 
 	public prev() {
-		if (!this.player) return;
-		this.player.prev();
+		if (!this.playerService) return;
+		this.playerService.prev();
 	}
 
-	public seek(percentage: number) {
-		if (!this.player) return;
-		this.player.seekPerPercentage(percentage);
+	public seekPerPercentage(percentage: number) {
+		if (!this.playerService) return;
+		this.playerService.seekPerPercentage(percentage);
+	}
+
+	public updatePerPercentage(newPercentage: number) {
+		this.seekBar.updatePerPercentage(newPercentage);
+	}
+
+	public updatePerPosition(newPosition: number) {
+		this.seekBar.updatePerPosition(newPosition);
 	}
 
 	connectedCallback() {
@@ -79,8 +96,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.nextButton.innerText = 'next';
 		this.prevButton = document.createElement('button');
 		this.prevButton.innerText = 'prev';
-		this.seekBar = new CircularSeekBar(140,150,'red')
-    console.log(this.seekBar)
+		this.seekBar = new GenericSeekbar();
 	}
 
 	addChildren() {
@@ -108,10 +124,12 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.prevButton.addEventListener('click', () => {
 			this.prev();
 		});
-    this.seekBar.addEventListener('seek',(event: CustomEvent)=>{
-      console.log(JSON.stringify(event.detail))
-      this.seek(event.detail.percentage)
-    })
+		this.seekBar.addEventListener(
+			'seekPerPercentage',
+			(event: CustomEvent) => {
+				this.seekPerPercentage(event.detail.percentage);
+			}
+		);
 	}
 }
 

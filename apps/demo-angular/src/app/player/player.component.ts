@@ -5,7 +5,11 @@ import {
 	OnInit,
 	ViewChild,
 } from '@angular/core';
-import { HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/rp';
+import {
+	HTMLRumblePlayer,
+	PercentageSeekBar,
+	RumblePlayerService,
+} from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
 
@@ -16,23 +20,17 @@ import { fakePlaylist } from '../../config/dummyAudioData.config';
 })
 export class PlayerComponent implements OnInit, AfterViewInit {
 	public player: RumblePlayerService;
-
 	@ViewChild('playerHTML')
 	playerHTML: ElementRef<HTMLRumblePlayer> | undefined;
-
-	// playerHTML: HTMLRumblePlayer = new HTMLRumblePlayer();
-
 	public eventsHistory: string[];
 
 	constructor() {
 		this.eventsHistory = [];
 		this.player = new RumblePlayerService();
 		this.player.setPlaylistFromUrls(fakePlaylist);
-		// this.ref.nativeElement.appendChild(this.playerHTML);
 	}
 
-	ngOnInit(): void {
-	}
+	ngOnInit(): void {}
 
 	togglePlayer() {
 		if (this.player.isPlaying) {
@@ -44,9 +42,10 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 
 	ngAfterViewInit() {
 		if (this.playerHTML) {
-			console.log(this.playerHTML)
+			const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
+			// this.playerHTML.nativeElement.setSeekbar(percentageSeekBar);
 			this.playerHTML.nativeElement.setPlayer(this.player);
-			console.log(this.player)
+			this.playerHTML.nativeElement.appendChild(percentageSeekBar);
 		}
 	}
 }
