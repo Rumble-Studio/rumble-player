@@ -1,4 +1,6 @@
 import { RumblePlayer } from './player';
+import { CircularSeekBar, LinearSeekBar } from './seekbar';
+import { RumblePlayerService } from './playerService';
 
 export class HTMLRumblePlayer extends HTMLElement {
 	playButton: HTMLButtonElement;
@@ -6,8 +8,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 	stopButton: HTMLButtonElement;
 	nextButton: HTMLButtonElement;
 	prevButton: HTMLButtonElement;
+	seekBar: LinearSeekBar
 
-	player: RumblePlayer | null;
+	player: RumblePlayerService | null;
 
 	constructor() {
 		super();
@@ -16,16 +19,17 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.bindHTMLElements();
 	}
 
-	public setPlayer(player: RumblePlayer) {
+	public setPlayer(player: RumblePlayerService) {
 		this.player = player;
 		this.player.newPositionCallback = this.updateVisualPosition
 	}
 
-	updateVisualPosition(position:number){
-		console.log('LOG BY THE HTML ELEMENT',position)
-		// if (this.seekbar){
-		// 	this.seekbar.updatePosition(position)
-		// }
+	updateVisualPosition = (position:number, percentage:number) => {
+	  // I had to change this function into an arrow function
+    // In order to access the right ``this`` context
+		console.log('LOG BY THE HTML ELEMENT',position, percentage)
+    this.seekBar.setBarProgression(percentage)
+
 	}
 
 	// should return as a promise the current index asked to be played
@@ -75,6 +79,8 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.nextButton.innerText = 'next';
 		this.prevButton = document.createElement('button');
 		this.prevButton.innerText = 'prev';
+		this.seekBar = new LinearSeekBar(10,'red',0)
+    console.log(this.seekBar)
 	}
 
 	addChildren() {
@@ -83,6 +89,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.appendChild(this.stopButton);
 		this.appendChild(this.nextButton);
 		this.appendChild(this.prevButton);
+		this.appendChild(this.seekBar);
 	}
 
 	bindHTMLElements() {
@@ -101,6 +108,10 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.prevButton.addEventListener('click', () => {
 			this.prev();
 		});
+    this.seekBar.addEventListener('seek',(event: CustomEvent)=>{
+      console.log(JSON.stringify(event.detail))
+      this.seek(event.detail.percentage)
+    })
 	}
 }
 

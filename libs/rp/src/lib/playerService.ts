@@ -107,17 +107,18 @@ export class RumblePlayerService {
 
 	updatePositions() {
 		if (this._playlist.length === 0) return;
-
+    let duration = 0
 		this._playlist.forEach((song: Song, songIndex: number) => {
 			if (song.howl) {
 				song.position = song.howl.seek() as number;
+        duration = this.playlist[this.index].howl.duration()
 			} else {
 				song.position = -1;
 			}
 		});
 
 		this.position = this.playlist[this.index].position;
-		this.percentage = 0; // TODO compute percentage based on current file being played
+		this.percentage = duration > 0 ? 100 * this.position / duration : 0; // TODO compute percentage based on current file being played
 		this.newPositionCallback(this.position, this.percentage);
 	}
 

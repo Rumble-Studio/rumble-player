@@ -46,6 +46,7 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 		if (this.playerHTML) {
 			console.log(this.playerHTML)
 			this.playerHTML.nativeElement.setPlayer(this.player);
+			console.log(this.player)
 		}
 	}
 }

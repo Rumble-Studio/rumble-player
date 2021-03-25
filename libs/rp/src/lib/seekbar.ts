@@ -1,20 +1,25 @@
-import { RumblePlayer } from './player';
 
 export class GenericSeekbar extends HTMLElement {
 	private position: number;
 	protected bar: GenericBar;
-	protected totalDuration: number;
+  protected barThickness: number;
+  protected barColor: string;
 	private positionBuffer: number;
 	private isPlaying: boolean;
 
 	constructor() {
 		super();
 	}
+	setBarProgression(value: number) {
+    this.bar.progress = value;
+  }
 
-	setTotalDuration(duration: number) {
-		this.totalDuration = duration;
-		console.log('New song duration is: ', duration);
-	}
+  connectedCallback() {
+    this.setInnerHTML();
+  }
+  setInnerHTML() {
+    this.appendChild(this.bar);
+  }
 
 	seek(percentage: number): void {
 		const event = new CustomEvent('seek', { detail: { percentage } });
@@ -25,19 +30,18 @@ export class GenericSeekbar extends HTMLElement {
 export class LinearSeekBar extends GenericSeekbar {
 	// TODO: Utiliser la classe CircularHandle et RectangleBar
 	// Bar properties
-	private barThickness: number;
-	private barColor: string;
+	protected barWidth
 	protected bar: LinearBar;
 	// Handle properties
 	private handleRadius: number;
 	private handleColor: string;
 
-	constructor(barThickness?: number, barColor?: string, duration?: number) {
+	constructor(barThickness?: number, barColor?: string, barWidth?: number) {
 		super();
 		this.barThickness = barThickness ? barThickness : 3;
 		this.barColor = barColor ? barColor : 'black';
-		this.totalDuration = duration ? duration : 0;
-		this.bar = new LinearBar(this.barThickness, this.barColor);
+		this.barWidth = barWidth ? barWidth : 250
+		this.bar = new LinearBar(this.barThickness, this.barColor, this.barWidth);
 		this.bar.addEventListener('seekTo', (evt: CustomEvent) => {
 			console.log(
 				'%cLINEAR SEEKBAR GOT SEEK EVENT',
@@ -47,25 +51,45 @@ export class LinearSeekBar extends GenericSeekbar {
 			super.seek(evt.detail.percentage);
 		});
 	}
-	connectedCallback() {
-		this.setInnerHTML();
-	}
 
-	private setInnerHTML() {
-		this.appendChild(this.bar);
-	}
-	setBarProgression(value: number) {
-		this.bar.progress = value;
-	}
 }
+export class CircularSeekBar extends GenericSeekbar{
+
+  protected bar: CircularBar;
+
+  constructor(innerBarRadius?: number, outerBarRadius?: number, barColor?: string) {
+    super();
+    this.barColor = barColor ? barColor : 'black';
+    this.bar = new CircularBar(innerBarRadius, outerBarRadius, barColor);
+    this.bar.addEventListener('seekTo', (evt: CustomEvent) => {
+      console.log(
+        '%cLINEAR SEEKBAR GOT SEEK EVENT',
+        'color:red',
+        evt.detail.percentage
+      );
+      super.seek(evt.detail.percentage);
+    });
+  }
+
+}
+
 
 class GenericBar extends HTMLElement {
 	protected barThickness: number;
 	protected barColor: string;
-	constructor(barThickness: number, barColor: string) {
+	protected barWidth: number
+  protected _progress: number;
+  get progress() {
+    return this._progress;
+  }
+  set progress(value: number) {
+    // To be overridden
+  }
+	constructor(barThickness: number, barColor: string, barWidth: number) {
 		super();
 		this.barThickness = barThickness;
 		this.barColor = barColor;
+		this.barWidth = barWidth
 	}
 
 	protected seek(percentage: number) {
@@ -73,27 +97,34 @@ class GenericBar extends HTMLElement {
 		const e = new CustomEvent('seekTo', { detail: { percentage } });
 		this.dispatchEvent(e);
 	}
+	protected setInnerHTML(){
+	  // To be overridden
+  }
+  protected clickCallback(event: MouseEvent){
+    // To be overridden
+  }
+  protected updateStyle(){
+    // To be overridden
+  }
 }
+
 export class LinearBar extends GenericBar {
 	private div: HTMLDivElement;
 	private progressDiv: HTMLDivElement;
-	private _progress: number;
-	get progress() {
-		return this._progress;
-	}
+
 	set progress(value: number) {
 		console.log('received value for progress ', value);
 		this.progressDiv.style.width = value.toString() + '%';
 	}
-	constructor(barThickness: number, barColor: string) {
-		super(barThickness, barColor);
+	constructor(barThickness: number, barColor: string, barWidth: number) {
+		super(barThickness, barColor, barWidth);
 	}
 	connectedCallback() {
 		this.setInnerHTML();
 		this.progress = 0;
 	}
 
-	private setInnerHTML() {
+	protected setInnerHTML() {
 		this.div = document.createElement('div');
 		this.progressDiv = document.createElement('div');
 		this.progressDiv.style.height = '100%';
@@ -104,7 +135,7 @@ export class LinearBar extends GenericBar {
 		this.updateStyle();
 	}
 
-	private clickCallback(event: MouseEvent) {
+  protected clickCallback(event: MouseEvent) {
 		const width = this.div.offsetWidth;
 		const x = event.offsetX < 0 ? 0 : event.offsetX; // Get the horizontal coordinate
 		const percentage = (100 * x) / width;
@@ -112,7 +143,7 @@ export class LinearBar extends GenericBar {
 		this.progress = percentage;
 	}
 
-	updateStyle() {
+  protected updateStyle() {
 		this.div.style.marginTop = '10px';
 		this.div.style.width = '300px';
 		this.div.style.height = this.barThickness.toString() + 'px';
@@ -122,6 +153,13 @@ export class LinearBar extends GenericBar {
 		};
 	}
 }
+export class CircularBar extends GenericBar{
+  // TODO Circula bar https://nosmoking.developpez.com/demos/css/gauge_circulaire.html
+  constructor(innerBarRadius: number, outerBarRadius: number, barColor: string) {
+    super(outerBarRadius-innerBarRadius, barColor, innerBarRadius);
+  }
+}
+
 
 class FunkyBar {}
 
@@ -149,5 +187,6 @@ class FunkyHandle {}
 
 customElements.define('rs-generic-seekbar', GenericSeekbar);
 customElements.define('rs-linear-seekbar', LinearSeekBar);
+customElements.define('rs-circular-seekbar', CircularSeekBar);
 customElements.define('rs-linearbar', LinearBar);
 customElements.define('rs-genericbar', GenericBar);

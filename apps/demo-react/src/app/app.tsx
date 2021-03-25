@@ -4,10 +4,11 @@ import styles from './app.module.scss';
 
 import { Route, Link } from 'react-router-dom';
 import { fakePlaylist } from '../config/dummyAudioData.config';
-import { EVENTLIST, RumblePlayer } from '@rumble-player/rp';
+import { EVENTLIST, HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/rp';
 import { Timestamp } from 'rxjs/internal-compatibility';
 const containerRef = React.createRef();
-const player = new RumblePlayer();
+const player = new RumblePlayerService();
+const playerHTML = new HTMLRumblePlayer()
 const eventsHistory = [];
 player.setPlaylistFromUrls(fakePlaylist);
 
@@ -16,9 +17,11 @@ export function App() {
 	const [index, setIndex] = useState(0);
 
 	useEffect(() => {
-		(containerRef.current as HTMLDivElement).appendChild(player);
+		(containerRef.current as HTMLDivElement).appendChild(playerHTML);
+		player.setPlaylistFromUrls(fakePlaylist)
+    playerHTML.setPlayer(player)
 		EVENTLIST.forEach((value) => {
-			player.addEventListener(value, ($event: CustomEvent) => {
+			playerHTML.addEventListener(value, ($event: CustomEvent) => {
 				eventsHistory.push(
 					'Event type: ' +
 						value +
@@ -55,8 +58,19 @@ export function App() {
 			<div ref={containerRef as RefObject<HTMLDivElement>}></div>
 			<hr />
 			<ol>
-				{eventsHistory.map((value, index) => {
-					return <p key={value + index.toString()}>{value}</p>;
+				{player.playlist.map((value,index) => {
+					// return <p key={value + index.toString()}>{value}</p>;
+          return (
+            <li key={value + index.toString()}>
+              <ul>
+                {player.index === index?
+                  <li><a href={value.file}>File</a> &nbsp;<strong >[selected]</strong> </li> :
+                  <li><a href={value.file}>File</a> &nbsp;</li>}
+                <li>position: {value.position ? value.position.toPrecision(2) : 0 }</li>
+                <li>playing: {value.howl?.playing()}</li>
+              </ul>
+            </li>
+          )
 				})}
 			</ol>
 			<Route
