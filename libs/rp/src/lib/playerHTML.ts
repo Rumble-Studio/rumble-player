@@ -8,7 +8,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 	stopButton: HTMLButtonElement;
 	nextButton: HTMLButtonElement;
 	prevButton: HTMLButtonElement;
-	seekBar: LinearSeekBar
+	seekBar: CircularSeekBar
 
 	player: RumblePlayerService | null;
 
@@ -79,7 +79,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.nextButton.innerText = 'next';
 		this.prevButton = document.createElement('button');
 		this.prevButton.innerText = 'prev';
-		this.seekBar = new LinearSeekBar(10,'red',0)
+		this.seekBar = new CircularSeekBar(140,150,'red')
     console.log(this.seekBar)
 	}
 
