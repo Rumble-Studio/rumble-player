@@ -8,6 +8,7 @@ class GenericBar extends HTMLElement {
 	constructor() {
 		super();
 		this.createHTMLElements();
+		this.bindHTMLElements();
 	}
 
 	/** HTML */
@@ -21,6 +22,11 @@ class GenericBar extends HTMLElement {
 	protected createHTMLElements() {
 		// nothing to do
 		console.log('No html element to create for GenericBar');
+	}
+	protected bindHTMLElements() {
+		this.addEventListener('click', () => {
+			console.log('Clicked on ' + this.kind);
+		});
 	}
 
 	/** logic */
@@ -44,6 +50,8 @@ class PercentageBar extends GenericBar {
 	get kind() {
 		return this._kind;
 	}
+
+  div:HTMLDivElement;
 	p: HTMLParagraphElement;
 	playButton: HTMLButtonElement;
 
@@ -56,25 +64,29 @@ class PercentageBar extends GenericBar {
 
 		console.log('Create percentage elements');
 
+		this.div = document.createElement('div');
 		this.playButton = document.createElement('button');
-		this.playButton.innerText = 'PERCENTAGE PLAY';
-
+		this.playButton.innerText = 'PERCENTAGE BAR BTN';
 		this.p = document.createElement('p');
 		this.p.innerText = 'blabla';
 	}
 	protected setInnerHTML() {
 		console.log('setInnerHTML percentage ');
-
-		this.appendChild(this.playButton);
-
-		this.appendChild(this.p);
+		this.appendChild(this.div);
+		this.div.appendChild(this.playButton);
+		this.playButton.appendChild(this.p);
 		this.updateVisual();
 	}
 	updateVisual() {
 		console.log('updatevisual percentage ');
 
 		// for percentageBar the visual shows the percentage
-		this.p.innerText = Math.round(this.percentage*100)/100 + '%';
+		this.p.innerText = Math.round(this.percentage * 100) / 100 + '%';
+	}
+	bindHTMLElements() {
+		this.addEventListener('click', () => {
+			console.log("Clicked on percentage bar !");
+		});
 	}
 }
 
@@ -146,8 +158,8 @@ export class GenericSeekbar extends HTMLElement {
 	}
 	protected setInnerHTML() {
 		// should add children to this
-    this.appendChild(this.bar);
-    this.appendChild(this.handle);
+		this.appendChild(this.bar);
+		this.appendChild(this.handle);
 	}
 
 	changeBar(newBar: GenericBar) {
