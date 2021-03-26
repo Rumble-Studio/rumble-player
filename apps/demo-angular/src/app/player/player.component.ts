@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import {
 	HTMLRumblePlayer,
+	LinearSeekBar,
 	PercentageSeekBar,
 	RumblePlayerService,
 } from '@rumble-player/rp';
@@ -42,9 +43,9 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 
 	ngAfterViewInit() {
 		if (this.playerHTML) {
-			const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
-			console.log('SETTING PERCENTAGE SEEKBAR')
-			this.playerHTML.nativeElement.setSeekbar(percentageSeekBar);
+			// const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
+			const linearSeekbar: LinearSeekBar = new LinearSeekBar()
+			this.playerHTML.nativeElement.setSeekbar(linearSeekbar);
 			this.playerHTML.nativeElement.setPlayer(this.player);
 			// this.playerHTML.nativeElement.appendChild(percentageSeekBar);
 		}

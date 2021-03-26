@@ -35,12 +35,11 @@ export class HTMLRumblePlayer extends HTMLElement {
 	setSeekbar(seekbar: GenericSeekbar) {
 		// remove old seekbar from the DOM
 		this.removeChild(this.seekBar);
-		this.removeChild(this.pauseButton);
 		// update seekbar
 		this.seekBar = seekbar;
 		// add new seekbar to dom
 		this.appendChild(this.seekBar);
-		this.connectedCallback();
+		// this.connectedCallback();
 		this.logKinds()
 
 	}
@@ -146,8 +145,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		// to log the kind of each sub element
 		if (this.seekBar) {
 			console.log('seekbar:',this.seekBar.kind);
-			console.log('bar:',this.seekBar.bar.kind);
-			console.log('handle:',this.seekBar.handle.kind);
+			console.log('visual:',this.seekBar.visuals.forEach(v=>v.kind));
 		} else {
 			console.log('No seekbar yet')
 		}
