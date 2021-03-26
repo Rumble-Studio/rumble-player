@@ -7,21 +7,34 @@ class GenericBar extends HTMLElement {
 
 	constructor() {
 		super();
+		this.createHTMLElements();
 	}
 
+	/** HTML */
+	connectedCallback() {
+		this.setInnerHTML();
+	}
+	protected setInnerHTML() {
+		// should add children to this
+		this.updateVisual();
+	}
+	protected createHTMLElements() {
+		// nothing to do
+		console.log('No html element to create for GenericBar');
+	}
+
+	/** logic */
 	updatePerPercentage(newPercentage: number) {
 		if (newPercentage != this.percentage) {
-			console.log(
-				this.kind + ' should be updated at',
-				newPercentage + '%'
-			);
-
+			console.log(this.kind + ' should be updated at', newPercentage + '%');
 			this.percentage = newPercentage;
 			this.updateVisual();
 		}
 	}
 
+	/** visual */
 	updateVisual() {
+		// should change the visual of the children based on properties like percentage
 		// nothing
 	}
 }
@@ -32,28 +45,36 @@ class PercentageBar extends GenericBar {
 		return this._kind;
 	}
 	p: HTMLParagraphElement;
+	playButton: HTMLButtonElement;
 
 	constructor() {
 		super();
-		this.createHTMLElements();
 	}
 
-	connectedCallback() {
-		this.setInnerHTML();
-	}
+	protected createHTMLElements() {
+		// for percentageBar we only have a "p" element
 
-	private createHTMLElements() {
+		console.log('Create percentage elements');
+
+		this.playButton = document.createElement('button');
+		this.playButton.innerText = 'PERCENTAGE PLAY';
+
 		this.p = document.createElement('p');
 		this.p.innerText = 'blabla';
 	}
+	protected setInnerHTML() {
+		console.log('setInnerHTML percentage ');
 
-	private setInnerHTML() {
+		this.appendChild(this.playButton);
+
 		this.appendChild(this.p);
 		this.updateVisual();
 	}
-
 	updateVisual() {
-		this.p.innerText = this.percentage + '%';
+		console.log('updatevisual percentage ');
+
+		// for percentageBar the visual shows the percentage
+		this.p.innerText = Math.round(this.percentage*100)/100 + '%';
 	}
 }
 
@@ -70,10 +91,7 @@ class GenericHandle extends HTMLElement {
 
 	updatePerPercentage(newPercentage: number) {
 		if (newPercentage != this.percentage) {
-			console.log(
-				this.kind + ' should be updated at',
-				newPercentage + '%'
-			);
+			console.log(this.kind + ' should be updated at', newPercentage + '%');
 
 			this.percentage = newPercentage;
 			this.updateVisual();
@@ -105,6 +123,13 @@ export class GenericSeekbar extends HTMLElement {
 
 	constructor() {
 		super();
+		this.createHTMLElements();
+	}
+
+	/** HTML */
+	protected createHTMLElements() {
+		// for percentageBar we only have a "p" element
+
 		this.fillBar();
 		this.fillHandle();
 	}
@@ -114,6 +139,15 @@ export class GenericSeekbar extends HTMLElement {
 	}
 	fillHandle() {
 		this.handle = new GenericHandle();
+	}
+
+	connectedCallback() {
+		this.setInnerHTML();
+	}
+	protected setInnerHTML() {
+		// should add children to this
+    this.appendChild(this.bar);
+    this.appendChild(this.handle);
 	}
 
 	changeBar(newBar: GenericBar) {
