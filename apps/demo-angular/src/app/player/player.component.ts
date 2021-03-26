@@ -43,9 +43,10 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 	ngAfterViewInit() {
 		if (this.playerHTML) {
 			const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
-			// this.playerHTML.nativeElement.setSeekbar(percentageSeekBar);
+			console.log('SETTING PERCENTAGE SEEKBAR')
+			this.playerHTML.nativeElement.setSeekbar(percentageSeekBar);
 			this.playerHTML.nativeElement.setPlayer(this.player);
-			this.playerHTML.nativeElement.appendChild(percentageSeekBar);
+			// this.playerHTML.nativeElement.appendChild(percentageSeekBar);
 		}
 	}
 }

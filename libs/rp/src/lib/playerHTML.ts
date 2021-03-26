@@ -28,17 +28,21 @@ export class HTMLRumblePlayer extends HTMLElement {
 			this.updatePerPercentage(newPercentage);
 		this.playerService.newPositionCallback = (newPosition: number) =>
 			this.updatePerPosition(newPosition);
+		this.logKinds()
+
 	}
 
-	setSeekbar(seekbar:GenericSeekbar){
+	setSeekbar(seekbar: GenericSeekbar) {
 		// remove old seekbar from the DOM
-		this.removeChild(this.seekBar)
-		this.removeChild(this.pauseButton)
+		this.removeChild(this.seekBar);
+		this.removeChild(this.pauseButton);
 		// update seekbar
 		this.seekBar = seekbar;
 		// add new seekbar to dom
-		this.appendChild(this.seekBar)
+		this.appendChild(this.seekBar);
 		this.connectedCallback();
+		this.logKinds()
+
 	}
 
 	// should return as a promise the current index asked to be played
@@ -97,6 +101,8 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.prevButton = document.createElement('button');
 		this.prevButton.innerText = 'prev';
 		this.seekBar = new GenericSeekbar();
+		this.logKinds()
+
 	}
 
 	addChildren() {
@@ -106,6 +112,8 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.appendChild(this.nextButton);
 		this.appendChild(this.prevButton);
 		this.appendChild(this.seekBar);
+		this.logKinds()
+
 	}
 
 	bindHTMLElements() {
@@ -130,6 +138,19 @@ export class HTMLRumblePlayer extends HTMLElement {
 				this.seekPerPercentage(event.detail.percentage);
 			}
 		);
+
+		this.logKinds()
+	}
+
+	logKinds() {
+		// to log the kind of each sub element
+		if (this.seekBar) {
+			console.log('seekbar:',this.seekBar.kind);
+			console.log('bar:',this.seekBar.bar.kind);
+			console.log('handle:',this.seekBar.handle.kind);
+		} else {
+			console.log('No seekbar yet')
+		}
 	}
 }
 

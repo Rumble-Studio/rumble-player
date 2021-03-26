@@ -1,20 +1,36 @@
 class GenericBar extends HTMLElement {
 	percentage: number = 0;
+	protected _kind = 'genericBar';
+	get kind() {
+		return this._kind;
+	}
 
 	constructor() {
 		super();
 	}
 
-	public updatePerPercentage(newPercentage: number) {
-		/**
-		 * this function should do nothing in the generic class
-		 */
-		this.percentage = newPercentage;
-		console.log('Generic bar should be updated at', newPercentage + '%');
+	updatePerPercentage(newPercentage: number) {
+		if (newPercentage != this.percentage) {
+			console.log(
+				this.kind + ' should be updated at',
+				newPercentage + '%'
+			);
+
+			this.percentage = newPercentage;
+			this.updateVisual();
+		}
+	}
+
+	updateVisual() {
+		// nothing
 	}
 }
 
 class PercentageBar extends GenericBar {
+	protected _kind = 'percentageBar';
+	get kind() {
+		return this._kind;
+	}
 	p: HTMLParagraphElement;
 
 	constructor() {
@@ -28,85 +44,83 @@ class PercentageBar extends GenericBar {
 
 	private createHTMLElements() {
 		this.p = document.createElement('p');
+		this.p.innerText = 'blabla';
 	}
 
 	private setInnerHTML() {
 		this.appendChild(this.p);
-    this.updateVisual();
+		this.updateVisual();
 	}
 
 	updateVisual() {
 		this.p.innerText = this.percentage + '%';
 	}
-
-	updatePerPercentage(newPercentage: number) {
-		console.log('PERCENTAGE bar should be updated at', newPercentage + '%');
-		this.percentage = newPercentage;
-		this.updateVisual();
-	}
 }
 
 class GenericHandle extends HTMLElement {
+	protected _kind = 'genericHandle';
+	get kind() {
+		return this._kind;
+	}
 	percentage: number = 0;
 
 	constructor() {
 		super();
 	}
 
-	public updatePerPercentage(newPercentage: number) {
-		/**
-		 * this function should do nothing in the generic class
-		 */
-		this.percentage = newPercentage;
-		console.log('Generic handle should be updated at', newPercentage + '%');
+	updatePerPercentage(newPercentage: number) {
+		if (newPercentage != this.percentage) {
+			console.log(
+				this.kind + ' should be updated at',
+				newPercentage + '%'
+			);
+
+			this.percentage = newPercentage;
+			this.updateVisual();
+		}
+	}
+
+	updateVisual() {
+		// nothing
 	}
 }
 
 export class GenericSeekbar extends HTMLElement {
-	/**
-	 *
-	 *  This class will:
-	 * - accept a progress and update the visual
-	 * - emit when seeked
-	 *
-	 *
-	 * A seekbar will always have a
-	 * support object (the bar) and a
-	 * mobile object (the handle)
-	 *
-	 *
-	 * When handle is moved: we emit the new position
-	 * when the bar is clicked: we emit the new position
-	 *
-	 *
-	 * WHen a new position is set:
-	 *  we update the position of the handle on the bar
-	 */
-
+	protected _kind = 'genericSeekbar';
+	get kind() {
+		return this._kind;
+	}
 	private _percentage: number = 0;
 	set percentage(newPercentage: number) {
 		this._percentage = newPercentage;
-		this._handle.updatePerPercentage(newPercentage);
-		this._bar.updatePerPercentage(newPercentage);
+		this.handle.updatePerPercentage(newPercentage);
+		this.bar.updatePerPercentage(newPercentage);
 	}
 	get percentage() {
 		return this._percentage;
 	}
 
-	protected _bar: GenericBar;
-	private _handle: GenericHandle;
+	public bar: GenericBar;
+	public handle: GenericHandle;
 
 	constructor() {
 		super();
-		this._bar = new GenericBar();
-		this._handle = new GenericHandle();
+		this.fillBar();
+		this.fillHandle();
+	}
+
+	fillBar() {
+		this.bar = new GenericBar();
+	}
+	fillHandle() {
+		this.handle = new GenericHandle();
 	}
 
 	changeBar(newBar: GenericBar) {
-		this._bar = newBar;
+		this.bar = newBar;
 	}
 	changeHandle(newHandle: GenericHandle) {
-		this._handle = newHandle;
+		this.handle = newHandle;
 	}
 
 	updatePerPercentage(newPercentage: number) {
@@ -127,17 +141,24 @@ export class GenericSeekbar extends HTMLElement {
 }
 
 export class PercentageSeekBar extends GenericSeekbar {
-	protected _bar: PercentageBar;
+	protected _kind = 'percentageSeekBar';
+	get kind() {
+		return this._kind;
+	}
 	constructor() {
 		super();
+	}
+
+	fillBar() {
+		this.bar = new PercentageBar();
 	}
 }
 
 // export class LinearSeekBar extends GenericSeekbar {
 // 	// TODO: Utiliser la classe CircularHandle et RectangleBar
 // 	// Bar properties
-// 	protected barWidth;
-// 	protected bar: LinearBar;
+// 	public barWidth;
+// 	public bar: LinearBar;
 // 	// Handle properties
 // 	private handleRadius: number;
 // 	private handleColor: string;
@@ -160,7 +181,7 @@ export class PercentageSeekBar extends GenericSeekbar {
 // }
 
 // export class CircularSeekBar extends GenericSeekbar {
-// 	protected bar: CircularBar;
+// 	public bar: CircularBar;
 
 // 	constructor(
 // 		innerBarRadius?: number,
@@ -364,18 +385,19 @@ export class PercentageSeekBar extends GenericSeekbar {
 // 	}
 // }
 
-// class FunkyBar {}
+/**
+ * BAR
+ */
+customElements.define('rs-generic-bar', GenericBar);
+customElements.define('rs-percentage-bar', PercentageBar);
 
-// class CircularHandle {}
-// class FunkyHandle {}
+/**
+ * HANDLE
+ */
+customElements.define('rs-generic-handle', GenericHandle);
 
+/**
+ * SEEKBAR
+ */
 customElements.define('rs-generic-seekbar', GenericSeekbar);
 customElements.define('rs-percentage-seekbar', PercentageSeekBar);
-// customElements.define('rs-percentage-seekbar', GenericSeekbar);
-// customElements.define('rs-linear-seekbar', LinearSeekBar);
-// customElements.define('rs-circular-seekbar', CircularSeekBar);
-
-customElements.define('rs-generic-bar', GenericBar);
-customElements.define('rs-generic-handle', GenericHandle);
-// customElements.define('rs-linearbar', LinearBar);
-// customElements.define('rs-circularbar', CircularBar);
