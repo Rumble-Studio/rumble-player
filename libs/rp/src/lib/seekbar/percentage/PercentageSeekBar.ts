@@ -8,8 +8,10 @@ export class PercentageSeekBar extends GenericSeekbar {
 		super();
 	}
 
-	fillVisuals() {
-		this.visuals = [new PercentageBar()];
+	protected fillVisuals() {
+		const percentageBar = new PercentageBar();
+		const newVisuals = [percentageBar];
+		this.changeVisuals(newVisuals);
 	}
 }
 

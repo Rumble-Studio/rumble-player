@@ -1,7 +1,7 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
 
-export const UPDATE_DELAY = 50;
+export const UPDATE_DELAY = 1000;
 
 interface Song {
 	id: string; // unique id to identify the song even when we add new song to the playlist
@@ -161,6 +161,8 @@ export class RumblePlayerService {
 
 	// should return as a promise the current index asked to be played
 	public play(index?: number): Promise<number> {
+		console.log('Asked to play:', index);
+
 		// if no playlist index is -1
 		if (this._playlist.length === 0) return Promise.resolve(-1);
 
@@ -334,10 +336,18 @@ export class RumblePlayerService {
 		);
 	}
 
+
+	/* CALLBACKS ON UPDATE */
+	public positionUpdateCallbacks: ((position:number) => void)[] = [];
 	public newPositionCallback(position: number) {
-		// console.log(position);
+		this.positionUpdateCallbacks.forEach((c) => {
+			c(position);
+		});
 	}
+	public percentageUpdateCallbacks: ((percentage:number) => void)[] = [];
 	public newPercentageCallback(percentage: number) {
-		//console.log(percentage);
+		this.percentageUpdateCallbacks.forEach((c) => {
+			c(percentage);
+		});
 	}
 }

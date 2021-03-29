@@ -14,7 +14,6 @@ export class LinearBar extends GenericVisual {
 		this.div = document.createElement('div');
 		this.div.style.backgroundColor = 'red';
 		this.div.style.height = '15px';
-
 		this.progressDiv = document.createElement('div');
 		this.progressDiv.style.width = '0%';
 		this.progressDiv.style.height = '100%';
@@ -26,9 +25,12 @@ export class LinearBar extends GenericVisual {
 		this.appendChild(this.div);
 		this.updateVisual();
 	}
-	protected bindHTMLElements() {}
+
+	// protected bindHTMLElements() {}
 
 	updateVisual() {
+		console.log('SHOULD UPDATE ('+this.kind+') BAR WITH:',this.percentage)
+
 		this.progressDiv.style.width = this.percentage + '%';
 	}
 }

@@ -38,22 +38,26 @@ export class GenericSeekbar extends HTMLElement {
 		this.changeVisuals(newVisuals);
 	}
 	public changeVisuals(visuals: GenericVisual[]) {
-		//this.stopListeningToVisuals()
+		this.stopListeningToVisuals()
 		this.visuals = visuals;
-		// this.listenToVisuals()
+		this.listenToVisuals()
 	}
+
 	connectedCallback() {
 		this.setInnerHTML();
 	}
+
 	protected setInnerHTML() {
 		// should add children to this
 		this.visuals.forEach((v) => {
 			this.appendChild(v);
 		});
 	}
+
 	updatePercentage(event: CustomEvent) {
 		this.percentage = event.detail.percentage;
 	}
+	
 	listenToVisuals() {
 		this.visuals.forEach((v) => {
 			v.addEventListener('seekPerPercentage', this.updatePercentage);
@@ -75,10 +79,11 @@ export class GenericSeekbar extends HTMLElement {
 
 	updatePerPosition(newPosition: number) {
 		// this.percentage = newPercentage;
-		// console.log('New position is not used per Generic Seekbar', newPosition);
+		console.log('New position is not used per Generic Seekbar', newPosition);
 	}
 
 	emitPercentage(percentage: number) {
+		// seekbar emit position for the player service to use
 		const e = new CustomEvent('seekPerPercentage', {
 			detail: { percentage },
 		});

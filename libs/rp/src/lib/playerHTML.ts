@@ -24,10 +24,16 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	public setPlayer(playerService: RumblePlayerService) {
 		this.playerService = playerService;
-		this.playerService.newPercentageCallback = (newPercentage: number) =>
-			this.updatePerPercentage(newPercentage);
-		this.playerService.newPositionCallback = (newPosition: number) =>
-			this.updatePerPosition(newPosition);
+		this.playerService.percentageUpdateCallbacks.push((newPercentage: number) =>
+		this.updatePerPercentage(newPercentage))
+
+		this.playerService.positionUpdateCallbacks.push((newPercentage: number) =>
+		this.updatePerPosition(newPercentage))
+		
+		// this.playerService.newPercentageCallback = (newPercentage: number) =>
+		// 	this.updatePerPercentage(newPercentage);
+		// this.playerService.newPositionCallback = (newPosition: number) =>
+		// 	this.updatePerPosition(newPosition);
 		this.logKinds();
 	}
 
@@ -115,6 +121,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	bindHTMLElements() {
 		this.playButton.addEventListener('click', () => {
+			console.log('clicked on play in playerHTML')
 			return this.play();
 		});
 		this.pauseButton.addEventListener('click', () => {
@@ -147,10 +154,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 		// to log the kind of each sub element
 		if (this.seekBar) {
 			console.log('seekbar:', this.seekBar.kind);
-			console.log(
-				'visual:',
-				this.seekBar.visuals.forEach((v) => v.kind)
-			);
+			this.seekBar.visuals.forEach((v) => {
+				console.log('visual:', v.kind);
+			});
 		} else {
 			console.log('No seekbar yet');
 		}

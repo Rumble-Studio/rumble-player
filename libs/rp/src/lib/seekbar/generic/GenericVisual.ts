@@ -15,14 +15,17 @@ export class GenericVisual extends HTMLElement {
 	connectedCallback() {
 		this.setInnerHTML();
 	}
+
 	protected setInnerHTML() {
 		// should add children to this
 		this.updateVisual();
 	}
+
 	protected createHTMLElements() {
 		// nothing to do
 		console.log('No html element to create for GenericVisual');
 	}
+
 	protected bindHTMLElements() {
 		this.addEventListener('click', () => {
 			console.log('Clicked on ' + this.kind);
@@ -42,6 +45,7 @@ export class GenericVisual extends HTMLElement {
 	updateVisual() {
 		// should change the visual of the children based on properties like percentage
 		// nothing
+		console.log('Nothing to visually update on '+ this.kind);
 	}
 }
 

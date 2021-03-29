@@ -1,4 +1,5 @@
 import {
+	AfterViewChecked,
 	AfterViewInit,
 	Component,
 	ElementRef,
@@ -22,10 +23,16 @@ import { fakePlaylist } from '../../config/dummyAudioData.config';
 })
 export class PlayerComponent implements AfterViewInit {
 	public player: RumblePlayerService;
-	@ViewChild('playerHTML')
+
+	@ViewChild('playerHTMLGeneric')
 	playerHTMLGeneric: ElementRef<HTMLRumblePlayer> | undefined;
-	//playerHTMLLinear: ElementRef<HTMLRumblePlayer> | undefined;
-	//playerHTMLPercentage: ElementRef<HTMLRumblePlayer> | undefined;
+
+	@ViewChild('playerHTMLPercentage')
+	playerHTMLPercentage: ElementRef<HTMLRumblePlayer> | undefined;
+
+	@ViewChild('playerHTMLLinear')
+	playerHTMLLinear: ElementRef<HTMLRumblePlayer> | undefined;
+
 	public eventsHistory: string[];
 
 	constructor() {
@@ -43,22 +50,29 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		// if (this.playerHTMLLinear) {
-		// 	const linearSeekbar: LinearSeekBar = new LinearSeekBar()
-		// 	this.playerHTMLLinear.nativeElement.setSeekbar(linearSeekbar);
-		// 	this.playerHTMLLinear.nativeElement.setPlayer(this.player);
-		//
-		// }
 		if (this.playerHTMLGeneric) {
 			const genericSeekbar: GenericSeekbar = new GenericSeekbar();
 			this.playerHTMLGeneric.nativeElement.setSeekbar(genericSeekbar);
 			this.playerHTMLGeneric.nativeElement.setPlayer(this.player);
+		} else {
+			console.warn('PlayerHTML Generic is not available');
 		}
-		// if (this.playerHTMLPercentage) {
-		//   const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
-		//   this.playerHTMLPercentage.nativeElement.setSeekbar(percentageSeekBar);
-		//   this.playerHTMLPercentage.nativeElement.setPlayer(this.player);
-		//
-		// }
+
+
+		if (this.playerHTMLLinear) {
+			const linearSeekbar: LinearSeekBar = new LinearSeekBar();
+			this.playerHTMLLinear.nativeElement.setSeekbar(linearSeekbar);
+			this.playerHTMLLinear.nativeElement.setPlayer(this.player);
+		} else {
+			console.warn('PlayerHTML Linear is not available');
+		}
+
+		if (this.playerHTMLPercentage) {
+			const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
+			this.playerHTMLPercentage.nativeElement.setSeekbar(percentageSeekBar);
+			this.playerHTMLPercentage.nativeElement.setPlayer(this.player);
+		} else {
+			console.warn('PlayerHTML Percentage is not available');
+		}
 	}
 }
