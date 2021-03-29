@@ -2,9 +2,7 @@ import { GenericVisual } from '../generic/GenericVisual';
 
 export class PercentageBar extends GenericVisual {
 	protected _kind = 'percentageBar';
-	get kind() {
-		return this._kind;
-	}
+
 
 	div: HTMLDivElement;
 	p: HTMLParagraphElement;

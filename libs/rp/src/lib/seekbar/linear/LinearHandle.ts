@@ -2,9 +2,6 @@ import { GenericVisual } from '../generic/GenericVisual';
 
 export class LinearHandle extends GenericVisual {
 	protected _kind = 'LinearBar';
-	get kind() {
-		return this._kind;
-	}
 
 	div: HTMLDivElement;
 

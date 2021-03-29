@@ -2,9 +2,6 @@ import { GenericVisual } from '../generic/GenericVisual';
 
 export class LinearBar extends GenericVisual {
 	protected _kind = 'LinearBar';
-	get kind() {
-		return this._kind;
-	}
 
 	div: HTMLDivElement;
 	progressDiv: HTMLDivElement;
@@ -41,7 +38,7 @@ export class LinearBar extends GenericVisual {
 		const y = event.offsetY < 0 ? 0 : event.offsetY; // Get the vertical coordinate
 		const percentage = (100 * x) / width;
 		console.log('Click ', percentage);
-		const clickEvent = new CustomEvent('seek', { detail: { percentage } });
+		const clickEvent = new CustomEvent('seekPerPercentage', { detail: { percentage } });
 		this.dispatchEvent(clickEvent);
 	}
 

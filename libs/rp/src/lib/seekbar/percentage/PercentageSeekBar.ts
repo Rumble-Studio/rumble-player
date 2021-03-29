@@ -3,9 +3,7 @@ import { PercentageBar } from '../percentage/PercentageBar';
 
 export class PercentageSeekBar extends GenericSeekbar {
 	protected _kind = 'percentageSeekBar';
-	get kind() {
-		return this._kind;
-	}
+
 	constructor() {
 		super();
 	}
