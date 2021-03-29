@@ -6,6 +6,7 @@ import {
 	ViewChild,
 } from '@angular/core';
 import {
+	GenericSeekbar,
 	HTMLRumblePlayer,
 	LinearSeekBar,
 	PercentageSeekBar,
@@ -19,10 +20,12 @@ import { fakePlaylist } from '../../config/dummyAudioData.config';
 	templateUrl: './player.component.html',
 	styleUrls: ['./player.component.scss'],
 })
-export class PlayerComponent implements OnInit, AfterViewInit {
+export class PlayerComponent implements AfterViewInit {
 	public player: RumblePlayerService;
 	@ViewChild('playerHTML')
-	playerHTML: ElementRef<HTMLRumblePlayer> | undefined;
+	playerHTMLGeneric: ElementRef<HTMLRumblePlayer> | undefined;
+	//playerHTMLLinear: ElementRef<HTMLRumblePlayer> | undefined;
+	//playerHTMLPercentage: ElementRef<HTMLRumblePlayer> | undefined;
 	public eventsHistory: string[];
 
 	constructor() {
@@ -30,8 +33,6 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 		this.player = new RumblePlayerService();
 		this.player.setPlaylistFromUrls(fakePlaylist);
 	}
-
-	ngOnInit(): void {}
 
 	togglePlayer() {
 		if (this.player.isPlaying) {
@@ -42,12 +43,22 @@ export class PlayerComponent implements OnInit, AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		if (this.playerHTML) {
-			// const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
-			const linearSeekbar: LinearSeekBar = new LinearSeekBar()
-			this.playerHTML.nativeElement.setSeekbar(linearSeekbar);
-			this.playerHTML.nativeElement.setPlayer(this.player);
-			// this.playerHTML.nativeElement.appendChild(percentageSeekBar);
+		// if (this.playerHTMLLinear) {
+		// 	const linearSeekbar: LinearSeekBar = new LinearSeekBar()
+		// 	this.playerHTMLLinear.nativeElement.setSeekbar(linearSeekbar);
+		// 	this.playerHTMLLinear.nativeElement.setPlayer(this.player);
+		//
+		// }
+		if (this.playerHTMLGeneric) {
+			const genericSeekbar: GenericSeekbar = new GenericSeekbar();
+			this.playerHTMLGeneric.nativeElement.setSeekbar(genericSeekbar);
+			this.playerHTMLGeneric.nativeElement.setPlayer(this.player);
 		}
+		// if (this.playerHTMLPercentage) {
+		//   const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
+		//   this.playerHTMLPercentage.nativeElement.setSeekbar(percentageSeekBar);
+		//   this.playerHTMLPercentage.nativeElement.setPlayer(this.player);
+		//
+		// }
 	}
 }

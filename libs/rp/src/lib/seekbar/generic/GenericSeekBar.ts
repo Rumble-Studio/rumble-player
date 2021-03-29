@@ -7,7 +7,7 @@ export class GenericSeekbar extends HTMLElement {
 	}
 	private _percentage = 0;
 	set percentage(newPercentage: number) {
-	  console.log(this.kind,' received a new percentage ', newPercentage)
+		console.log(this.kind, ' received a new percentage ', newPercentage);
 		this._percentage = newPercentage;
 		this.visuals.forEach((v) => v.updatePerPercentage(newPercentage));
 	}
@@ -35,13 +35,13 @@ export class GenericSeekbar extends HTMLElement {
 
 	protected fillVisuals() {
 		const newVisuals = [new GenericVisual()];
-		this.changeVisuals(newVisuals)
+		this.changeVisuals(newVisuals);
 	}
-  public changeVisuals(visuals: GenericVisual[]) {
-	  this.stopListeningToVisuals()
-    this.visuals = visuals;
-    this.listenToVisuals()
-  }
+	public changeVisuals(visuals: GenericVisual[]) {
+		//this.stopListeningToVisuals()
+		this.visuals = visuals;
+		// this.listenToVisuals()
+	}
 	connectedCallback() {
 		this.setInnerHTML();
 	}
@@ -51,23 +51,23 @@ export class GenericSeekbar extends HTMLElement {
 			this.appendChild(v);
 		});
 	}
-	updatePercentage(event:CustomEvent) {
-    this.percentage = event.detail.percentage
-  }
-  listenToVisuals() {
-    this.visuals.forEach((v) => {
-      v.addEventListener('seekPerPercentage', this.updatePercentage);
-    })
-  }
+	updatePercentage(event: CustomEvent) {
+		this.percentage = event.detail.percentage;
+	}
+	listenToVisuals() {
+		this.visuals.forEach((v) => {
+			v.addEventListener('seekPerPercentage', this.updatePercentage);
+		});
+	}
 
-  stopListeningToVisuals(){
-	  if(!this.visuals){
-	    return
-    }
-    this.visuals.forEach((v) => {
-      v.removeEventListener('seekPerPercentage' ,this.updatePercentage)
-    });
-  }
+	stopListeningToVisuals() {
+		if (!this.visuals) {
+			return;
+		}
+		this.visuals.forEach((v) => {
+			v.removeEventListener('seekPerPercentage', this.updatePercentage);
+		});
+	}
 
 	updatePerPercentage(newPercentage: number) {
 		this.percentage = newPercentage;

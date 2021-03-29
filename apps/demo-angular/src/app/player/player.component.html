@@ -1,9 +1,16 @@
 <div class="playerContainer" #playerContainer>
-
-	<rumble-player #playerHTML>
-	</rumble-player>
+	<rumble-player #playerHTMLGeneric> </rumble-player>
 </div>
 
+<hr />
+<div class="playerContainer" #playerContainer>
+	<rumble-player #playerHTMLLinear> </rumble-player>
+</div>
+
+<hr />
+<div class="playerContainer" #playerContainer>
+	<rumble-player #playerHTMLPercentage> </rumble-player>
+</div>
 
 <hr />
 
@@ -11,23 +18,26 @@
 <br />
 Current state: {{ player.isPlaying ? 'playing' : 'not playing' }} <br />
 Current index: {{ player.index }} <br />
-Current position: {{ player.position | number:'1.1-1' }} <br />
+Current position: {{ player.position | number: '1.1-1' }} <br />
 <hr />
 
 <h2>Playlist:</h2>
 
 <ol>
 	<li *ngFor="let song of player.playlist; let index = index">
-
 		<ul>
-			<li><a [href]="song.file">File</a> &nbsp;<strong *ngIf="player.index == index">[selected]</strong> </li>
-			<li>position: {{song.position|number: '1.1-1'}}</li>
-			<li>playing: {{song.howl?.playing()}}</li>
+			<li>
+				<a [href]="song.file">File</a> &nbsp;<strong
+					*ngIf="player.index == index"
+					>[selected]</strong
+				>
+			</li>
+			<li>position: {{ song.position | number: '1.1-1' }}</li>
+			<li>playing: {{ song.howl?.playing() }}</li>
 		</ul>
 	</li>
 </ol>
 <hr />
-
 
 <h2>History:</h2>
 <ol>
