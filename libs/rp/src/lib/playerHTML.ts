@@ -1,4 +1,4 @@
-import { GenericSeekbar } from './seekbar';
+import { GenericSeekbar } from './seekbar/generic/GenericSeekBar';
 import { RumblePlayerService } from './playerService';
 
 export class HTMLRumblePlayer extends HTMLElement {
@@ -28,8 +28,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 			this.updatePerPercentage(newPercentage);
 		this.playerService.newPositionCallback = (newPosition: number) =>
 			this.updatePerPosition(newPosition);
-		this.logKinds()
-
+		this.logKinds();
 	}
 
 	setSeekbar(seekbar: GenericSeekbar) {
@@ -40,8 +39,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 		// add new seekbar to dom
 		this.appendChild(this.seekBar);
 		// this.connectedCallback();
-		this.logKinds()
 
+		this.updateSeekBarListener();
+		this.logKinds();
 	}
 
 	// should return as a promise the current index asked to be played
@@ -100,8 +100,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.prevButton = document.createElement('button');
 		this.prevButton.innerText = 'prev';
 		this.seekBar = new GenericSeekbar();
-		this.logKinds()
-
+		this.logKinds();
 	}
 
 	addChildren() {
@@ -111,8 +110,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.appendChild(this.nextButton);
 		this.appendChild(this.prevButton);
 		this.appendChild(this.seekBar);
-		this.logKinds()
-
+		this.logKinds();
 	}
 
 	bindHTMLElements() {
@@ -131,23 +129,30 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.prevButton.addEventListener('click', () => {
 			this.prev();
 		});
+		this.updateSeekBarListener();
+
+		this.logKinds();
+	}
+	private updateSeekBarListener() {
 		this.seekBar.addEventListener(
 			'seekPerPercentage',
 			(event: CustomEvent) => {
+				console.log('seeked per percentage', event.detail.percentage);
 				this.seekPerPercentage(event.detail.percentage);
 			}
 		);
-
-		this.logKinds()
 	}
 
 	logKinds() {
 		// to log the kind of each sub element
 		if (this.seekBar) {
-			console.log('seekbar:',this.seekBar.kind);
-			console.log('visual:',this.seekBar.visuals.forEach(v=>v.kind));
+			console.log('seekbar:', this.seekBar.kind);
+			console.log(
+				'visual:',
+				this.seekBar.visuals.forEach((v) => v.kind)
+			);
 		} else {
-			console.log('No seekbar yet')
+			console.log('No seekbar yet');
 		}
 	}
 }
