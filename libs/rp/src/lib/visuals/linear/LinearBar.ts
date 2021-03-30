@@ -1,6 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
 
-
 export class LinearBar extends GenericVisual {
 	protected _kind = 'LinearBar';
 
@@ -24,13 +23,28 @@ export class LinearBar extends GenericVisual {
 	protected setInnerHTML() {
 		this.div.appendChild(this.progressDiv);
 		this.appendChild(this.div);
-		this.updateVisual();
 	}
 
-	// protected bindHTMLElements() {}
+	bindHTMLElements() {
+		// custom bindings of events
+		// in particular, a click emits a percentage based on width
+		this.addEventListener('click', (event) => {
+
+			const bcr = this.getBoundingClientRect();
+			const percentage = (event.clientX - bcr.left) / bcr.width
+
+
+			console.log('PERCENTAGE;',percentage)
+
+			const clickEvent = new CustomEvent('seekPerPercentage', {
+				detail: { percentage },
+			});
+			this.dispatchEvent(clickEvent);
+		});
+	}
 
 	updateVisual() {
-		this.progressDiv.style.width = this.percentage + '%';
+		this.progressDiv.style.width = 100*this.percentage + '%';
 	}
 }
 

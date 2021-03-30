@@ -1,16 +1,9 @@
 export class GenericVisual extends HTMLElement {
-	private _percentage = 0;
-	set percentage(newPercentage: number) {
-		this._percentage = newPercentage;
-		this.visuals.forEach((v) => v.updatePerPercentage(newPercentage));
-	}
-	get percentage() {
-		return this._percentage;
-	}
 
-	visuals:GenericVisual[];
-	
-	position = 0;
+
+	public percentage = 0;
+	public position = 0;
+
 	protected _kind = 'GenericVisual';
 	get kind() {
 		return this._kind;
@@ -28,30 +21,25 @@ export class GenericVisual extends HTMLElement {
 	}
 
 	protected setInnerHTML() {
-		// should add children to this
-		this.updateVisual();
+		console.log('[GenericVisual](setInnerHTML)','nothing to set');
 	}
 
 	protected createHTMLElements() {
-		// nothing to do
-		console.log('No html element to create for GenericVisual');
+		console.log('[GenericVisual](createHTMLElements)','nothing to create');
 	}
 
 	protected bindHTMLElements() {
-		this.addEventListener('click', () => {
-			console.log('Clicked on ' + this.kind);
-		});
+		console.log('[GenericVisual](bindHTMLElements)','nothing to bind');
 	}
 
 	/** logic */
-	updatePerPercentage(newPercentage: number) {
+	public updatePerPercentage(newPercentage: number) {
 		if (newPercentage != this.percentage) {
 			this.percentage = newPercentage;
 			this.updateVisual();
 		}
 	}
-
-	updatePerPosition(newPosition: number) {
+	public updatePerPosition(newPosition: number) {
 		if (newPosition != this.position) {
 			this.position = newPosition;
 			this.updateVisual();
@@ -59,9 +47,8 @@ export class GenericVisual extends HTMLElement {
 	}
 
 	/** visual */
-	updateVisual() {
-		// should change the visual of the children based on properties like percentage
-		// nothing
+	protected updateVisual() {
+		console.log('[GenericVisual](updateVisual)','nothing to update');
 	}
 }
 

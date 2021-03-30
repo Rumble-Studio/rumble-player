@@ -1,25 +1,13 @@
 export * from './lib/rp';
 export * from './lib/playerService';
-
-// visual
 export * from './lib/GenericVisual';
+export * from './lib/playerHTML';
 
 //buttons
-export * from './lib/buttons/simplePlayButton';
-
-// seekbar
-export * from './lib/seekbar/generic/GenericSeekBar';
+export * from './lib/visuals/buttons/simplePlayButton';
 // linear
-export * from './lib/seekbar/linear/LinearBar';
-export * from './lib/seekbar/linear/LinearHandle';
-export * from './lib/seekbar/linear/LinearSeekBar';
-// percentage
-export * from './lib/seekbar/percentage/PercentageBar';
-export * from './lib/seekbar/percentage/PercentageSeekBar';
+export * from './lib/visuals/linear/LinearBar';
 // giraffe
-export * from './lib/seekbar/giraffe/GiraffeSeekBar';
-export * from './lib/seekbar/giraffe/GiraffeVisual';
-export * from './lib/seekbar/giraffe/MoucheVisual';
+export * from './lib/visuals/funky/GiraffeVisual';
+export * from './lib/visuals/funky/MoucheVisual';
 
-
-export * from './lib/playerHTML';

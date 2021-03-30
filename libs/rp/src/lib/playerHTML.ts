@@ -13,6 +13,14 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	playerService: RumblePlayerService | null;
 
+	playRef: () => void;
+	pauseRef: () => void;
+	stopRef: () => void;
+	nextRef: () => void;
+	prevRef: () => void;
+	processEventSeekPerPercentageRef: (event: CustomEvent) => void;
+	processEventSeekPerPositionRef: (event: CustomEvent) => void;
+
 	constructor(playerService?: RumblePlayerService) {
 		super();
 		if (playerService) {
@@ -20,6 +28,16 @@ export class HTMLRumblePlayer extends HTMLElement {
 		} else {
 			this.playerService = null;
 		}
+
+		this.playRef = () => this.play();
+		this.pauseRef = () => this.pause();
+		this.stopRef = () => this.stop();
+		this.nextRef = () => this.next();
+		this.prevRef = () => this.prev();
+		this.processEventSeekPerPercentageRef = (event: CustomEvent) =>
+			this.processEventSeekPerPercentage(event);
+		this.processEventSeekPerPositionRef = (event: CustomEvent) =>
+			this.processEventSeekPerPosition(event);
 	}
 
 	public setPlayer(playerService: RumblePlayerService) {
@@ -47,7 +65,6 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.startListeningToVisualChildren();
 	}
 
-	// should return as a promise the current index asked to be played
 	public play() {
 		console.log('PLAY', this.playerService);
 		if (!this.playerService) return;
@@ -96,12 +113,10 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.visualChildren.forEach((vc) =>
 			vc.updatePerPercentage(newPercentage)
 		);
-		// this.seekBar.updatePerPercentage(newPercentage);
 	}
 
 	public updatePerPosition(newPosition: number) {
 		this.visualChildren.forEach((vc) => vc.updatePerPosition(newPosition));
-		// this.seekBar.updatePerPosition(newPosition);
 	}
 
 	connectedCallback() {
@@ -113,53 +128,46 @@ export class HTMLRumblePlayer extends HTMLElement {
 			this.removeChild(vc);
 		});
 	}
+
 	addChildren() {
 		this.visualChildren.forEach((vc) => this.appendChild(vc));
 	}
 
 	startListeningToVisualChildren() {
 		this.visualChildren.forEach((vc) => {
-			vc.addEventListener('pause', this.pause);
-			vc.addEventListener('play', this.play);
-			vc.addEventListener('stop', this.stop);
-			vc.addEventListener('next', this.next);
-			vc.addEventListener('prev', this.prev);
+			vc.addEventListener('pause', this.pauseRef);
+			vc.addEventListener('play', this.playRef);
+			vc.addEventListener('stop', this.stopRef);
+			vc.addEventListener('next', this.nextRef);
+			vc.addEventListener('prev', this.prevRef);
 			vc.addEventListener(
 				'seekPerPercentage',
-				this.processEventSeekPerPercentage
+				this.processEventSeekPerPercentageRef
 			);
 			vc.addEventListener(
 				'seekPerPosition',
-				this.processEventSeekPerPosition
+				this.processEventSeekPerPositionRef
 			);
 		});
 	}
+
 	stopListeningToVisualChildren() {
 		this.visualChildren.forEach((vc) => {
-			vc.removeEventListener('pause', this.pause);
-			vc.removeEventListener('play', this.play);
-			vc.removeEventListener('stop', this.stop);
-			vc.removeEventListener('next', this.next);
-			vc.removeEventListener('prev', this.prev);
+			vc.removeEventListener('pause', this.pauseRef);
+			vc.removeEventListener('play', this.playRef);
+			vc.removeEventListener('stop', this.stopRef);
+			vc.removeEventListener('next', this.nextRef);
+			vc.removeEventListener('prev', this.prevRef);
 			vc.removeEventListener(
 				'seekPerPercentage',
-				this.processEventSeekPerPercentage
+				this.processEventSeekPerPercentageRef
 			);
 			vc.removeEventListener(
 				'seekPerPosition',
-				this.processEventSeekPerPosition
+				this.processEventSeekPerPositionRef
 			);
 		});
 	}
-	// private updateSeekBarListener() {
-	// 	this.seekBar.addEventListener(
-	// 		'seekPerPercentage',
-	// 		(event: CustomEvent) => {
-	// 			console.log('seeked per percentage', event.detail.percentage);
-	// 			this.seekPerPercentage(event.detail.percentage);
-	// 		}
-	// 	);
-	// }
 }
 
 customElements.define('rumble-player', HTMLRumblePlayer);

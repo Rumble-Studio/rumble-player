@@ -118,7 +118,7 @@ export class RumblePlayerService {
 		});
 
 		this.position = this.playlist[this.index].position;
-		this.percentage = duration > 0 ? (100 * this.position) / duration : 0; // TODO compute percentage based on current file being played
+		this.percentage = duration > 0 ? (this.position) / duration : 0; // TODO compute percentage based on current file being played
 		this.newPositionCallback(this.position);
 		this.newPercentageCallback(this.percentage);
 	}
@@ -276,13 +276,13 @@ export class RumblePlayerService {
 			song.howl = this.createHowlWithBindings(song);
 			if (song.howl.state() === 'loading') {
 				song.howl.once('load', () => {
-					song.howl.seek((percentage * song.howl.duration()) / 100);
+					song.howl.seek((percentage * song.howl.duration()));
 				});
 			} else if (song.howl.state() === 'loaded') {
-				song.howl.seek((percentage * song.howl.duration()) / 100);
+				song.howl.seek((percentage * song.howl.duration()));
 			}
 		} else {
-			song.howl.seek((percentage * song.howl.duration()) / 100);
+			song.howl.seek((percentage * song.howl.duration()));
 		}
 		// console.log('song status ', song.howl.state())
 		//get song duration

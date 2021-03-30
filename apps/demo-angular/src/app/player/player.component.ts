@@ -1,23 +1,62 @@
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import {
-	AfterViewChecked,
-	AfterViewInit,
-	Component,
-	ElementRef,
-	OnInit,
-	ViewChild,
-} from '@angular/core';
-import {
-	GenericSeekbar,
 	HTMLRumblePlayer,
-	LinearSeekBar,
-	PercentageSeekBar,
 	RumblePlayerService,
-	GiraffeSeekBar,
 	SimplePlayButton,
 	GenericVisual,
+	LinearBar,
 } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
+
+class MyDemoButton extends GenericVisual {
+	protected _kind = 'SimplePlayButton';
+
+	state = false;
+
+	constructor() {
+		super();
+	}
+	/** custom HTML elements  */
+	button: HTMLInputElement | undefined;
+	protected createHTMLElements() {
+		this.button = document.createElement('input');
+		this.button.setAttribute('type', 'button');
+		this.button.setAttribute('value', 'toggle');
+		this.button.style.backgroundColor = 'red';
+	}
+	protected setInnerHTML() {
+		// custom creation of HTML children
+		if (this.button) {
+			this.appendChild(this.button);
+		}
+	}
+	bindHTMLElements() {
+		// custom bindings of events
+		// in particular, play button can emit "play" on click
+		this.addEventListener('click', () => {
+			console.log('CLICKED')
+	
+			this.state = !this.state;
+
+			if (this.state) {
+				console.log('should play')
+				const e = new Event('play');
+				this.dispatchEvent(e);
+			} else {
+				console.log('should pause')
+
+				const e = new Event('pause');
+				this.dispatchEvent(e);
+			}
+		});
+	}
+	updateVisual() {
+		//
+	}
+}
+customElements.define('rs-demo-play-button', MyDemoButton);
+
 
 @Component({
 	selector: 'rumble-player-player',
@@ -66,10 +105,14 @@ export class PlayerComponent implements AfterViewInit {
 
 		if (this.playerHTMLLinear) {
 			this.playerHTMLLinear.nativeElement.setPlayer(this.player);
-
-			const linearSeekbar: LinearSeekBar = new LinearSeekBar();
+			const linearBar: LinearBar = new LinearBar();
 			const simplePlayButton: SimplePlayButton = new SimplePlayButton();
-			const visualChildren:GenericVisual[] = [linearSeekbar, simplePlayButton];
+			const myDemoButton: MyDemoButton = new MyDemoButton();
+			const visualChildren: GenericVisual[] = [
+				simplePlayButton,
+				linearBar,
+				myDemoButton,
+			];
 			this.playerHTMLLinear.nativeElement.setVisualChildren(visualChildren);
 		} else {
 			console.warn('PlayerHTML Linear is not available');
