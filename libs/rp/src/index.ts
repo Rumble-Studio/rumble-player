@@ -9,3 +9,7 @@ export * from './lib/seekbar/linear/LinearHandle';
 export * from './lib/seekbar/linear/LinearSeekBar';
 export * from './lib/seekbar/percentage/PercentageBar';
 export * from './lib/seekbar/percentage/PercentageSeekBar';
+
+export * from './lib/seekbar/giraffe/GiraffeSeekBar';
+export * from './lib/seekbar/giraffe/GiraffeVisual';
+export * from './lib/seekbar/giraffe/MoucheVisual';

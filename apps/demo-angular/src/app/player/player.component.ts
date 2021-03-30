@@ -12,6 +12,7 @@ import {
 	LinearSeekBar,
 	PercentageSeekBar,
 	RumblePlayerService,
+	GiraffeSeekBar,
 } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
@@ -32,6 +33,9 @@ export class PlayerComponent implements AfterViewInit {
 
 	@ViewChild('playerHTMLLinear')
 	playerHTMLLinear: ElementRef<HTMLRumblePlayer> | undefined;
+
+	@ViewChild('playerHTMLGiraffe')
+	playerHTMLGiraffe: ElementRef<HTMLRumblePlayer> | undefined;
 
 	public eventsHistory: string[];
 
@@ -73,6 +77,14 @@ export class PlayerComponent implements AfterViewInit {
 			this.playerHTMLPercentage.nativeElement.setPlayer(this.player);
 		} else {
 			console.warn('PlayerHTML Percentage is not available');
+		}
+
+		if (this.playerHTMLGiraffe) {
+			const giraffeSeekBar: GiraffeSeekBar = new GiraffeSeekBar();
+			this.playerHTMLGiraffe.nativeElement.setSeekbar(giraffeSeekBar);
+			this.playerHTMLGiraffe.nativeElement.setPlayer(this.player);
+		} else {
+			console.warn('PlayerHTML Giraffe is not available');
 		}
 	}
 }
