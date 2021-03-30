@@ -13,6 +13,8 @@ import {
 	PercentageSeekBar,
 	RumblePlayerService,
 	GiraffeSeekBar,
+	SimplePlayButton,
+	GenericVisual,
 } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
@@ -54,37 +56,39 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		if (this.playerHTMLGeneric) {
-			const genericSeekbar: GenericSeekbar = new GenericSeekbar();
-			this.playerHTMLGeneric.nativeElement.setSeekbar(genericSeekbar);
-			this.playerHTMLGeneric.nativeElement.setPlayer(this.player);
-		} else {
-			console.warn('PlayerHTML Generic is not available');
-		}
-
+		// if (this.playerHTMLGeneric) {
+		// 	const genericSeekbar: GenericSeekbar = new GenericSeekbar();
+		// 	this.playerHTMLGeneric.nativeElement.setSeekbar(genericSeekbar);
+		// 	this.playerHTMLGeneric.nativeElement.setPlayer(this.player);
+		// } else {
+		// 	console.warn('PlayerHTML Generic is not available');
+		// }
 
 		if (this.playerHTMLLinear) {
-			const linearSeekbar: LinearSeekBar = new LinearSeekBar();
-			this.playerHTMLLinear.nativeElement.setSeekbar(linearSeekbar);
 			this.playerHTMLLinear.nativeElement.setPlayer(this.player);
+
+			const linearSeekbar: LinearSeekBar = new LinearSeekBar();
+			const simplePlayButton: SimplePlayButton = new SimplePlayButton();
+			const visualChildren:GenericVisual[] = [linearSeekbar, simplePlayButton];
+			this.playerHTMLLinear.nativeElement.setVisualChildren(visualChildren);
 		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}
 
-		if (this.playerHTMLPercentage) {
-			const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
-			this.playerHTMLPercentage.nativeElement.setSeekbar(percentageSeekBar);
-			this.playerHTMLPercentage.nativeElement.setPlayer(this.player);
-		} else {
-			console.warn('PlayerHTML Percentage is not available');
-		}
+		// if (this.playerHTMLPercentage) {
+		// 	const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
+		// 	this.playerHTMLPercentage.nativeElement.setSeekbar(percentageSeekBar);
+		// 	this.playerHTMLPercentage.nativeElement.setPlayer(this.player);
+		// } else {
+		// 	console.warn('PlayerHTML Percentage is not available');
+		// }
 
-		if (this.playerHTMLGiraffe) {
-			const giraffeSeekBar: GiraffeSeekBar = new GiraffeSeekBar();
-			this.playerHTMLGiraffe.nativeElement.setSeekbar(giraffeSeekBar);
-			this.playerHTMLGiraffe.nativeElement.setPlayer(this.player);
-		} else {
-			console.warn('PlayerHTML Giraffe is not available');
-		}
+		// if (this.playerHTMLGiraffe) {
+		// 	const giraffeSeekBar: GiraffeSeekBar = new GiraffeSeekBar();
+		// 	this.playerHTMLGiraffe.nativeElement.setSeekbar(giraffeSeekBar);
+		// 	this.playerHTMLGiraffe.nativeElement.setPlayer(this.player);
+		// } else {
+		// 	console.warn('PlayerHTML Giraffe is not available');
+		// }
 	}
 }

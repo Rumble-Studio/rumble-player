@@ -1,4 +1,4 @@
-import { GenericVisual } from '../generic/GenericVisual';
+import { GenericVisual } from '../../GenericVisual';
 
 export class GiraffeVisual extends GenericVisual {
 	protected _kind = 'GiraffeVisual';
@@ -14,12 +14,16 @@ export class GiraffeVisual extends GenericVisual {
 		this.div = document.createElement('div');
 		this.div.style.height = '250px';
 		this.div.style.width = '250px';
+		this.div.style.position = 'absolute';
+		this.div.style.overflow = "hidden";
 
 		this.img = document.createElement('img');
 		this.img.style.cursor = 'pointer';
-		this.img.setAttribute('src','https://animalfactguide.com/wp-content/uploads/2013/01/iStock_000006372643XSmall.jpg')
+		this.img.setAttribute('src','https://images.ctfassets.net/81iqaqpfd8fy/3r4flvP8Z26WmkMwAEWEco/870554ed7577541c5f3bc04942a47b95/78745131.jpg?w=1200&h=1200&fm=jpg&fit=fill')
 		this.img.style.width = '100%';
 		this.img.style.objectFit = 'cover';
+		this.img.style.transition = 'all 1s'
+
 	}
 	protected setInnerHTML() {
 		this.div.appendChild(this.img);

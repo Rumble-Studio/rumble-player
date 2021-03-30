@@ -1,7 +1,7 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
 
-export const UPDATE_DELAY = 1000;
+export const UPDATE_DELAY = 100;
 
 interface Song {
 	id: string; // unique id to identify the song even when we add new song to the playlist
@@ -248,7 +248,7 @@ export class RumblePlayerService {
 		const song = this._playlist[this.index];
 		const currentPosition = song.howl.seek() as number;
 		if (currentPosition > 2) {
-			this.seek(0);
+			this.seekPerPosition(0);
 			return;
 		}
 
@@ -291,7 +291,7 @@ export class RumblePlayerService {
 		//play if playing
 	}
 	// Move player head to a given time position (s)
-	public seek(position: number, index?: number) {
+	public seekPerPosition(position: number, index?: number) {
 		if (this._playlist.length === 0) return;
 		const indexToSeek = index || this.index;
 		const song = this._playlist[indexToSeek];
@@ -300,21 +300,7 @@ export class RumblePlayerService {
 			song.howl = this.createHowlWithBindings(song);
 		}
 		song.howl.seek(position);
-		//
-		// if (song.howl.state() === 'unloaded') {
-		// 	song.howl.once('load', () => {
-		// 		song.howl.seek(position);
-		// 		console.log('loaded ', song.howl.seek(), song.howl.duration());
-		// 	});
-		// 	song.howl.load();
-		// } else if (song.howl.state() === 'loading') {
-		// 	song.howl.once('load', () => {
-		// 		song.howl.seek(position);
-		// 		console.log('loaded ', song.howl.seek(), song.howl.duration());
-		// 	});
-		// } else {
-		// 	song.howl.seek(position);
-		// }
+
 	}
 
 	public setPlaylistFromUrls(urls: string[]) {

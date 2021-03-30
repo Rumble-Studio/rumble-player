@@ -1,13 +1,15 @@
-import { GenericSeekbar } from './seekbar/generic/GenericSeekBar';
 import { RumblePlayerService } from './playerService';
+import { GenericVisual } from './GenericVisual';
 
 export class HTMLRumblePlayer extends HTMLElement {
-	playButton: HTMLButtonElement;
-	pauseButton: HTMLButtonElement;
-	stopButton: HTMLButtonElement;
-	nextButton: HTMLButtonElement;
-	prevButton: HTMLButtonElement;
-	seekBar: GenericSeekbar;
+	// playButton: HTMLButtonElement;
+	// pauseButton: HTMLButtonElement;
+	// stopButton: HTMLButtonElement;
+	// nextButton: HTMLButtonElement;
+	// prevButton: HTMLButtonElement;
+	// seekBar: GenericSeekbar;
+
+	private visualChildren: GenericVisual[] = [];
 
 	playerService: RumblePlayerService | null;
 
@@ -18,36 +20,31 @@ export class HTMLRumblePlayer extends HTMLElement {
 		} else {
 			this.playerService = null;
 		}
-		this.createHTMLChildren(); // instanciate also seekBar
-		this.bindHTMLElements();
 	}
 
 	public setPlayer(playerService: RumblePlayerService) {
 		this.playerService = playerService;
-		this.playerService.percentageUpdateCallbacks.push((newPercentage: number) =>
-		this.updatePerPercentage(newPercentage))
+		this.playerService.percentageUpdateCallbacks.push(
+			(newPercentage: number) => this.updatePerPercentage(newPercentage)
+		);
 
 		this.playerService.positionUpdateCallbacks.push((newPercentage: number) =>
-		this.updatePerPosition(newPercentage))
-		
+			this.updatePerPosition(newPercentage)
+		);
+
 		// this.playerService.newPercentageCallback = (newPercentage: number) =>
 		// 	this.updatePerPercentage(newPercentage);
 		// this.playerService.newPositionCallback = (newPosition: number) =>
 		// 	this.updatePerPosition(newPosition);
-		this.logKinds();
+		// this.logKinds();
 	}
 
-	setSeekbar(seekbar: GenericSeekbar) {
-		// remove old seekbar from the DOM
-		this.removeChild(this.seekBar);
-		// update seekbar
-		this.seekBar = seekbar;
-		// add new seekbar to dom
-		this.appendChild(this.seekBar);
-		// this.connectedCallback();
-
-		this.updateSeekBarListener();
-		this.logKinds();
+	setVisualChildren(newVisualChildren: GenericVisual[]) {
+		this.stopListeningToVisualChildren();
+		this.removeChildren();
+		this.visualChildren = newVisualChildren;
+		this.addChildren();
+		this.startListeningToVisualChildren();
 	}
 
 	// should return as a promise the current index asked to be played
@@ -77,90 +74,92 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.playerService.prev();
 	}
 
+	public processEventSeekPerPercentage(event: CustomEvent) {
+		this.seekPerPercentage(event.detail.percentage);
+	}
+
 	public seekPerPercentage(percentage: number) {
 		if (!this.playerService) return;
 		this.playerService.seekPerPercentage(percentage);
 	}
 
+	public processEventSeekPerPosition(event: CustomEvent) {
+		this.seekPerPosition(event.detail.percentage);
+	}
+
+	public seekPerPosition(position: number) {
+		if (!this.playerService) return;
+		this.playerService.seekPerPosition(position);
+	}
+
 	public updatePerPercentage(newPercentage: number) {
-		this.seekBar.updatePerPercentage(newPercentage);
+		this.visualChildren.forEach((vc) =>
+			vc.updatePerPercentage(newPercentage)
+		);
+		// this.seekBar.updatePerPercentage(newPercentage);
 	}
 
 	public updatePerPosition(newPosition: number) {
-		this.seekBar.updatePerPosition(newPosition);
+		this.visualChildren.forEach((vc) => vc.updatePerPosition(newPosition));
+		// this.seekBar.updatePerPosition(newPosition);
 	}
 
 	connectedCallback() {
 		this.addChildren();
 	}
 
-	createHTMLChildren() {
-		this.playButton = document.createElement('button');
-		this.playButton.innerText = 'play';
-		this.pauseButton = document.createElement('button');
-		this.pauseButton.innerText = 'pause';
-		this.stopButton = document.createElement('button');
-		this.stopButton.innerText = 'stop';
-		this.nextButton = document.createElement('button');
-		this.nextButton.innerText = 'next';
-		this.prevButton = document.createElement('button');
-		this.prevButton.innerText = 'prev';
-		this.seekBar = new GenericSeekbar();
-		this.logKinds();
+	removeChildren() {
+		this.visualChildren.forEach((vc) => {
+			this.removeChild(vc);
+		});
 	}
-
 	addChildren() {
-		this.appendChild(this.playButton);
-		this.appendChild(this.pauseButton);
-		this.appendChild(this.stopButton);
-		this.appendChild(this.nextButton);
-		this.appendChild(this.prevButton);
-		this.appendChild(this.seekBar);
-		this.logKinds();
+		this.visualChildren.forEach((vc) => this.appendChild(vc));
 	}
 
-	bindHTMLElements() {
-		this.playButton.addEventListener('click', () => {
-			console.log('clicked on play in playerHTML')
-			return this.play();
+	startListeningToVisualChildren() {
+		this.visualChildren.forEach((vc) => {
+			vc.addEventListener('pause', this.pause);
+			vc.addEventListener('play', this.play);
+			vc.addEventListener('stop', this.stop);
+			vc.addEventListener('next', this.next);
+			vc.addEventListener('prev', this.prev);
+			vc.addEventListener(
+				'seekPerPercentage',
+				this.processEventSeekPerPercentage
+			);
+			vc.addEventListener(
+				'seekPerPosition',
+				this.processEventSeekPerPosition
+			);
 		});
-		this.pauseButton.addEventListener('click', () => {
-			return this.pause();
-		});
-		this.stopButton.addEventListener('click', () => {
-			return this.stop();
-		});
-		this.nextButton.addEventListener('click', () => {
-			this.next();
-		});
-		this.prevButton.addEventListener('click', () => {
-			this.prev();
-		});
-		this.updateSeekBarListener();
-
-		this.logKinds();
 	}
-	private updateSeekBarListener() {
-		this.seekBar.addEventListener(
-			'seekPerPercentage',
-			(event: CustomEvent) => {
-				console.log('seeked per percentage', event.detail.percentage);
-				this.seekPerPercentage(event.detail.percentage);
-			}
-		);
+	stopListeningToVisualChildren() {
+		this.visualChildren.forEach((vc) => {
+			vc.removeEventListener('pause', this.pause);
+			vc.removeEventListener('play', this.play);
+			vc.removeEventListener('stop', this.stop);
+			vc.removeEventListener('next', this.next);
+			vc.removeEventListener('prev', this.prev);
+			vc.removeEventListener(
+				'seekPerPercentage',
+				this.processEventSeekPerPercentage
+			);
+			vc.removeEventListener(
+				'seekPerPosition',
+				this.processEventSeekPerPosition
+			);
+		});
 	}
-
-	logKinds() {
-		// to log the kind of each sub element
-		if (this.seekBar) {
-			console.log('seekbar:', this.seekBar.kind);
-			this.seekBar.visuals.forEach((v) => {
-				console.log('visual:', v.kind);
-			});
-		} else {
-			console.log('No seekbar yet');
-		}
-	}
+	// private updateSeekBarListener() {
+	// 	this.seekBar.addEventListener(
+	// 		'seekPerPercentage',
+	// 		(event: CustomEvent) => {
+	// 			console.log('seeked per percentage', event.detail.percentage);
+	// 			this.seekPerPercentage(event.detail.percentage);
+	// 		}
+	// 	);
+	// }
 }
 
 customElements.define('rumble-player', HTMLRumblePlayer);

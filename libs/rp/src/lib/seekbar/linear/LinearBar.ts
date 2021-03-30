@@ -1,4 +1,5 @@
-import { GenericVisual } from '../generic/GenericVisual';
+import { GenericVisual } from '../../GenericVisual';
+
 
 export class LinearBar extends GenericVisual {
 	protected _kind = 'LinearBar';
@@ -29,8 +30,6 @@ export class LinearBar extends GenericVisual {
 	// protected bindHTMLElements() {}
 
 	updateVisual() {
-		console.log('SHOULD UPDATE ('+this.kind+') BAR WITH:',this.percentage)
-
 		this.progressDiv.style.width = this.percentage + '%';
 	}
 }

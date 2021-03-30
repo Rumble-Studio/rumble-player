@@ -1,4 +1,4 @@
-import { GenericVisual } from '../generic/GenericVisual';
+import { GenericVisual } from '../../GenericVisual';
 
 export class PercentageBar extends GenericVisual {
 	protected _kind = 'percentageBar';
@@ -34,7 +34,6 @@ export class PercentageBar extends GenericVisual {
 
 
 	updateVisual() {
-		console.log('SHOULD UPDATE ('+this.kind+') BAR WITH:',this.percentage)
 		this.p.innerText = Math.round(this.percentage * 100) / 100 + '%';
 	}
 }

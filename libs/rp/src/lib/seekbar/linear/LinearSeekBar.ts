@@ -22,7 +22,7 @@ export class LinearSeekBar extends GenericSeekbar {
 		};
 
 		this.onmousedown = (e) => {
-			console.log('Mouse down');
+			// console.log('Mouse down');
 			e.preventDefault();
 			// get the mouse cursor position at startup:
 			let x = e.clientX;
@@ -38,7 +38,7 @@ export class LinearSeekBar extends GenericSeekbar {
 				let pos = (100 * e.clientX) / this.clientWidth;
 				pos = pos <= 100 ? pos : 100;
 				this.percentage = pos;
-				console.log('slide percentage', pos);
+				// console.log('slide percentage', pos);
 			};
 			document.onmouseup = () => {
 				// stop moving when mouse button is released:

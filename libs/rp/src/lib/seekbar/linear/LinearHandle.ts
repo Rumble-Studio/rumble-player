@@ -1,5 +1,4 @@
-import { GenericVisual } from '../generic/GenericVisual';
-import { min } from 'rxjs/operators';
+import { GenericVisual } from '../../GenericVisual';
 
 export class LinearHandle extends GenericVisual {
 	protected _kind = 'LinearHandle';
@@ -21,7 +20,7 @@ export class LinearHandle extends GenericVisual {
 		this.style.pointerEvents = 'none'; // TODO : THis line is the most important one
 
 		this.div.onmousedown = (e) => {
-			console.log('Mouse down');
+			// console.log('Mouse down');
 			e.preventDefault();
 			// get the mouse cursor position at startup:
 			let x = e.clientX;
@@ -55,9 +54,9 @@ export class LinearHandle extends GenericVisual {
 		const parentWidth = this.parentElement.clientWidth;
 		const maxOffset = parentWidth - childWidth;
 		const y = (this.percentage * parentWidth) / 100;
-		console.log(maxOffset, y);
+		// console.log(maxOffset, y);
 		const offset = y < maxOffset ? y : maxOffset;
-		console.log('%cOFFSETS,', 'color:blue', childWidth, parentWidth);
+		// console.log('%cOFFSETS,', 'color:blue', childWidth, parentWidth);
 		this.div.style.left = offset + 'px';
 	}
 }

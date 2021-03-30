@@ -1,5 +1,16 @@
 export class GenericVisual extends HTMLElement {
-	percentage = 0;
+	private _percentage = 0;
+	set percentage(newPercentage: number) {
+		this._percentage = newPercentage;
+		this.visuals.forEach((v) => v.updatePerPercentage(newPercentage));
+	}
+	get percentage() {
+		return this._percentage;
+	}
+
+	visuals:GenericVisual[];
+	
+	position = 0;
 	protected _kind = 'GenericVisual';
 	get kind() {
 		return this._kind;
@@ -35,8 +46,14 @@ export class GenericVisual extends HTMLElement {
 	/** logic */
 	updatePerPercentage(newPercentage: number) {
 		if (newPercentage != this.percentage) {
-			console.log(this.kind + ' should be updated at', newPercentage + '%');
 			this.percentage = newPercentage;
+			this.updateVisual();
+		}
+	}
+
+	updatePerPosition(newPosition: number) {
+		if (newPosition != this.position) {
+			this.position = newPosition;
 			this.updateVisual();
 		}
 	}
@@ -45,7 +62,6 @@ export class GenericVisual extends HTMLElement {
 	updateVisual() {
 		// should change the visual of the children based on properties like percentage
 		// nothing
-		console.log('Nothing to visually update on '+ this.kind);
 	}
 }
 

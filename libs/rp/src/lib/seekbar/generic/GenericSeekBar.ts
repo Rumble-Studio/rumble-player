@@ -1,19 +1,11 @@
-import { GenericVisual } from './GenericVisual';
+import { GenericVisual } from '../../GenericVisual';
 
-export class GenericSeekbar extends HTMLElement {
+export class GenericSeekbar extends GenericVisual {
 	protected _kind = 'genericSeekbar';
 	get kind() {
 		return this._kind;
 	}
-	private _percentage = 0;
-	set percentage(newPercentage: number) {
-		console.log(this.kind, ' received a new percentage ', newPercentage);
-		this._percentage = newPercentage;
-		this.visuals.forEach((v) => v.updatePerPercentage(newPercentage));
-	}
-	get percentage() {
-		return this._percentage;
-	}
+
 
 	public visuals: GenericVisual[];
 
@@ -26,9 +18,9 @@ export class GenericSeekbar extends HTMLElement {
 	protected createHTMLElements() {
 		// for percentageBar we only have a "p" element
 		this.style.position = 'relative';
-		this.style.background = 'black';
-		this.style.height = '50px';
-		this.style.width = '100%';
+		// this.style.background = 'black';
+		// this.style.height = '50px';
+		// this.style.width = '100%';
 		this.style.display = 'block';
 		this.fillVisuals();
 	}
@@ -79,7 +71,7 @@ export class GenericSeekbar extends HTMLElement {
 
 	updatePerPosition(newPosition: number) {
 		// this.percentage = newPercentage;
-		console.log('New position is not used per Generic Seekbar', newPosition);
+		// console.log('New position is not used per Generic Seekbar', newPosition);
 	}
 
 	emitPercentage(percentage: number) {
