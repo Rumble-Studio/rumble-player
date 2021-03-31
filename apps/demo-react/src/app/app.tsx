@@ -1,10 +1,10 @@
 import React, { RefObject, useEffect, useState } from 'react';
-
+import Player from './player'
 import styles from './app.module.scss';
 
 import { Route, Link } from 'react-router-dom';
 import { fakePlaylist } from '../config/dummyAudioData.config';
-import { EVENTLIST, HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/rp';
+import {  HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/rp';
 import { Timestamp } from 'rxjs/internal-compatibility';
 const containerRef = React.createRef();
 const player = new RumblePlayerService();
@@ -16,36 +16,36 @@ export function App() {
 	const [isPlaying, setPlaying] = useState(false);
 	const [index, setIndex] = useState(0);
 
-	useEffect(() => {
-		(containerRef.current as HTMLDivElement).appendChild(playerHTML);
-		player.setPlaylistFromUrls(fakePlaylist)
-    playerHTML.setPlayer(player)
-		EVENTLIST.forEach((value) => {
-			playerHTML.addEventListener(value, ($event: CustomEvent) => {
-				eventsHistory.push(
-					'Event type: ' +
-						value +
-						', data : ' +
-						JSON.stringify($event.detail)
-				);
-				setPlaying(player.isPlaying);
-				setIndex(player.index);
-			});
-		});
-	}, []);
-	const togglePlayer = () => {
-		if (player.isPlaying) {
-			player.pause();
-		} else {
-			player.play();
-		}
-	};
+	// useEffect(() => {
+	// 	(containerRef.current as HTMLDivElement).appendChild(playerHTML);
+	// 	player.setPlaylistFromUrls(fakePlaylist)
+  //   playerHTML.setPlayer(player)
+	// 	EVENTLIST.forEach((value) => {
+	// 		playerHTML.addEventListener(value, ($event: CustomEvent) => {
+	// 			eventsHistory.push(
+	// 				'Event type: ' +
+	// 					value +
+	// 					', data : ' +
+	// 					JSON.stringify($event.detail)
+	// 			);
+	// 			setPlaying(player.isPlaying);
+	// 			setIndex(player.index);
+	// 		});
+	// 	});
+	// }, []);
+	// const togglePlayer = () => {
+	// 	if (player.isPlaying) {
+	// 		player.pause();
+	// 	} else {
+	// 		player.play();
+	// 	}
+	// };
 
 	return (
 		<div className={styles.app}>
 			{/* START: routes */}
 			{/* These routes and navigation have been generated for you */}
-			{/* Feel free to move and update them to fit your needs */}
+			{/* Feel free to move and update them to fit your needs
 			<br />
 			<button onClick={togglePlayer}>click me to toggle play/pause</button>
 			<hr />
@@ -73,6 +73,8 @@ export function App() {
           )
 				})}
 			</ol>
+			*/}
+			<Player />
 			<Route
 				path="/"
 				exact

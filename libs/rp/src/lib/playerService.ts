@@ -111,7 +111,6 @@ export class RumblePlayerService {
 		this._playlist.forEach((song: Song, songIndex: number) => {
 			if (song.howl) {
 				song.position = song.howl.seek() as number;
-				duration = this.playlist[this.index].howl.duration();
 			} else {
 				song.position = -1;
 			}

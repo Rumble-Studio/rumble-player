@@ -8,6 +8,8 @@ import {
 } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
+import {ControlButton} from './buttons/controls-button'
+import {Tasks} from './buttons/controls-button'
 
 class MyDemoButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
@@ -34,9 +36,12 @@ class MyDemoButton extends GenericVisual {
 	bindHTMLElements() {
 		// custom bindings of events
 		// in particular, play button can emit "play" on click
+    // Toggle button won't work unless we implement toggle feature at playerService level
+    // if initial state is true and clicked while playing, nothing will happen
+
 		this.addEventListener('click', () => {
 			console.log('CLICKED')
-	
+
 			this.state = !this.state;
 
 			if (this.state) {
@@ -108,10 +113,14 @@ export class PlayerComponent implements AfterViewInit {
 			const linearBar: LinearBar = new LinearBar();
 			const simplePlayButton: SimplePlayButton = new SimplePlayButton();
 			const myDemoButton: MyDemoButton = new MyDemoButton();
-			const visualChildren: GenericVisual[] = [
-				simplePlayButton,
-				linearBar,
-				myDemoButton,
+			const BUTTONS = [] as GenericVisual[]
+      ['play','pause','stop','next','prev'].forEach(value => {
+        BUTTONS.push(new ControlButton(value,Tasks[value]))
+      })
+      //const myPlayButton: ControlButton = new ControlButton('play',Tasks['play']);
+
+      const visualChildren: GenericVisual[] = [...BUTTONS,
+				linearBar
 			];
 			this.playerHTMLLinear.nativeElement.setVisualChildren(visualChildren);
 		} else {
