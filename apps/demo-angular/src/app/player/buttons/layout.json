@@ -1,0 +1,18 @@
+{
+  "play": {
+    "style": {
+      "position": "absolute",
+      "bottom": 40
+    },
+    "action": "play",
+    "title": "play"
+  },
+  "pause": {
+    "style": {
+      "position": "absolute",
+      "top": 20
+    },
+    "action": "pause",
+    "title": "pause"
+  }
+}

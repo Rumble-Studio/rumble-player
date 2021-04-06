@@ -1,15 +1,11 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import {
-	HTMLRumblePlayer,
-	RumblePlayerService,
-	SimplePlayButton,
-	GenericVisual,
-	LinearBar,
-} from '@rumble-player/rp';
+import { GenericVisual, HTMLRumblePlayer, LinearBar, RumblePlayerService, SimplePlayButton } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
-import {ControlButton} from './buttons/controls-button'
-import {Tasks} from './buttons/controls-button'
+import { ControlButton, Tasks } from './buttons/controls-button';
+
+import * as layout from'./buttons/layout.json'
+import { doc } from 'prettier';
 
 class MyDemoButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
@@ -100,13 +96,6 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		// if (this.playerHTMLGeneric) {
-		// 	const genericSeekbar: GenericSeekbar = new GenericSeekbar();
-		// 	this.playerHTMLGeneric.nativeElement.setSeekbar(genericSeekbar);
-		// 	this.playerHTMLGeneric.nativeElement.setPlayer(this.player);
-		// } else {
-		// 	console.warn('PlayerHTML Generic is not available');
-		// }
 
 		if (this.playerHTMLLinear) {
 			this.playerHTMLLinear.nativeElement.setPlayer(this.player);
@@ -118,29 +107,30 @@ export class PlayerComponent implements AfterViewInit {
         BUTTONS.push(new ControlButton(value,Tasks[value]))
       })
       //const myPlayButton: ControlButton = new ControlButton('play',Tasks['play']);
-
-      const visualChildren: GenericVisual[] = [...BUTTONS,
+      const children = this.layoutGenerator()
+      const visualChildren: GenericVisual[] = [...children,
 				linearBar
 			];
+
 			this.playerHTMLLinear.nativeElement.setVisualChildren(visualChildren);
+      this.playerHTMLLinear.nativeElement.setHeight('250px')
 		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}
 
-		// if (this.playerHTMLPercentage) {
-		// 	const percentageSeekBar: PercentageSeekBar = new PercentageSeekBar();
-		// 	this.playerHTMLPercentage.nativeElement.setSeekbar(percentageSeekBar);
-		// 	this.playerHTMLPercentage.nativeElement.setPlayer(this.player);
-		// } else {
-		// 	console.warn('PlayerHTML Percentage is not available');
-		// }
-
-		// if (this.playerHTMLGiraffe) {
-		// 	const giraffeSeekBar: GiraffeSeekBar = new GiraffeSeekBar();
-		// 	this.playerHTMLGiraffe.nativeElement.setSeekbar(giraffeSeekBar);
-		// 	this.playerHTMLGiraffe.nativeElement.setPlayer(this.player);
-		// } else {
-		// 	console.warn('PlayerHTML Giraffe is not available');
-		// }
 	}
+
+	layoutGenerator() {
+	  const data = (layout as any).default
+    const visualChildren = [] as GenericVisual []
+    for (const layoutKey in data) {
+      console.log(layoutKey)
+      const button = new ControlButton(data[layoutKey].title,data[layoutKey].action)
+      for (const key in data[layoutKey].style){
+        button.style[key] = data[layoutKey].style[key]
+      }
+      visualChildren.push(button)
+    }
+    return visualChildren
+  }
 }

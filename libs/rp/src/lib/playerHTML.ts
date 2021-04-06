@@ -10,6 +10,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 	// seekBar: GenericSeekbar;
 
 	private visualChildren: GenericVisual[] = [];
+	private layoutContainer = document.createElement('div')
 
 	playerService: RumblePlayerService | null;
 
@@ -129,8 +130,14 @@ export class HTMLRumblePlayer extends HTMLElement {
 		});
 	}
 
+	setHeight(height:string){
+	  this.layoutContainer.style.height = height
+  }
+
 	addChildren() {
-		this.visualChildren.forEach((vc) => this.appendChild(vc));
+	  this.layoutContainer.style.position = 'relative'
+	  this.appendChild(this.layoutContainer)
+		this.visualChildren.forEach((vc) => this.layoutContainer.appendChild(vc));
 	}
 
 	startListeningToVisualChildren() {
