@@ -5,9 +5,12 @@ export class LinearBar extends GenericVisual {
 
 	div: HTMLDivElement;
 	progressDiv: HTMLDivElement;
+	percentage: number;
 
 	constructor() {
 		super();
+		this.createHTMLElements();
+		this.setInnerHTML();
 	}
 
 	protected createHTMLElements() {
@@ -29,12 +32,10 @@ export class LinearBar extends GenericVisual {
 		// custom bindings of events
 		// in particular, a click emits a percentage based on width
 		this.addEventListener('click', (event) => {
-
 			const bcr = this.getBoundingClientRect();
-			const percentage = (event.clientX - bcr.left) / bcr.width
+			const percentage = (event.clientX - bcr.left) / bcr.width;
 
-
-			console.log('PERCENTAGE;',percentage)
+			console.log('PERCENTAGE;', percentage);
 
 			const clickEvent = new CustomEvent('seekPerPercentage', {
 				detail: { percentage },
@@ -44,7 +45,8 @@ export class LinearBar extends GenericVisual {
 	}
 
 	updateVisual() {
-		this.progressDiv.style.width = 100*this.percentage + '%';
+		console.log(this.percentage);
+		this.progressDiv.style.width = 100 * this.percentage + '%';
 	}
 }
 

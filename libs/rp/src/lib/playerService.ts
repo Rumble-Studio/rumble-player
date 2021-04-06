@@ -115,9 +115,11 @@ export class RumblePlayerService {
 				song.position = -1;
 			}
 		});
-
+		if (this.playlist[this.index].howl) {
+			duration = this.playlist[this.index].howl.duration();
+		}
 		this.position = this.playlist[this.index].position;
-		this.percentage = duration > 0 ? (this.position) / duration : 0; // TODO compute percentage based on current file being played
+		this.percentage = duration > 0 ? this.position / duration : 0; // TODO compute percentage based on current file being played
 		this.newPositionCallback(this.position);
 		this.newPercentageCallback(this.percentage);
 	}
@@ -275,13 +277,13 @@ export class RumblePlayerService {
 			song.howl = this.createHowlWithBindings(song);
 			if (song.howl.state() === 'loading') {
 				song.howl.once('load', () => {
-					song.howl.seek((percentage * song.howl.duration()));
+					song.howl.seek(percentage * song.howl.duration());
 				});
 			} else if (song.howl.state() === 'loaded') {
-				song.howl.seek((percentage * song.howl.duration()));
+				song.howl.seek(percentage * song.howl.duration());
 			}
 		} else {
-			song.howl.seek((percentage * song.howl.duration()));
+			song.howl.seek(percentage * song.howl.duration());
 		}
 		// console.log('song status ', song.howl.state())
 		//get song duration
@@ -299,7 +301,6 @@ export class RumblePlayerService {
 			song.howl = this.createHowlWithBindings(song);
 		}
 		song.howl.seek(position);
-
 	}
 
 	public setPlaylistFromUrls(urls: string[]) {
@@ -321,15 +322,14 @@ export class RumblePlayerService {
 		);
 	}
 
-
 	/* CALLBACKS ON UPDATE */
-	public positionUpdateCallbacks: ((position:number) => void)[] = [];
+	public positionUpdateCallbacks: ((position: number) => void)[] = [];
 	public newPositionCallback(position: number) {
 		this.positionUpdateCallbacks.forEach((c) => {
 			c(position);
 		});
 	}
-	public percentageUpdateCallbacks: ((percentage:number) => void)[] = [];
+	public percentageUpdateCallbacks: ((percentage: number) => void)[] = [];
 	public newPercentageCallback(percentage: number) {
 		this.percentageUpdateCallbacks.forEach((c) => {
 			c(percentage);

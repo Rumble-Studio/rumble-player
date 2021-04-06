@@ -1,6 +1,4 @@
 export class GenericVisual extends HTMLElement {
-
-
 	public percentage = 0;
 	public position = 0;
 
@@ -21,15 +19,15 @@ export class GenericVisual extends HTMLElement {
 	}
 
 	protected setInnerHTML() {
-		console.log('[GenericVisual](setInnerHTML)','nothing to set');
+		console.log('[GenericVisual](setInnerHTML)', 'nothing to set');
 	}
 
 	protected createHTMLElements() {
-		console.log('[GenericVisual](createHTMLElements)','nothing to create');
+		console.log('[GenericVisual](createHTMLElements)', 'nothing to create');
 	}
 
 	protected bindHTMLElements() {
-		console.log('[GenericVisual](bindHTMLElements)','nothing to bind');
+		console.log('[GenericVisual](bindHTMLElements)', 'nothing to bind');
 	}
 
 	/** logic */
@@ -48,7 +46,7 @@ export class GenericVisual extends HTMLElement {
 
 	/** visual */
 	protected updateVisual() {
-		console.log('[GenericVisual](updateVisual)','nothing to update');
+		console.log('[GenericVisual](updateVisual)', 'nothing to update');
 	}
 }
 
