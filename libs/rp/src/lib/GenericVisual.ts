@@ -11,10 +11,14 @@ export class GenericVisual extends HTMLElement {
 		super();
 		this.createHTMLElements();
 		this.bindHTMLElements();
+		console.log('GENERIC VISUAL CONSTRUCTOR CALLED')
+
 	}
 
 	/** HTML */
 	connectedCallback() {
+		console.log('%cGENERIC VISUAL CONNECTED CALLBACK CALLED','color:blue')
+
 		this.setInnerHTML();
 	}
 

@@ -9,11 +9,14 @@ export class LinearBar extends GenericVisual {
 
 	constructor() {
 		super();
-		this.createHTMLElements();
-		this.setInnerHTML();
+		console.log('LINEAR BAR CONSTRUCTOR CALLED')
+		// this.createHTMLElements();
+		// this.setInnerHTML();
 	}
 
 	protected createHTMLElements() {
+		console.log('%cLINEAR BAR createHTMLElements CALLED','color:red')
+
 		this.div = document.createElement('div');
 		this.div.style.backgroundColor = 'red';
 		this.div.style.height = '15px';
@@ -23,12 +26,13 @@ export class LinearBar extends GenericVisual {
 		this.progressDiv.style.backgroundColor = 'blue';
 		this.div.style.cursor = 'pointer';
 	}
+
 	protected setInnerHTML() {
 		this.div.appendChild(this.progressDiv);
 		this.appendChild(this.div);
 	}
 
-	bindHTMLElements() {
+	protected bindHTMLElements() {
 		// custom bindings of events
 		// in particular, a click emits a percentage based on width
 		this.addEventListener('click', (event) => {

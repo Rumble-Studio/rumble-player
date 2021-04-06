@@ -1,7 +1,7 @@
 import { GenericVisual } from "../../GenericVisual";
 
-export class SimplePauseButton extends GenericVisual {
-	protected _kind = 'SimplePauseButton';
+export class SimplePlayButton extends GenericVisual {
+	protected _kind = 'SimplePlayButton';
 
 
 	constructor() {
@@ -13,7 +13,7 @@ export class SimplePauseButton extends GenericVisual {
 	protected createHTMLElements() {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
-		this.button.setAttribute('value', 'pause');
+		this.button.setAttribute('value', 'play');
 	}
 	protected setInnerHTML() {
 		// custom creation of HTML children
@@ -22,9 +22,9 @@ export class SimplePauseButton extends GenericVisual {
 
 	bindHTMLElements() {
 		// custom bindings of events
-		// in particular, pause button can emit "pause" on click
+		// in particular, play button can emit "play" on click
 		this.addEventListener('click', () => {
-			const e  = new Event('pause')
+			const e  = new Event('play')
 			this.dispatchEvent(e);
 		});
 	}
@@ -34,4 +34,4 @@ export class SimplePauseButton extends GenericVisual {
 	}
 }
 
-customElements.define('rs-simple-pause-button', SimplePauseButton);
+customElements.define('rs-simple-play-button', SimplePlayButton);

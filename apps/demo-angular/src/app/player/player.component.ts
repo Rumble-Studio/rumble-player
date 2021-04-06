@@ -1,11 +1,15 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { GenericVisual, HTMLRumblePlayer, LinearBar, RumblePlayerService, SimplePlayButton } from '@rumble-player/rp';
+import {
+	GenericVisual,
+	HTMLRumblePlayer,
+	LinearBar,
+	RumblePlayerService,
+	SimpleConfigurableButton,
+	SimplePauseButton,
+	SimplePlayButton,
+} from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
-import { ControlButton, Tasks } from './buttons/controls-button';
-
-import * as layout from'./buttons/layout.json'
-import { doc } from 'prettier';
 
 class MyDemoButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
@@ -32,20 +36,20 @@ class MyDemoButton extends GenericVisual {
 	bindHTMLElements() {
 		// custom bindings of events
 		// in particular, play button can emit "play" on click
-    // Toggle button won't work unless we implement toggle feature at playerService level
-    // if initial state is true and clicked while playing, nothing will happen
+		// Toggle button won't work unless we implement toggle feature at playerService level
+		// if initial state is true and clicked while playing, nothing will happen
 
 		this.addEventListener('click', () => {
-			console.log('CLICKED')
+			console.log('CLICKED');
 
 			this.state = !this.state;
 
 			if (this.state) {
-				console.log('should play')
+				console.log('should play');
 				const e = new Event('play');
 				this.dispatchEvent(e);
 			} else {
-				console.log('should pause')
+				console.log('should pause');
 
 				const e = new Event('pause');
 				this.dispatchEvent(e);
@@ -58,7 +62,6 @@ class MyDemoButton extends GenericVisual {
 }
 customElements.define('rs-demo-play-button', MyDemoButton);
 
-
 @Component({
 	selector: 'rumble-player-player',
 	templateUrl: './player.component.html',
@@ -67,17 +70,8 @@ customElements.define('rs-demo-play-button', MyDemoButton);
 export class PlayerComponent implements AfterViewInit {
 	public player: RumblePlayerService;
 
-	@ViewChild('playerHTMLGeneric')
-	playerHTMLGeneric: ElementRef<HTMLRumblePlayer> | undefined;
-
-	@ViewChild('playerHTMLPercentage')
-	playerHTMLPercentage: ElementRef<HTMLRumblePlayer> | undefined;
-
-	@ViewChild('playerHTMLLinear')
-	playerHTMLLinear: ElementRef<HTMLRumblePlayer> | undefined;
-
-	@ViewChild('playerHTMLGiraffe')
-	playerHTMLGiraffe: ElementRef<HTMLRumblePlayer> | undefined;
+	@ViewChild('playerHTML')
+	playerHTML: ElementRef<HTMLRumblePlayer> | undefined;
 
 	public eventsHistory: string[];
 
@@ -96,41 +90,49 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	ngAfterViewInit() {
+		if (this.playerHTML) {
+			this.playerHTML.nativeElement.setPlayer(this.player);
 
-		if (this.playerHTMLLinear) {
-			this.playerHTMLLinear.nativeElement.setPlayer(this.player);
 			const linearBar: LinearBar = new LinearBar();
 			const simplePlayButton: SimplePlayButton = new SimplePlayButton();
+			const simplePauseButton: SimplePauseButton = new SimplePauseButton();
+			const nextBtn: SimpleConfigurableButton = new SimpleConfigurableButton('next');
+			const prevBtn: SimpleConfigurableButton = new SimpleConfigurableButton('prev');
 			const myDemoButton: MyDemoButton = new MyDemoButton();
-			const BUTTONS = [] as GenericVisual[]
-      ['play','pause','stop','next','prev'].forEach(value => {
-        BUTTONS.push(new ControlButton(value,Tasks[value]))
-      })
-      //const myPlayButton: ControlButton = new ControlButton('play',Tasks['play']);
-      const children = this.layoutGenerator()
-      const visualChildren: GenericVisual[] = [...children,
-				linearBar
+			const visualChildren: GenericVisual[] = [
+				linearBar,
+				simplePlayButton,
+				simplePauseButton,
+				nextBtn,
+				prevBtn,
+				myDemoButton,
 			];
 
-			this.playerHTMLLinear.nativeElement.setVisualChildren(visualChildren);
-      this.playerHTMLLinear.nativeElement.setHeight('250px')
+			this.playerHTML.nativeElement.setVisualChildren(visualChildren);
+
+
+			// TODO: this.playerHTML.nativeElement.setFromConfig('default1');
+
+			// this.playerHTML.nativeElement.setHeight('250px');
 		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}
-
 	}
 
-	layoutGenerator() {
-	  const data = (layout as any).default
-    const visualChildren = [] as GenericVisual []
-    for (const layoutKey in data) {
-      console.log(layoutKey)
-      const button = new ControlButton(data[layoutKey].title,data[layoutKey].action)
-      for (const key in data[layoutKey].style){
-        button.style[key] = data[layoutKey].style[key]
-      }
-      visualChildren.push(button)
-    }
-    return visualChildren
-  }
+	// layoutGenerator() {
+	// 	const data = (layout as any).default;
+	// 	const visualChildren = [] as GenericVisual[];
+	// 	for (const layoutKey in data) {
+	// 		console.log(layoutKey);
+	// 		const button = new ControlButton(
+	// 			data[layoutKey].title,
+	// 			data[layoutKey].action
+	// 		);
+	// 		for (const key in data[layoutKey].style) {
+	// 			button.style[key] = data[layoutKey].style[key];
+	// 		}
+	// 		visualChildren.push(button);
+	// 	}
+	// 	return visualChildren;
+	// }
 }

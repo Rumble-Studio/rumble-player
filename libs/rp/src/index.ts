@@ -5,6 +5,8 @@ export * from './lib/playerHTML';
 
 //buttons
 export * from './lib/visuals/buttons/simplePlayButton';
+export * from './lib/visuals/buttons/simplePauseButton';
+export * from './lib/visuals/buttons/simpleConfigurableButton';
 // linear
 export * from './lib/visuals/linear/LinearBar';
 // giraffe
