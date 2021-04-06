@@ -45,7 +45,6 @@ export class LinearBar extends GenericVisual {
 	}
 
 	updateVisual() {
-		console.log(this.percentage);
 		this.progressDiv.style.width = 100 * this.percentage + '%';
 	}
 }
