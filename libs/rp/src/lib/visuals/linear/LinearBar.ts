@@ -10,8 +10,6 @@ export class LinearBar extends GenericVisual {
 	constructor() {
 		super();
 		console.log('LINEAR BAR CONSTRUCTOR CALLED')
-		this.createHTMLElements();
-		this.setInnerHTML();
 	}
 
 	protected createHTMLElements() {

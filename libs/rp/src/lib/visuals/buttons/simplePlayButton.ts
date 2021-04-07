@@ -19,8 +19,11 @@ export class SimplePauseButton extends GenericVisual {
 		// custom creation of HTML children
 		this.appendChild(this.button);
 	}
+  connectedCallback() {
+    console.log('%cGENERIC VISUAL CONNECTED CALLBACK CALLED From Children','color:red')
+  }
 
-	bindHTMLElements() {
+  bindHTMLElements() {
 		// custom bindings of events
 		// in particular, pause button can emit "pause" on click
 		this.addEventListener('click', () => {

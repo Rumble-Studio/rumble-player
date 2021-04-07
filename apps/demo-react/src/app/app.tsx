@@ -4,6 +4,7 @@ import {
 	HTMLRumblePlayer,
 	LinearBar,
 	GenericVisual,
+  Config3
 } from '@rumble-player/rp';
 import { fakePlaylist } from '../config/dummyAudioData.config';
 import { ControlButton, Tasks } from './buttons/controls-button';
@@ -65,18 +66,8 @@ export default class Player extends React.Component<IProps, IState> {
 
 	componentDidMount(){
 
-		const linearBar: LinearBar = new LinearBar();
-		console.log(linearBar);
-		const BUTTONS = [] as GenericVisual[];
-		['play', 'pause', 'stop', 'next', 'prev'].forEach((value) => {
-		  const button = new ControlButton(value, Tasks[value])
-			BUTTONS.push(button);
-			console.log(button)
-		});
-
-		const visualChildren: GenericVisual[] = [...BUTTONS, linearBar];
-    this.playerHTML.setVisualChildren(visualChildren);
-    console.log('button',visualChildren);
+	  console.log('didMount')
+		this.playerHTML.setFromConfig(Config3);
     (this.containerRef.current as HTMLRumblePlayer).appendChild(
       this.playerHTML
     )
