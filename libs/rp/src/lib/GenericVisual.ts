@@ -28,6 +28,9 @@ export class GenericVisual extends HTMLElement {
     }
 
   }
+  adoptedCallback(){
+	  console.log('adopted ',this.kind)
+  }
 
 	protected setInnerHTML() {
 		console.log('[GenericVisual](setInnerHTML)', 'nothing to set');
@@ -62,3 +65,4 @@ export class GenericVisual extends HTMLElement {
 }
 
 customElements.define('rs-generic-bar', GenericVisual);
+

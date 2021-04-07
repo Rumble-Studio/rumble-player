@@ -48,6 +48,7 @@ export default class Player extends React.Component<IProps, IState> {
 	private isPlaying: boolean;
 	private position: number;
 	private index: number;
+  private exampleRef = React.createRef();
 	constructor(props) {
 		super(props);
     this.playerHTML = new HTMLRumblePlayer();
@@ -60,7 +61,7 @@ export default class Player extends React.Component<IProps, IState> {
       player:this.player
 		};
 	}
-	private containerRef = React.createRef();
+	private containerRef = React.createRef<HTMLRumblePlayer>();
 	private player = new RumblePlayerService();
 	private playerHTML = new HTMLRumblePlayer();
 
@@ -68,9 +69,9 @@ export default class Player extends React.Component<IProps, IState> {
 
 	  console.log('didMount')
 		this.playerHTML.setFromConfig(Config3);
-    (this.containerRef.current as HTMLRumblePlayer).appendChild(
-      this.playerHTML
-    )
+	  const ex = new ExampleCustom();
+    (this.containerRef.current as HTMLRumblePlayer).replaceWith(this.playerHTML);
+    (this.exampleRef.current as ExampleCustom).replaceWith(ex)
 		this.interval = setInterval(this.updateStyle, 10);
 	}
 
@@ -113,6 +114,7 @@ export default class Player extends React.Component<IProps, IState> {
 				<hr />
 				<rumble-player ref={this.containerRef as React.RefObject<HTMLRumblePlayer>} />
 				<hr />
+				<ex-rs ref={this.exampleRef as React.RefObject<ExampleCustom>}/>
 				{player ? (
 					<ol>
 						{player.playlist.map((value, index) => {
@@ -127,3 +129,16 @@ export default class Player extends React.Component<IProps, IState> {
 		);
 	}
 }
+
+class ExampleCustom extends HTMLElement {
+  constructor() {
+    super();
+  }
+  connectedCallback(){
+    console.log('Proof ConnectedCallback')
+    const p = document.createElement('p')
+    p.innerText = 'hola'
+    this.appendChild(p)
+  }
+}
+customElements.define('ex-rs',ExampleCustom)
