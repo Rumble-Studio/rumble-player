@@ -1,12 +1,17 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import {
-	GenericVisual,
-	HTMLRumblePlayer,
-	LinearBar,
-	RumblePlayerService,
-	SimpleConfigurableButton,
-	SimplePauseButton,
-	SimplePlayButton,
+  GenericVisual,
+  HTMLRumblePlayer,
+  LinearBar,
+  RumblePlayerService,
+  SimpleConfigurableButton,
+  SimplePauseButton,
+  SimplePlayButton,
+  SimpleNextButton,
+  SimplePrevButton,
+  SimpleForwardButton,
+  SimpleBackwardButton,
+  SimpleStopButton
 } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
@@ -96,13 +101,15 @@ export class PlayerComponent implements AfterViewInit {
 			const linearBar: LinearBar = new LinearBar();
 			const simplePlayButton: SimplePlayButton = new SimplePlayButton();
 			const simplePauseButton: SimplePauseButton = new SimplePauseButton();
-			const nextBtn: SimpleConfigurableButton = new SimpleConfigurableButton('next');
-			const prevBtn: SimpleConfigurableButton = new SimpleConfigurableButton('prev');
+			const nextBtn: SimpleNextButton = new SimpleNextButton()
+			const prevBtn: SimplePrevButton = new SimplePrevButton()
+			const stopBtn: SimpleStopButton = new SimpleStopButton()
 			const myDemoButton: MyDemoButton = new MyDemoButton();
 			const visualChildren: GenericVisual[] = [
 				linearBar,
 				simplePlayButton,
 				simplePauseButton,
+        stopBtn,
 				nextBtn,
 				prevBtn,
 				myDemoButton,
