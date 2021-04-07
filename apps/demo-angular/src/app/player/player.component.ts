@@ -11,10 +11,15 @@ import {
   SimplePrevButton,
   SimpleForwardButton,
   SimpleBackwardButton,
-  SimpleStopButton
+  SimpleStopButton,
+  Config1,
+  Config3,
+  Config2
 } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
+
+
 
 class MyDemoButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
@@ -98,33 +103,10 @@ export class PlayerComponent implements AfterViewInit {
 		if (this.playerHTML) {
 			this.playerHTML.nativeElement.setPlayer(this.player);
 
-			const linearBar: LinearBar = new LinearBar();
-			const simplePlayButton: SimplePlayButton = new SimplePlayButton();
-			const simplePauseButton: SimplePauseButton = new SimplePauseButton();
-			const nextBtn: SimpleNextButton = new SimpleNextButton()
-			const prevBtn: SimplePrevButton = new SimplePrevButton()
-			const stopBtn: SimpleStopButton = new SimpleStopButton()
-			const forwardBtn: SimpleForwardButton = new SimpleForwardButton(10)
-			const backwardBtn: SimpleBackwardButton = new SimpleBackwardButton(5)
-			const myDemoButton: MyDemoButton = new MyDemoButton();
-			const visualChildren: GenericVisual[] = [
-				linearBar,
-				simplePlayButton,
-				simplePauseButton,
-        stopBtn,
-				nextBtn,
-				prevBtn,
-        forwardBtn,
-        backwardBtn,
-				myDemoButton,
-			];
-
-			this.playerHTML.nativeElement.setVisualChildren(visualChildren);
-
+			this.playerHTML.nativeElement.setFromConfig(Config3);
 
 			// TODO: this.playerHTML.nativeElement.setFromConfig('default1');
 
-			// this.playerHTML.nativeElement.setHeight('250px');
 		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}

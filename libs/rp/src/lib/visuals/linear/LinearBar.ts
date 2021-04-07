@@ -3,15 +3,15 @@ import { GenericVisual } from '../../GenericVisual';
 export class LinearBar extends GenericVisual {
 	protected _kind = 'LinearBar';
 
-	div: HTMLDivElement;
-	progressDiv: HTMLDivElement;
+	div: HTMLDivElement = document.createElement('div');
+	progressDiv: HTMLDivElement = document.createElement('div');
 	percentage: number;
 
 	constructor() {
 		super();
 		console.log('LINEAR BAR CONSTRUCTOR CALLED')
-		// this.createHTMLElements();
-		// this.setInnerHTML();
+		this.createHTMLElements();
+		this.setInnerHTML();
 	}
 
 	protected createHTMLElements() {
@@ -27,7 +27,8 @@ export class LinearBar extends GenericVisual {
 		this.div.style.cursor = 'pointer';
 	}
 
-	protected setInnerHTML() {
+
+  protected setInnerHTML() {
 		this.div.appendChild(this.progressDiv);
 		this.appendChild(this.div);
 	}

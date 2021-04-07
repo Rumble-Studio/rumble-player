@@ -8,19 +8,20 @@ export class GenericVisual extends HTMLElement {
 	}
 
 	constructor() {
+
 		super();
-		this.createHTMLElements();
-		this.bindHTMLElements();
-		console.log('GENERIC VISUAL CONSTRUCTOR CALLED')
+    this.createHTMLElements();
+    this.bindHTMLElements();
+    console.log('GENERIC VISUAL CONSTRUCTOR CALLED')
 
 	}
 
 	/** HTML */
 	connectedCallback() {
 		console.log('%cGENERIC VISUAL CONNECTED CALLBACK CALLED','color:blue')
+    this.setInnerHTML();
 
-		this.setInnerHTML();
-	}
+  }
 
 	protected setInnerHTML() {
 		console.log('[GenericVisual](setInnerHTML)', 'nothing to set');

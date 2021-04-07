@@ -1,0 +1,8 @@
+{
+  "visualChildren":[
+    "LinearBar",
+    "SimplePlayButton",
+    "SimplePauseButton",
+    "SimpleStopButton"
+  ]
+}

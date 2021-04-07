@@ -15,6 +15,7 @@ interface IState {
 	index?: number;
 	player?: RumblePlayerService;
 	position?: number;
+	visualChildren?: GenericVisual[]
 }
 
 function Line(props) {
@@ -48,37 +49,43 @@ export default class Player extends React.Component<IProps, IState> {
 	private index: number;
 	constructor(props) {
 		super(props);
+    this.playerHTML = new HTMLRumblePlayer();
+    this.player = new RumblePlayerService();
+    this.player.setPlaylistFromUrls(fakePlaylist);
+    this.playerHTML.setPlayer(this.player);
 		this.state = {
 			isPlaying: false,
 			index: 0,
+      player:this.player
 		};
 	}
 	private containerRef = React.createRef();
 	private player = new RumblePlayerService();
 	private playerHTML = new HTMLRumblePlayer();
 
-	componentDidMount = () => {
-		this.playerHTML = new HTMLRumblePlayer();
-		this.player = new RumblePlayerService();
-		this.player.setPlaylistFromUrls(fakePlaylist);
+	componentDidMount(){
 
-		this.playerHTML.setPlayer(this.player);
-		this.setState({ player: this.player });
 		const linearBar: LinearBar = new LinearBar();
 		console.log(linearBar);
 		const BUTTONS = [] as GenericVisual[];
 		['play', 'pause', 'stop', 'next', 'prev'].forEach((value) => {
-			BUTTONS.push(new ControlButton(value, Tasks[value]));
+		  const button = new ControlButton(value, Tasks[value])
+			BUTTONS.push(button);
+			console.log(button)
 		});
 
 		const visualChildren: GenericVisual[] = [...BUTTONS, linearBar];
-		this.playerHTML.setVisualChildren(visualChildren);
-		(this.containerRef.current as HTMLDivElement).appendChild(
-			this.playerHTML
-		);
+    this.playerHTML.setVisualChildren(visualChildren);
+    console.log('button',visualChildren);
+    (this.containerRef.current as HTMLRumblePlayer).appendChild(
+      this.playerHTML
+    )
 		this.interval = setInterval(this.updateStyle, 10);
-	};
-	updateStyle = () => {
+	}
+
+
+
+  updateStyle = () => {
 		const { isPlaying, index, position } = this.state.player;
 		this.isPlaying = isPlaying;
 		this.index = index;
@@ -89,7 +96,7 @@ export default class Player extends React.Component<IProps, IState> {
 		clearInterval(this.interval);
 	}
 
-	togglePlayer = () => {
+  togglePlayer = () => {
 		if (this.player.isPlaying) {
 			this.player.pause();
 			this.setState({ isPlaying: false });
@@ -113,7 +120,7 @@ export default class Player extends React.Component<IProps, IState> {
 				Current state: {this.isPlaying ? 'playing' : 'not playing'}
 				<br />
 				<hr />
-				<div ref={this.containerRef as React.RefObject<HTMLDivElement>} />
+				<rumble-player ref={this.containerRef as React.RefObject<HTMLRumblePlayer>} />
 				<hr />
 				{player ? (
 					<ol>

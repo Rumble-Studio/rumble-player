@@ -1,5 +1,14 @@
 import { RumblePlayerService } from './playerService';
 import { GenericVisual } from './GenericVisual';
+import {
+  Config1,
+  LinearBar, SimpleBackwardButton, SimpleForwardButton,
+  SimpleNextButton,
+  SimplePauseButton,
+  SimplePlayButton,
+  SimplePrevButton,
+  SimpleStopButton
+} from '../index';
 
 export class HTMLRumblePlayer extends HTMLElement {
 	private visualChildren: GenericVisual[] = [];
@@ -33,6 +42,43 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.processEventSeekPerPositionRef = (event: CustomEvent) =>
 			this.processEventSeekPerPosition(event);
 	}
+
+	setFromConfig(config: any){
+    const visualChildren: GenericVisual[] = [
+    ]
+    const layout =  (config as any).default.visualChildren
+    layout.forEach(value => {
+      switch (value){
+        case 'LinearBar':
+          visualChildren.push(new LinearBar());
+          break;
+        case 'SimplePlayButton':
+          visualChildren.push(new SimplePlayButton());
+          break;
+        case 'SimplePauseButton':
+          visualChildren.push(new SimplePauseButton());
+          break;
+        case 'SimpleStopButton':
+          visualChildren.push(new SimpleStopButton());
+          break;
+        case 'SimpleNextButton':
+          visualChildren.push(new SimpleNextButton());
+          break;
+        case 'SimplePrevButton':
+          visualChildren.push(new SimplePrevButton());
+          break;
+        case 'SimpleForwardButton':
+          visualChildren.push(new SimpleForwardButton());
+          break;
+        case 'SimpleBackwardButton':
+          visualChildren.push(new SimpleBackwardButton());
+          break;
+        default :
+          break;
+      }
+    })
+    this.setVisualChildren(visualChildren)
+  }
 
 	public setPlayer(playerService: RumblePlayerService) {
 		this.playerService = playerService;

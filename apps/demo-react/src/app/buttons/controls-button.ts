@@ -18,8 +18,8 @@ export class ControlButton extends GenericVisual {
 		super();
 		this.displayName = name;
 		this.task = task;
+		this.createHTMLElements()
 		console.log('display name', this.displayName);
-		this.createHTMLElements();
 		console.log(task);
 	}
 	/** custom HTML elements  */
@@ -38,7 +38,7 @@ export class ControlButton extends GenericVisual {
 			this.appendChild(this.button);
 		}
 	}
-	bindHTMLElements() {
+	protected bindHTMLElements() {
 		// custom bindings of events
 		// in particular, play button can emit "play" on click
 		// Toggle button won't work unless we implement toggle feature at playerService level
