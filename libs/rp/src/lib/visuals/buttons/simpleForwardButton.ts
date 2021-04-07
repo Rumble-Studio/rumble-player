@@ -26,7 +26,7 @@ export class SimpleForwardButton extends GenericVisual {
     // custom bindings of events
     // in particular, play button can emit "play" on click
     this.addEventListener('click', () => {
-      const e  = new CustomEvent('forward',{detail:{jump:this.jump}})
+      const e  = new CustomEvent('seekPerPosition',{detail:{jump:this.jump}})
       this.dispatchEvent(e);
     });
   }

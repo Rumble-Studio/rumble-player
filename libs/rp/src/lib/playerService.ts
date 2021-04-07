@@ -300,7 +300,16 @@ export class RumblePlayerService {
 		if (!song.howl) {
 			song.howl = this.createHowlWithBindings(song);
 		}
-		song.howl.seek(position);
+		if (position > song.howl.duration()){
+		  this.next()
+    }
+		else if (position<0){
+		  song.howl.seek(0)
+    }
+		else {
+      song.howl.seek(position);
+    }
+
 	}
 
 	public setPlaylistFromUrls(urls: string[]) {

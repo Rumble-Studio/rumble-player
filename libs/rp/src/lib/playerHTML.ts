@@ -95,7 +95,10 @@ export class HTMLRumblePlayer extends HTMLElement {
 	}
 
 	public processEventSeekPerPosition(event: CustomEvent) {
-		this.seekPerPosition(event.detail.percentage);
+	  const {jump} = event.detail
+    const position = this.playerService.position
+    const newPosition = jump + position
+		this.seekPerPosition(newPosition);
 	}
 
 	public seekPerPosition(position: number) {

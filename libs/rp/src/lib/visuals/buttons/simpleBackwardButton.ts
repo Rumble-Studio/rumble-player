@@ -26,7 +26,7 @@ export class SimpleBackwardButton extends GenericVisual {
     // custom bindings of events
     // in particular, play button can emit "play" on click
     this.addEventListener('click', () => {
-      const e  = new CustomEvent('backward',{detail:{jump:this.jump}})
+      const e  = new CustomEvent('seekPerPosition',{detail:{jump:-this.jump}})
       this.dispatchEvent(e);
     });
   }

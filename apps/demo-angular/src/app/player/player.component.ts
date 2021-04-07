@@ -104,6 +104,8 @@ export class PlayerComponent implements AfterViewInit {
 			const nextBtn: SimpleNextButton = new SimpleNextButton()
 			const prevBtn: SimplePrevButton = new SimplePrevButton()
 			const stopBtn: SimpleStopButton = new SimpleStopButton()
+			const forwardBtn: SimpleForwardButton = new SimpleForwardButton(10)
+			const backwardBtn: SimpleBackwardButton = new SimpleBackwardButton(5)
 			const myDemoButton: MyDemoButton = new MyDemoButton();
 			const visualChildren: GenericVisual[] = [
 				linearBar,
@@ -112,6 +114,8 @@ export class PlayerComponent implements AfterViewInit {
         stopBtn,
 				nextBtn,
 				prevBtn,
+        forwardBtn,
+        backwardBtn,
 				myDemoButton,
 			];
 
