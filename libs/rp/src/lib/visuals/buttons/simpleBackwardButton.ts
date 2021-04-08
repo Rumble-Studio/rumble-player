@@ -17,10 +17,6 @@ export class SimpleBackwardButton extends GenericVisual {
     this.button.setAttribute('type', 'button');
     this.button.setAttribute('value', 'backward');
   }
-  protected setInnerHTML() {
-    // custom creation of HTML children
-    this.appendChild(this.button);
-  }
 
   bindHTMLElements() {
     // custom bindings of events
@@ -29,6 +25,10 @@ export class SimpleBackwardButton extends GenericVisual {
       const e  = new CustomEvent('seekPerPosition',{detail:{jump:-this.jump}})
       this.dispatchEvent(e);
     });
+  }
+  protected updateStyle() {
+    super.updateStyle();
+    this.shadowRoot.appendChild(this.button);
   }
 
   updateVisual(){

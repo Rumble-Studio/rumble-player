@@ -15,11 +15,10 @@ export class SimplePlayButton extends GenericVisual {
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', 'play');
 	}
-	protected setInnerHTML() {
-		// custom creation of HTML children
-		this.appendChild(this.button);
-	}
-
+  protected updateStyle() {
+    super.updateStyle();
+    this.shadowRoot.appendChild(this.button);
+  }
 	bindHTMLElements() {
 		// custom bindings of events
 		// in particular, play button can emit "play" on click

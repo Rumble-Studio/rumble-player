@@ -18,10 +18,6 @@ export class SimpleConfigurableButton extends GenericVisual {
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', this.eventToEmit);
 	}
-	protected setInnerHTML() {
-		// custom creation of HTML children
-		this.appendChild(this.button);
-	}
 
 	bindHTMLElements() {
 		// custom bindings of events
@@ -31,6 +27,10 @@ export class SimpleConfigurableButton extends GenericVisual {
 			this.dispatchEvent(e);
 		});
 	}
+  protected updateStyle() {
+    super.updateStyle();
+    this.shadowRoot.appendChild(this.button);
+  }
 
 	updateVisual() {
 		//

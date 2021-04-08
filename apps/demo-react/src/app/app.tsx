@@ -131,14 +131,28 @@ export default class Player extends React.Component<IProps, IState> {
 }
 
 class ExampleCustom extends HTMLElement {
+
   constructor() {
+    // always call super before doing anything
     super();
+    // attaching an open shadow lets us access the shadowRoot
+    // property from outside . eg elm.shadowRoot
+    const shadow = this.attachShadow({mode: 'open'});
+    const div = document.createElement('div');
+    const style = document.createElement('style');
+    shadow.appendChild(style);
+    shadow.appendChild(div)
   }
   connectedCallback(){
-    console.log('Proof ConnectedCallback')
-    const p = document.createElement('p')
-    p.innerText = 'hola'
-    this.appendChild(p)
+    this.updateStyle()
+  }
+  updateStyle(){
+    const shadowRoot = this.shadowRoot;
+    shadowRoot.querySelector('style').textContent = `
+    div {
+      background-color: red};
+    }
+  `;
   }
 }
 customElements.define('ex-rs',ExampleCustom)

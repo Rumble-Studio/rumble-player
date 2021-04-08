@@ -25,10 +25,10 @@ export class GiraffeVisual extends GenericVisual {
 		this.img.style.transition = 'all 1s'
 
 	}
-	protected setInnerHTML() {
+	protected updateStyle() {
+    super.updateStyle();
 		this.div.appendChild(this.img);
-		this.appendChild(this.div);
-		this.updateVisual();
+		this._shadow.appendChild(this.div);
 	}
 
 	updateVisual() {

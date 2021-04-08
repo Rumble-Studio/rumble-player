@@ -15,9 +15,9 @@ export class SimpleStopButton extends GenericVisual {
     this.button.setAttribute('type', 'button');
     this.button.setAttribute('value', 'stop');
   }
-  protected setInnerHTML() {
-    // custom creation of HTML children
-    this.appendChild(this.button);
+  protected updateStyle() {
+    super.updateStyle();
+    this.shadowRoot.appendChild(this.button);
   }
 
   bindHTMLElements() {

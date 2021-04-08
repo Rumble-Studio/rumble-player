@@ -11,19 +11,17 @@ export class SimplePauseButton extends GenericVisual {
 	/** custom HTML elements  */
 	button: HTMLInputElement;
 	protected createHTMLElements() {
+
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', 'pause');
 	}
-	protected setInnerHTML() {
-		// custom creation of HTML children
-		this.appendChild(this.button);
-	}
+
   connectedCallback() {
     console.log('%cGENERIC VISUAL CONNECTED CALLBACK CALLED From Children','color:red')
   }
 
-  bindHTMLElements() {
+  protected bindHTMLElements() {
 		// custom bindings of events
 		// in particular, pause button can emit "pause" on click
 		this.addEventListener('click', () => {
@@ -31,8 +29,12 @@ export class SimplePauseButton extends GenericVisual {
 			this.dispatchEvent(e);
 		});
 	}
+	protected updateStyle() {
+    super.updateStyle();
+    this.shadowRoot.appendChild(this.button);
+  }
 
-	updateVisual(){
+  updateVisual(){
 		//
 	}
 }

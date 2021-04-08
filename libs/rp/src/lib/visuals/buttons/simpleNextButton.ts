@@ -15,9 +15,9 @@ export class SimpleNextButton extends GenericVisual {
     this.button.setAttribute('type', 'button');
     this.button.setAttribute('value', 'next');
   }
-  protected setInnerHTML() {
-    // custom creation of HTML children
-    this.appendChild(this.button);
+  protected updateStyle() {
+    super.updateStyle();
+    this.shadowRoot.appendChild(this.button);
   }
 
   bindHTMLElements() {

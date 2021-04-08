@@ -3,6 +3,7 @@ export class GenericVisual extends HTMLElement {
 	public position = 0;
 
 	protected _kind = 'GenericVisual';
+	protected _shadow : ShadowRoot;
 	get kind() {
 		return this._kind;
 	}
@@ -10,7 +11,7 @@ export class GenericVisual extends HTMLElement {
 	constructor() {
 
 		super();
-
+    this._shadow = this.attachShadow({mode: 'open'});
     console.log('GENERIC VISUAL CONSTRUCTOR CALLED')
 
 	}
@@ -18,14 +19,7 @@ export class GenericVisual extends HTMLElement {
 	/** HTML */
 	connectedCallback() {
 		console.log('%cGENERIC VISUAL CONNECTED CALLBACK CALLED From Parent'+this.kind,'color:blue')
-    // const range = document.createRange();
-    // range.selectNodeContents(this);
-    // range.deleteContents();
-    if (!this.hasChildNodes()){
-      this.createHTMLElements();
-      this.bindHTMLElements();
-      this.setInnerHTML();
-    }
+    this.updateStyle()
 
   }
   adoptedCallback(){
@@ -62,6 +56,10 @@ export class GenericVisual extends HTMLElement {
 	protected updateVisual() {
 		console.log('[GenericVisual](updateVisual)', 'nothing to update');
 	}
+	protected updateStyle(){
+    if (!this._shadow.hasChildNodes()){
+      this.createHTMLElements();
+      this.bindHTMLElements();}  }
 }
 
 customElements.define('rs-generic-bar', GenericVisual);

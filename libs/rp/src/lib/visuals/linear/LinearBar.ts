@@ -26,10 +26,12 @@ export class LinearBar extends GenericVisual {
 	}
 
 
-  protected setInnerHTML() {
-		this.div.appendChild(this.progressDiv);
-		this.appendChild(this.div);
-	}
+
+  protected updateStyle() {
+    super.updateStyle();
+    this.div.appendChild(this.progressDiv);
+    this.shadowRoot.appendChild(this.div)
+  }
 
 	protected bindHTMLElements() {
 		// custom bindings of events

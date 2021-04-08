@@ -12,6 +12,7 @@ import {
 
 export class HTMLRumblePlayer extends HTMLElement {
 	private visualChildren: GenericVisual[] = [];
+	private _shadow : ShadowRoot;
 	// private layoutContainer = document.createElement('div')
 
 	playerService: RumblePlayerService | null;
@@ -26,6 +27,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	constructor(playerService?: RumblePlayerService) {
 		super();
+    this._shadow = this.attachShadow({mode: 'open'});
 		if (playerService) {
 			this.playerService = playerService;
 		} else {
@@ -41,6 +43,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 			this.processEventSeekPerPercentage(event);
 		this.processEventSeekPerPositionRef = (event: CustomEvent) =>
 			this.processEventSeekPerPosition(event);
+
 	}
 
 	setFromConfig(config: any){
@@ -168,7 +171,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	removeChildren() {
 		this.visualChildren.forEach((vc) => {
-			this.removeChild(vc);
+			this._shadow.removeChild(vc);
 		});
 	}
 
@@ -180,7 +183,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		// this.layoutContainer.style.position = 'relative';
 		// this.appendChild(this.layoutContainer);
 		// this.visualChildren.forEach((vc) => this.layoutContainer.appendChild(vc));
-		this.visualChildren.forEach((vc) => this.appendChild(vc));
+		this.visualChildren.forEach((vc) => this._shadow.appendChild(vc));
 	}
 
 	startListeningToVisualChildren() {
