@@ -1,18 +1,25 @@
 import { RumblePlayerService } from './playerService';
 import { GenericVisual } from './GenericVisual';
 import {
-  Config1,
-  LinearBar, SimpleBackwardButton, SimpleForwardButton,
-  SimpleNextButton,
-  SimplePauseButton,
-  SimplePlayButton,
-  SimplePrevButton,
-  SimpleStopButton
+	LinearBar,
+	SimpleBackwardButton,
+	SimpleForwardButton,
+	SimpleNextButton,
+	SimplePauseButton,
+	SimplePlayButton,
+	SimplePrevButton,
+	SimpleStopButton,
 } from '../index';
+import { config1, config2, config3 } from '../config/configs';
+
+export interface playerConfig {
+	[key: string]: string | string[];
+	visualChildren: string[];
+}
 
 export class HTMLRumblePlayer extends HTMLElement {
 	private visualChildren: GenericVisual[] = [];
-	private _shadow : ShadowRoot;
+	private _shadow: ShadowRoot;
 	// private layoutContainer = document.createElement('div')
 
 	playerService: RumblePlayerService | null;
@@ -27,7 +34,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	constructor(playerService?: RumblePlayerService) {
 		super();
-    this._shadow = this.attachShadow({mode: 'open'});
+		this._shadow = this.attachShadow({ mode: 'open' });
 		if (playerService) {
 			this.playerService = playerService;
 		} else {
@@ -43,45 +50,63 @@ export class HTMLRumblePlayer extends HTMLElement {
 			this.processEventSeekPerPercentage(event);
 		this.processEventSeekPerPositionRef = (event: CustomEvent) =>
 			this.processEventSeekPerPosition(event);
-
 	}
 
-	setFromConfig(config: any){
-    const visualChildren: GenericVisual[] = [
-    ]
-    const layout =  (config as any).default.visualChildren
-    layout.forEach(value => {
-      switch (value){
-        case 'LinearBar':
-          visualChildren.push(new LinearBar());
-          break;
-        case 'SimplePlayButton':
-          visualChildren.push(new SimplePlayButton());
-          break;
-        case 'SimplePauseButton':
-          visualChildren.push(new SimplePauseButton());
-          break;
-        case 'SimpleStopButton':
-          visualChildren.push(new SimpleStopButton());
-          break;
-        case 'SimpleNextButton':
-          visualChildren.push(new SimpleNextButton());
-          break;
-        case 'SimplePrevButton':
-          visualChildren.push(new SimplePrevButton());
-          break;
-        case 'SimpleForwardButton':
-          visualChildren.push(new SimpleForwardButton());
-          break;
-        case 'SimpleBackwardButton':
-          visualChildren.push(new SimpleBackwardButton());
-          break;
-        default :
-          break;
-      }
-    })
-    this.setVisualChildren(visualChildren)
-  }
+	loadConfig(config: playerConfig | string) {
+		if (typeof config == 'string') {
+			switch (config) {
+				case 'config1':
+					this.setFromConfig(config1);
+					break;
+				case 'config2':
+					this.setFromConfig(config2);
+					break;
+				case 'config3':
+					this.setFromConfig(config3);
+					break;
+				default:
+					break;
+			}
+		} else {
+			this.setFromConfig(config);
+		}
+	}
+
+	setFromConfig(config: playerConfig) {
+		const visualChildren: GenericVisual[] = [];
+		const layout = config.visualChildren;
+		layout.forEach((value) => {
+			switch (value) {
+				case 'LinearBar':
+					visualChildren.push(new LinearBar());
+					break;
+				case 'SimplePlayButton':
+					visualChildren.push(new SimplePlayButton());
+					break;
+				case 'SimplePauseButton':
+					visualChildren.push(new SimplePauseButton());
+					break;
+				case 'SimpleStopButton':
+					visualChildren.push(new SimpleStopButton());
+					break;
+				case 'SimpleNextButton':
+					visualChildren.push(new SimpleNextButton());
+					break;
+				case 'SimplePrevButton':
+					visualChildren.push(new SimplePrevButton());
+					break;
+				case 'SimpleForwardButton':
+					visualChildren.push(new SimpleForwardButton());
+					break;
+				case 'SimpleBackwardButton':
+					visualChildren.push(new SimpleBackwardButton());
+					break;
+				default:
+					break;
+			}
+		});
+		this.setVisualChildren(visualChildren);
+	}
 
 	public setPlayer(playerService: RumblePlayerService) {
 		this.playerService = playerService;
@@ -144,9 +169,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 	}
 
 	public processEventSeekPerPosition(event: CustomEvent) {
-	  const {jump} = event.detail
-    const position = this.playerService.position
-    const newPosition = jump + position
+		const { jump } = event.detail;
+		const position = this.playerService.position;
+		const newPosition = jump + position;
 		this.seekPerPosition(newPosition);
 	}
 

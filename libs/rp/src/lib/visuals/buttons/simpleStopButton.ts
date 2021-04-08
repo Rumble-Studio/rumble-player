@@ -1,37 +1,26 @@
-import { GenericVisual } from "../../GenericVisual";
+import { GenericVisual } from '../../GenericVisual';
 
 export class SimpleStopButton extends GenericVisual {
-  protected _kind = 'SimpleStopButton';
+	protected _kind = 'SimpleStopButton';
+	button: HTMLInputElement;
 
+	constructor() {
+		super();
+	}
 
-  constructor() {
-    super();
-  }
+	protected createHTMLElements() {
+		this.button = document.createElement('input');
+		this.button.setAttribute('type', 'button');
+		this.button.setAttribute('value', 'stop');
+		this.list_of_children = [this.button];
+	}
 
-  /** custom HTML elements  */
-  button: HTMLInputElement;
-  protected createHTMLElements() {
-    this.button = document.createElement('input');
-    this.button.setAttribute('type', 'button');
-    this.button.setAttribute('value', 'stop');
-  }
-  protected updateStyle() {
-    super.updateStyle();
-    this.shadowRoot.appendChild(this.button);
-  }
-
-  bindHTMLElements() {
-    // custom bindings of events
-    // in particular, play button can emit "play" on click
-    this.addEventListener('click', () => {
-      const e  = new Event('stop')
-      this.dispatchEvent(e);
-    });
-  }
-
-  updateVisual(){
-    //
-  }
+	protected bindHTMLElements() {
+		this.button.addEventListener('click', () => {
+			const e = new Event('stop');
+			this.dispatchEvent(e);
+		});
+	}
 }
 
 customElements.define('rs-simple-stop-button', SimpleStopButton);

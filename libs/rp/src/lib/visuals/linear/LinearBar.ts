@@ -9,39 +9,34 @@ export class LinearBar extends GenericVisual {
 
 	constructor() {
 		super();
-		console.log('LINEAR BAR CONSTRUCTOR CALLED')
 	}
 
 	protected createHTMLElements() {
-		console.log('%cLINEAR BAR createHTMLElements CALLED','color:red')
+
+		const style = document.createElement('style');
 
 		this.div = document.createElement('div');
-		this.div.style.backgroundColor = 'red';
-		this.div.style.height = '15px';
+		this.div.setAttribute('id', 'bar');
+
+		// this.div.style.backgroundColor = 'red';
+		// this.div.style.height = '15px';
+		// this.div.style.position = 'relative';
+		// this.div.style.cursor = 'pointer';
+
 		this.progressDiv = document.createElement('div');
-		this.progressDiv.style.width = '0%';
-		this.progressDiv.style.height = '100%';
-		this.progressDiv.style.backgroundColor = 'blue';
-		this.div.style.cursor = 'pointer';
+		// this.progressDiv.style.width = '10px';
+		// this.progressDiv.style.height = '20px';
+		// this.progressDiv.style.backgroundColor = 'orange';
+		this.progressDiv.setAttribute('id', 'progressBar');
+
+		this.div.appendChild(this.progressDiv);
+		this.list_of_children = [style, this.div];
 	}
 
-
-
-  protected updateStyle() {
-    super.updateStyle();
-    this.div.appendChild(this.progressDiv);
-    this.shadowRoot.appendChild(this.div)
-  }
-
 	protected bindHTMLElements() {
-		// custom bindings of events
-		// in particular, a click emits a percentage based on width
 		this.addEventListener('click', (event) => {
 			const bcr = this.getBoundingClientRect();
 			const percentage = (event.clientX - bcr.left) / bcr.width;
-
-			console.log('PERCENTAGE;', percentage);
-
 			const clickEvent = new CustomEvent('seekPerPercentage', {
 				detail: { percentage },
 			});
@@ -50,7 +45,26 @@ export class LinearBar extends GenericVisual {
 	}
 
 	updateVisual() {
-		this.progressDiv.style.width = 100 * this.percentage + '%';
+		this._shadow.querySelector('style').textContent = this.generateStyle(
+			this.percentage
+		);
+		// this.progressDiv.style.width = 100 * this.percentage + 'px';
+	}
+
+	generateStyle(percentage: number) {
+		return `
+		#bar{
+			height:15px;
+			position:relative;
+			background-color: red;
+			cursor:pointer;
+		}
+		#progressBar {
+			width: ${100 * percentage}%;
+			height: 100%;
+			background-color: blue;
+		}
+`;
 	}
 }
 

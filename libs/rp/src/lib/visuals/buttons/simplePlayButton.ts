@@ -1,42 +1,26 @@
-import { GenericVisual } from "../../GenericVisual";
+import { GenericVisual } from '../../GenericVisual';
 
-export class SimplePauseButton extends GenericVisual {
-	protected _kind = 'SimplePauseButton';
-
+export class SimplePlayButton extends GenericVisual {
+	protected _kind = 'SimplePlayButton';
+	button: HTMLInputElement;
 
 	constructor() {
 		super();
 	}
 
-	/** custom HTML elements  */
-	button: HTMLInputElement;
 	protected createHTMLElements() {
-
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
-		this.button.setAttribute('value', 'pause');
+		this.button.setAttribute('value', 'play');
+		this.list_of_children = [this.button];
 	}
 
-  connectedCallback() {
-    console.log('%cGENERIC VISUAL CONNECTED CALLBACK CALLED From Children','color:red')
-  }
-
-  protected bindHTMLElements() {
-		// custom bindings of events
-		// in particular, pause button can emit "pause" on click
-		this.addEventListener('click', () => {
-			const e  = new Event('pause')
+	protected bindHTMLElements() {
+		this.button.addEventListener('click', () => {
+			const e = new Event('play');
 			this.dispatchEvent(e);
 		});
 	}
-	protected updateStyle() {
-    super.updateStyle();
-    this.shadowRoot.appendChild(this.button);
-  }
-
-  updateVisual(){
-		//
-	}
 }
 
-customElements.define('rs-simple-pause-button', SimplePauseButton);
+customElements.define('rs-simple-play-button', SimplePlayButton);

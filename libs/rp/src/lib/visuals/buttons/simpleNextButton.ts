@@ -1,37 +1,26 @@
-import { GenericVisual } from "../../GenericVisual";
+import { GenericVisual } from '../../GenericVisual';
 
 export class SimpleNextButton extends GenericVisual {
-  protected _kind = 'SimpleNextButton';
+	protected _kind = 'SimpleNextButton';
+	button: HTMLInputElement;
 
+	constructor() {
+		super();
+	}
 
-  constructor() {
-    super();
-  }
+	protected createHTMLElements() {
+		this.button = document.createElement('input');
+		this.button.setAttribute('type', 'button');
+		this.button.setAttribute('value', 'next');
+		this.list_of_children = [this.button];
+	}
 
-  /** custom HTML elements  */
-  button: HTMLInputElement;
-  protected createHTMLElements() {
-    this.button = document.createElement('input');
-    this.button.setAttribute('type', 'button');
-    this.button.setAttribute('value', 'next');
-  }
-  protected updateStyle() {
-    super.updateStyle();
-    this.shadowRoot.appendChild(this.button);
-  }
-
-  bindHTMLElements() {
-    // custom bindings of events
-    // in particular, play button can emit "play" on click
-    this.addEventListener('click', () => {
-      const e  = new Event('next')
-      this.dispatchEvent(e);
-    });
-  }
-
-  updateVisual(){
-    //
-  }
+	protected bindHTMLElements() {
+		this.button.addEventListener('click', () => {
+			const e = new Event('next');
+			this.dispatchEvent(e);
+		});
+	}
 }
 
 customElements.define('rs-simple-next-button', SimpleNextButton);

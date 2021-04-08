@@ -247,10 +247,12 @@ export class RumblePlayerService {
 		if (this._playlist.length === 0) return;
 
 		const song = this._playlist[this.index];
-		const currentPosition = song.howl.seek() as number;
-		if (currentPosition > 2) {
-			this.seekPerPosition(0);
-			return;
+		if (song.howl) {
+			const currentPosition = song.howl.seek() as number;
+			if (currentPosition > 2) {
+				this.seekPerPosition(0);
+				return;
+			}
 		}
 
 		// remember value before stopping
@@ -300,16 +302,13 @@ export class RumblePlayerService {
 		if (!song.howl) {
 			song.howl = this.createHowlWithBindings(song);
 		}
-		if (position > song.howl.duration()){
-		  this.next()
-    }
-		else if (position<0){
-		  song.howl.seek(0)
-    }
-		else {
-      song.howl.seek(position);
-    }
-
+		if (position > song.howl.duration()) {
+			this.next();
+		} else if (position < 0) {
+			song.howl.seek(0);
+		} else {
+			song.howl.seek(position);
+		}
 	}
 
 	public setPlaylistFromUrls(urls: string[]) {

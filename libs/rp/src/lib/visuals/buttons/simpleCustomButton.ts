@@ -1,8 +1,9 @@
 import { GenericVisual } from '../../GenericVisual';
 
-export class SimplePauseButton extends GenericVisual {
-	protected _kind = 'SimplePauseButton';
+export class SimpleCustomButton extends GenericVisual {
+	protected _kind = 'SimpleCustomButton';
 	button: HTMLInputElement;
+	private eventToEmit: string;
 
 	constructor() {
 		super();
@@ -11,16 +12,18 @@ export class SimplePauseButton extends GenericVisual {
 	protected createHTMLElements() {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
-		this.button.setAttribute('value', 'pause');
+		this.button.setAttribute('value', this.eventToEmit);
 		this.list_of_children = [this.button];
 	}
 
 	protected bindHTMLElements() {
 		this.button.addEventListener('click', () => {
-			const e = new Event('pause');
+			const e = new Event(this.eventToEmit);
 			this.dispatchEvent(e);
 		});
 	}
 }
 
-customElements.define('rs-simple-pause-button', SimplePauseButton);
+customElements.define('rs-simple-custom-button', SimpleCustomButton);
+
+

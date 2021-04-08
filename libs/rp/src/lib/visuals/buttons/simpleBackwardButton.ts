@@ -1,39 +1,32 @@
-import { GenericVisual } from "../../GenericVisual";
+import { GenericVisual } from '../../GenericVisual';
 
 export class SimpleBackwardButton extends GenericVisual {
-  protected _kind = 'SimpleBackwardButton';
+	protected _kind = 'SimpleBackwardButton';
+	button: HTMLInputElement;
   private jump: number;
 
 
-  constructor(jump?:number) {
-    super();
-    this.jump = jump ? jump : 15
-  }
+	constructor(jump=15) {
+		super();
+    this.jump = jump;
+	}
 
-  /** custom HTML elements  */
-  button: HTMLInputElement;
-  protected createHTMLElements() {
-    this.button = document.createElement('input');
-    this.button.setAttribute('type', 'button');
-    this.button.setAttribute('value', 'backward');
-  }
+	protected createHTMLElements() {
+		this.button = document.createElement('input');
+		this.button.setAttribute('type', 'button');
+		this.button.setAttribute('value', 'backward('+this.jump+'s)');
+		this.list_of_children = [this.button];
+	}
 
-  bindHTMLElements() {
-    // custom bindings of events
-    // in particular, play button can emit "play" on click
-    this.addEventListener('click', () => {
-      const e  = new CustomEvent('seekPerPosition',{detail:{jump:-this.jump}})
-      this.dispatchEvent(e);
-    });
-  }
-  protected updateStyle() {
-    super.updateStyle();
-    this.shadowRoot.appendChild(this.button);
-  }
-
-  updateVisual(){
-    //
-  }
+	protected bindHTMLElements() {
+		this.button.addEventListener('click', () => {
+			const e = new CustomEvent('seekPerPosition', {
+				detail: { jump: -this.jump },
+			});
+			this.dispatchEvent(e);
+		});
+	}
 }
 
 customElements.define('rs-simple-backward-button', SimpleBackwardButton);
+

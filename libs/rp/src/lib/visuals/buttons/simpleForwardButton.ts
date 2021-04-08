@@ -1,39 +1,32 @@
-import { GenericVisual } from "../../GenericVisual";
+import { GenericVisual } from '../../GenericVisual';
 
 export class SimpleForwardButton extends GenericVisual {
-  protected _kind = 'SimpleForwardButton';
+	protected _kind = 'SimpleForwardButton';
+	button: HTMLInputElement;
   private jump: number;
 
 
-  constructor(jump?:number) {
-    super();
-    this.jump = jump ? jump : 15
-  }
+	constructor(jump=15) {
+		super();
+    this.jump = jump;
+	}
 
-  /** custom HTML elements  */
-  button: HTMLInputElement;
-  protected createHTMLElements() {
-    this.button = document.createElement('input');
-    this.button.setAttribute('type', 'button');
-    this.button.setAttribute('value', 'forward');
-  }
-  protected updateStyle() {
-    super.updateStyle();
-    this.shadowRoot.appendChild(this.button);
-  }
+	protected createHTMLElements() {
+		this.button = document.createElement('input');
+		this.button.setAttribute('type', 'button');
+		this.button.setAttribute('value', 'forward('+this.jump+'s)');
+		this.list_of_children = [this.button];
+	}
 
-  bindHTMLElements() {
-    // custom bindings of events
-    // in particular, play button can emit "play" on click
-    this.addEventListener('click', () => {
-      const e  = new CustomEvent('seekPerPosition',{detail:{jump:this.jump}})
-      this.dispatchEvent(e);
-    });
-  }
-
-  updateVisual(){
-    //
-  }
+	protected bindHTMLElements() {
+		this.button.addEventListener('click', () => {
+			const e = new CustomEvent('seekPerPosition', {
+				detail: { jump: this.jump },
+			});
+			this.dispatchEvent(e);
+		});
+	}
 }
 
 customElements.define('rs-simple-forward-button', SimpleForwardButton);
+

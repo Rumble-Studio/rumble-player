@@ -2,19 +2,7 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import {
   GenericVisual,
   HTMLRumblePlayer,
-  LinearBar,
   RumblePlayerService,
-  SimpleConfigurableButton,
-  SimplePauseButton,
-  SimplePlayButton,
-  SimpleNextButton,
-  SimplePrevButton,
-  SimpleForwardButton,
-  SimpleBackwardButton,
-  SimpleStopButton,
-  Config1,
-  Config3,
-  Config2
 } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
@@ -23,51 +11,32 @@ import { fakePlaylist } from '../../config/dummyAudioData.config';
 
 class MyDemoButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
-
+	button: HTMLInputElement | undefined;
 	state = false;
 
 	constructor() {
 		super();
 	}
-	/** custom HTML elements  */
-	button: HTMLInputElement | undefined;
+	
 	protected createHTMLElements() {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', 'toggle');
 		this.button.style.backgroundColor = 'red';
+		this.list_of_children = [this.button];
 	}
-	protected setInnerHTML() {
-		// custom creation of HTML children
-		if (this.button) {
-			this.appendChild(this.button);
-		}
-	}
+
 	bindHTMLElements() {
-		// custom bindings of events
-		// in particular, play button can emit "play" on click
-		// Toggle button won't work unless we implement toggle feature at playerService level
-		// if initial state is true and clicked while playing, nothing will happen
-
 		this.addEventListener('click', () => {
-			console.log('CLICKED');
-
 			this.state = !this.state;
-
 			if (this.state) {
-				console.log('should play');
 				const e = new Event('play');
 				this.dispatchEvent(e);
 			} else {
-				console.log('should pause');
-
 				const e = new Event('pause');
 				this.dispatchEvent(e);
 			}
 		});
-	}
-	updateVisual() {
-		//
 	}
 }
 customElements.define('rs-demo-play-button', MyDemoButton);
@@ -102,11 +71,7 @@ export class PlayerComponent implements AfterViewInit {
 	ngAfterViewInit() {
 		if (this.playerHTML) {
 			this.playerHTML.nativeElement.setPlayer(this.player);
-
-			this.playerHTML.nativeElement.setFromConfig(Config3);
-
-			// TODO: this.playerHTML.nativeElement.setFromConfig('default1');
-
+			this.playerHTML.nativeElement.loadConfig('config3');
 		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}
