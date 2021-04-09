@@ -16,10 +16,7 @@ export class SimpleNextButton extends GenericVisual {
 	}
 
 	protected bindHTMLElements() {
-		this.button.addEventListener('click', () => {
-			const e = new Event('next');
-			this.dispatchEvent(e);
-		});
+		this._playerService.next()
 	}
 }
 
