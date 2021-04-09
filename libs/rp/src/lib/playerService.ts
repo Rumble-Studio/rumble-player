@@ -254,9 +254,9 @@ export class RumblePlayerService {
 		const song = this._playlist[this.index];
 		if (song.howl) {
 			const currentPosition = song.howl.seek() as number;
-			if (currentPosition > 2) {
+			if (currentPosition < 2) {
 				this.seekPerPosition(0);
-        this.dispatchPlayerEvent(playerServiceEventType.prev)
+				this.dispatchPlayerEvent(playerServiceEventType.prev)
 				return;
 			}
 		}
@@ -275,7 +275,7 @@ export class RumblePlayerService {
 			this.play();
 		}
     this.dispatchPlayerEvent(playerServiceEventType.prev)
-	}
+  }
 
 	public seekPerPercentage(percentage: number, index?: number) {
 		// Seek to a given percentage of actual song

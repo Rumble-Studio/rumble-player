@@ -24,8 +24,8 @@ export class GenericVisual extends HTMLElement {
 		super();
 		this._shadow = this.attachShadow({ mode: 'open' });
 		this.createHTMLElements();
-		this.bindHTMLElements();
 		this.setInnerHTML();
+    this.bindHTMLElements();
 		console.log('GENERIC VISUAL CONSTRUCTOR CALLED');
 	}
 

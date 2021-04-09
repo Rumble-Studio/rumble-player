@@ -19,7 +19,9 @@ export class SimplePlayButton extends GenericVisual {
 	}
 
 	protected bindHTMLElements() {
-    this._playerService.play(this.index)
+		this.button.addEventListener('click', () => {
+      this._playerService.play(this.index)
+		});
 	}
 	protected updateState(state:playerServiceEvent) {
     super.updateState(state);

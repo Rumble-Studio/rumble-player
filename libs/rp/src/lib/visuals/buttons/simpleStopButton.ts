@@ -18,7 +18,9 @@ export class SimpleStopButton extends GenericVisual {
 	}
 
 	protected bindHTMLElements() {
-		this._playerService.stop()
+    this.button.addEventListener('click', () => {
+      this._playerService.stop()
+    });
 	}
   protected updateState(state:playerServiceEvent) {
     super.updateState(state);
