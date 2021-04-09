@@ -4,9 +4,11 @@ import { playerServiceEvent } from '../../playerService';
 export class SimplePlayButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
 	button: HTMLInputElement;
+	index : number
 
-	constructor() {
+	constructor(index = 0) {
 		super();
+		this.index = index
 	}
 
 	protected createHTMLElements() {
@@ -17,10 +19,7 @@ export class SimplePlayButton extends GenericVisual {
 	}
 
 	protected bindHTMLElements() {
-		this.button.addEventListener('click', () => {
-			const e = new Event('play');
-			this.dispatchEvent(e);
-		});
+    this._playerService.play(this.index)
 	}
 	protected updateState(state:playerServiceEvent) {
     super.updateState(state);
