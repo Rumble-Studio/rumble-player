@@ -10,7 +10,8 @@ import {
 	SimplePrevButton,
 	SimpleStopButton,
 } from '../index';
-import { config1, config2, config3 } from '../config/configs';
+import { config1, config2, config3, config4, configPlayPause } from '../config/configs';
+import { SimplePlaylist } from './visuals/playlist/SimplePlaylist';
 
 export interface playerConfig {
 	[key: string]: string | string[];
@@ -64,6 +65,12 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'config3':
 					this.setFromConfig(config3);
 					break;
+        case 'configPlayPause':
+          this.setFromConfig(configPlayPause);
+          break;
+        case 'config4':
+          this.setFromConfig(config4);
+          break;
 				default:
 					break;
 			}
@@ -101,6 +108,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'SimpleBackwardButton':
 					visualChildren.push(new SimpleBackwardButton());
 					break;
+        case 'SimplePlaylist':
+          visualChildren.push(new SimplePlaylist());
+          break;
 				default:
 					break;
 			}

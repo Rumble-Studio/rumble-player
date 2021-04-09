@@ -29,3 +29,25 @@ export const config3 = {
 		'SimpleBackwardButton',
 	],
 };
+
+export const config4 = {
+  visualChildren: [
+    'LinearBar',
+    'SimplePlayButton',
+    'SimplePauseButton',
+    'SimpleStopButton',
+    'SimpleNextButton',
+    'SimplePrevButton',
+    'SimpleForwardButton',
+    'SimpleBackwardButton',
+    'SimplePlaylist'
+  ],
+};
+
+export const configPlayPause = {
+  visualChildren: [
+    'SimplePlayButton',
+    'SimplePauseButton',
+    'SimpleStopButton',
+  ],
+};
