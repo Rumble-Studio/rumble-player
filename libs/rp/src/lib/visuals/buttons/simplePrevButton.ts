@@ -17,7 +17,7 @@ export class SimplePrevButton extends GenericVisual {
 
 	protected bindHTMLElements() {
     this.button.addEventListener('click', () => {
-      this._playerService.prev()
+      this.playerService.prev()
     });
 	}
 }

@@ -4,11 +4,11 @@ import { playerServiceEvent } from '../../playerService';
 export class SimplePlayButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
 	button: HTMLInputElement;
-	index : number
+	index: number;
 
 	constructor(index = 0) {
 		super();
-		this.index = index
+		this.index = index;
 	}
 
 	protected createHTMLElements() {
@@ -20,17 +20,16 @@ export class SimplePlayButton extends GenericVisual {
 
 	protected bindHTMLElements() {
 		this.button.addEventListener('click', () => {
-      this._playerService.play(this.index)
+			this.playerService.play(this.index);
 		});
 	}
-	protected updateState(state:playerServiceEvent) {
-    super.updateState(state);
-    if (state.type === 'play'){
-      this.button.disabled = true
-    }
-    else if (state.type === 'pause' || state.type === 'stop'){
-      this.button.disabled = false
-    }
+	protected updateState(state: playerServiceEvent) {
+		super.updateState(state);
+		if (state.type === 'play') {
+			this.button.disabled = true;
+		} else if (state.type === 'pause' || state.type === 'stop') {
+			this.button.disabled = false;
+		}
 	}
 }
 

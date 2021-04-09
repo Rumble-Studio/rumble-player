@@ -352,13 +352,14 @@ export class RumblePlayerService {
 		});
 	}
 
-	/* Player state CALLBACKS */
+	/* CALLBACKS ON STATE CHANGE */
   public playingEventsCallbacks: ((event: playerServiceEvent) => void)[] = []
   public playerStateChangedCallback(event: playerServiceEvent){
     this.playingEventsCallbacks.forEach((callback) => {
       callback(event)
     })
   }
+
   private dispatchPlayerEvent(type:playerServiceEventType){
     const event : playerServiceEvent= {
       type,

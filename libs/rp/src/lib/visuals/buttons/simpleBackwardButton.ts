@@ -3,18 +3,23 @@ import { GenericVisual } from '../../GenericVisual';
 export class SimpleBackwardButton extends GenericVisual {
 	protected _kind = 'SimpleBackwardButton';
 	button: HTMLInputElement;
-  private jump: number;
+	private jump: number;
+
+	protected dontBuildHTMLElements = true;
 
 
-	constructor(jump=15) {
-		super();
-    this.jump = jump;
+	constructor(jump = 15) {
+		super(true); // true to delay HTML logic and let jump be set
+		this.jump = jump;
+		this.createHTMLElements();
+		this.setInnerHTML();
+		this.bindHTMLElements();
 	}
 
 	protected createHTMLElements() {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
-		this.button.setAttribute('value', 'backward('+this.jump+'s)');
+		this.button.setAttribute('value', 'backward(' + this.jump + 's)');
 		this.list_of_children = [this.button];
 	}
 
@@ -29,4 +34,3 @@ export class SimpleBackwardButton extends GenericVisual {
 }
 
 customElements.define('rs-simple-backward-button', SimpleBackwardButton);
-

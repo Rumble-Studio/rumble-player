@@ -14,21 +14,10 @@ export class LinearBar extends GenericVisual {
 	protected createHTMLElements() {
 
 		const style = document.createElement('style');
-
 		this.div = document.createElement('div');
 		this.div.setAttribute('id', 'bar');
-
-		// this.div.style.backgroundColor = 'red';
-		// this.div.style.height = '15px';
-		// this.div.style.position = 'relative';
-		// this.div.style.cursor = 'pointer';
-
 		this.progressDiv = document.createElement('div');
-		// this.progressDiv.style.width = '10px';
-		// this.progressDiv.style.height = '20px';
-		// this.progressDiv.style.backgroundColor = 'orange';
 		this.progressDiv.setAttribute('id', 'progressBar');
-
 		this.div.appendChild(this.progressDiv);
 		this.list_of_children = [style, this.div];
 	}
@@ -48,7 +37,6 @@ export class LinearBar extends GenericVisual {
 		this._shadow.querySelector('style').textContent = this.generateStyle(
 			this.percentage
 		);
-		// this.progressDiv.style.width = 100 * this.percentage + 'px';
 	}
 
 	generateStyle(percentage: number) {
@@ -63,8 +51,7 @@ export class LinearBar extends GenericVisual {
 			width: ${100 * percentage}%;
 			height: 100%;
 			background-color: blue;
-		}
-`;
+		}`;
 	}
 }
 

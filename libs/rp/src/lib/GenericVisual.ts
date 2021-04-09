@@ -1,31 +1,41 @@
 import { playerServiceEvent, RumblePlayerService } from './playerService';
 
 export class GenericVisual extends HTMLElement {
+
 	public percentage = 0;
 	public position = 0;
 	protected list_of_children: HTMLElement[] = [];
+	protected list_of_emitted_events:string[];
+	protected list_of_subcribed_events:string[];
 
 	protected _kind = 'GenericVisual';
-	protected _shadow: ShadowRoot;
-	protected _playerService : RumblePlayerService
-  set player(player: RumblePlayerService){
-	  this._playerService = player
-    this._playerService.playingEventsCallbacks.push((state:playerServiceEvent)=> this.updateState(state)
-    );
-  }
-  get player(){
-    return this._playerService
-  }
 	get kind() {
 		return this._kind;
 	}
 
-	constructor() {
+	protected _shadow: ShadowRoot;
+
+	protected _playerService: RumblePlayerService;
+	set playerService(player: RumblePlayerService) {
+		this._playerService = player;
+		this._playerService.playingEventsCallbacks.push(
+			(state: playerServiceEvent) => this.updateState(state)
+		);
+	}
+	get playerService() {
+		return this._playerService;
+	}
+
+
+	constructor(dontBuildHTMLElements=false) {
 		super();
+
 		this._shadow = this.attachShadow({ mode: 'open' });
-		this.createHTMLElements();
-		this.setInnerHTML();
-    this.bindHTMLElements();
+		if (!dontBuildHTMLElements) {
+			this.createHTMLElements();
+			this.setInnerHTML();
+			this.bindHTMLElements();
+		}
 		console.log('GENERIC VISUAL CONSTRUCTOR CALLED');
 	}
 
@@ -37,16 +47,16 @@ export class GenericVisual extends HTMLElement {
 			'color:crimson',
 			this.kind
 		);
-		this.updateStyle();
+		this.updateVisual();
 	}
 
 	attributeChangedCallback() {
 		console.log('Custom square element attributes changed.');
-		this.updateStyle();
+		this.updateVisual();
 	}
-	protected updateState(state:playerServiceEvent){
-   // console.log('STATE CHANGED',state)
-  }
+	protected updateState(state: playerServiceEvent) {
+		console.log('STATE CHANGED',state,this.kind)
+	}
 
 	// Generic visual construction
 
@@ -68,7 +78,9 @@ export class GenericVisual extends HTMLElement {
 	 * Loop over children to add them to shadow DOM
 	 */
 	setInnerHTML() {
-		this.list_of_children.forEach((child) => this.shadowRoot.appendChild(child));
+		this.list_of_children.forEach((child) =>
+			this.shadowRoot.appendChild(child)
+		);
 	}
 
 	// logic
@@ -93,12 +105,12 @@ export class GenericVisual extends HTMLElement {
 		// console.log('[GenericVisual](updateVisual)', 'nothing to update');
 	}
 
-	/**
-	 * Called by HTML hooks
-	 */
-	protected updateStyle() {
-		console.log('[GenericVisual](updateStyle)', 'nothing to update');
-	}
+	// /**
+	//  * Called by HTML hooks
+	//  */
+	// protected updateStyle() {
+	// 	console.log('[GenericVisual](updateStyle)', 'nothing to update');
+	// }
 }
 
 customElements.define('rs-generic-bar', GenericVisual);

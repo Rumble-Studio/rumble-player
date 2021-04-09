@@ -219,7 +219,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		// this.appendChild(this.layoutContainer);
 		// this.visualChildren.forEach((vc) => this.layoutContainer.appendChild(vc));
 		this.visualChildren.forEach((vc) => {
-		  vc.player = this.playerService
+		  vc.playerService = this.playerService
 		  this._shadow.appendChild(vc)
 		});
 	}

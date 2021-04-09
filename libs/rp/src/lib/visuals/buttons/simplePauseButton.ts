@@ -19,7 +19,7 @@ export class SimplePauseButton extends GenericVisual {
 
 	protected bindHTMLElements() {
 		this.button.addEventListener('click', () => {
-			this._playerService.pause()
+			this.playerService.pause()
 		});
 	}
   protected updateState(state:playerServiceEvent) {
