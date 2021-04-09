@@ -3,18 +3,18 @@ import { GenericVisual } from '../../GenericVisual';
 export class SimpleForwardButton extends GenericVisual {
 	protected _kind = 'SimpleForwardButton';
 	button: HTMLInputElement;
-  private jump: number;
+	private jump: number
 
 
 	constructor(jump=15) {
 		super();
-    this.jump = jump;
+		this.jump = jump
 	}
 
 	protected createHTMLElements() {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
-		this.button.setAttribute('value', 'forward('+this.jump+'s)');
+    this.button.setAttribute('value', 'forward('+15+'s)');
 		this.list_of_children = [this.button];
 	}
 
@@ -26,6 +26,7 @@ export class SimpleForwardButton extends GenericVisual {
 			this.dispatchEvent(e);
 		});
 	}
+
 }
 
 customElements.define('rs-simple-forward-button', SimpleForwardButton);

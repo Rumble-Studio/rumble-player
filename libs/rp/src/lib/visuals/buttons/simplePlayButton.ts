@@ -1,4 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
+import { playerServiceEvent } from '../../playerService';
 
 export class SimplePlayButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
@@ -20,6 +21,15 @@ export class SimplePlayButton extends GenericVisual {
 			const e = new Event('play');
 			this.dispatchEvent(e);
 		});
+	}
+	protected updateState(state:playerServiceEvent) {
+    super.updateState(state);
+    if (state.type === 'play'){
+      this.button.disabled = true
+    }
+    else if (state.type === 'pause' || state.type === 'stop'){
+      this.button.disabled = false
+    }
 	}
 }
 

@@ -50,10 +50,12 @@ export class RumblePlayerService {
 
 	playingOn() {
 		this.isPlaying = true;
+		this.dispatchPlayerEvent(playerServiceEventType.play)
 	}
 	playingOff() {
 		this.isPlaying = false;
-	}
+    this.dispatchPlayerEvent(playerServiceEventType.pause)
+  }
 
 	// index in playlist
 	private _index: number;
@@ -211,12 +213,14 @@ export class RumblePlayerService {
 			const song = this._playlist[index];
 			if (song.howl) {
 				song.howl.stop();
+        this.dispatchPlayerEvent(playerServiceEventType.stop)
 			}
 		} else {
 			// we stop all item in the playlist (several can play together)
 			this._playlist.forEach((song: Song, songIndex: number) => {
 				if (song.howl) {
 					song.howl.stop();
+          this.dispatchPlayerEvent(playerServiceEventType.stop)
 				}
 			});
 		}
@@ -240,6 +244,7 @@ export class RumblePlayerService {
 		if (isPlaying) {
 			this.play();
 		}
+    this.dispatchPlayerEvent(playerServiceEventType.next)
 	}
 
 	public prev() {
@@ -251,6 +256,7 @@ export class RumblePlayerService {
 			const currentPosition = song.howl.seek() as number;
 			if (currentPosition > 2) {
 				this.seekPerPosition(0);
+        this.dispatchPlayerEvent(playerServiceEventType.prev)
 				return;
 			}
 		}
@@ -268,6 +274,7 @@ export class RumblePlayerService {
 		if (isPlaying) {
 			this.play();
 		}
+    this.dispatchPlayerEvent(playerServiceEventType.prev)
 	}
 
 	public seekPerPercentage(percentage: number, index?: number) {
@@ -287,6 +294,7 @@ export class RumblePlayerService {
 		} else {
 			song.howl.seek(percentage * song.howl.duration());
 		}
+    this.dispatchPlayerEvent(playerServiceEventType.seek)
 		// console.log('song status ', song.howl.state())
 		//get song duration
 		// convert percentage to position
@@ -343,4 +351,43 @@ export class RumblePlayerService {
 			c(percentage);
 		});
 	}
+
+	/* Player state CALLBACKS */
+  public playingEventsCallbacks: ((event: playerServiceEvent) => void)[] = []
+  public playerStateChangedCallback(event: playerServiceEvent){
+    this.playingEventsCallbacks.forEach((callback) => {
+      callback(event)
+    })
+  }
+  private dispatchPlayerEvent(type:playerServiceEventType){
+    const event : playerServiceEvent= {
+      type,
+      state:{
+        position: this.position,
+        percentage: this.percentage,
+        index: this.index,
+        playing: this.isPlaying
+      } as playerState
+    };
+    this.playerStateChangedCallback(event)
+  }
+
+}
+enum playerServiceEventType{
+  'play' = 'play' ,
+  'pause' = 'pause',
+  'stop' = 'stop',
+  'next' = 'next',
+  'prev' = 'prev',
+  'seek' = 'seek'
+}
+export interface playerState{
+  position:number,
+  percentage:number,
+  index:number,
+  playing:boolean,
+}
+export interface playerServiceEvent {
+  type: playerServiceEventType,
+  state: playerState
 }

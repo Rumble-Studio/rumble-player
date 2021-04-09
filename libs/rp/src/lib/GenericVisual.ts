@@ -1,3 +1,5 @@
+import { playerServiceEvent, RumblePlayerService } from './playerService';
+
 export class GenericVisual extends HTMLElement {
 	public percentage = 0;
 	public position = 0;
@@ -5,6 +7,15 @@ export class GenericVisual extends HTMLElement {
 
 	protected _kind = 'GenericVisual';
 	protected _shadow: ShadowRoot;
+	protected _playerService : RumblePlayerService
+  set player(player: RumblePlayerService){
+	  this._playerService = player
+    this._playerService.playingEventsCallbacks.push((state:playerServiceEvent)=> this.updateState(state)
+    );
+  }
+  get player(){
+    return this._playerService
+  }
 	get kind() {
 		return this._kind;
 	}
@@ -33,6 +44,9 @@ export class GenericVisual extends HTMLElement {
 		console.log('Custom square element attributes changed.');
 		this.updateStyle();
 	}
+	protected updateState(state:playerServiceEvent){
+   // console.log('STATE CHANGED',state)
+  }
 
 	// Generic visual construction
 

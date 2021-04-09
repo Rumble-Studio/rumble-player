@@ -208,7 +208,10 @@ export class HTMLRumblePlayer extends HTMLElement {
 		// this.layoutContainer.style.position = 'relative';
 		// this.appendChild(this.layoutContainer);
 		// this.visualChildren.forEach((vc) => this.layoutContainer.appendChild(vc));
-		this.visualChildren.forEach((vc) => this._shadow.appendChild(vc));
+		this.visualChildren.forEach((vc) => {
+		  vc.player = this.playerService
+		  this._shadow.appendChild(vc)
+		});
 	}
 
 	startListeningToVisualChildren() {

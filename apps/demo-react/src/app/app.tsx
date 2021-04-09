@@ -68,7 +68,8 @@ export default class Player extends React.Component<IProps, IState> {
 	componentDidMount(){
 
 	  console.log('didMount')
-		this.playerHTML.setFromConfig(Config3);
+		//this.playerHTML.setFromConfig(Config3);
+    this.playerHTML.loadConfig('config3')
 	  const ex = new ExampleCustom();
     (this.containerRef.current as HTMLRumblePlayer).replaceWith(this.playerHTML);
     (this.exampleRef.current as ExampleCustom).replaceWith(ex)
