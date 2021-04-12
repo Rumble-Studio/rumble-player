@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const UPDATE_DELAY = 100;
 
-interface Song {
+export interface Song {
 	id: string; // unique id to identify the song even when we add new song to the playlist
 	title: string;
 	file: string;
@@ -166,11 +166,15 @@ export class RumblePlayerService {
 	public play(index?: number): Promise<number> {
 		console.log('Asked to play:', index);
 
+		if (index){
+		  console.log('given index is', index)
+		  this.index = index
+    }
+
 		// if no playlist index is -1
 		if (this._playlist.length === 0) return Promise.resolve(-1);
 
-		const indexToPlay = index || this.index;
-
+		const indexToPlay = this.index;
 		console.log('Asked to play:', indexToPlay);
 
 		// Check howl instance to play
@@ -193,7 +197,7 @@ export class RumblePlayerService {
 		if (index) {
 			const song = this._playlist[index];
 			if (song.howl) {
-				song.howl.pause();
+				song.howl.pause(index);
 			}
 		} else {
 			// we pause all item in the playlist (several can play together)

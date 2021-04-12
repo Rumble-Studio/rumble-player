@@ -71,7 +71,7 @@ export class PlayerComponent implements AfterViewInit {
 	ngAfterViewInit() {
 		if (this.playerHTML) {
 			this.playerHTML.nativeElement.setPlayer(this.player);
-			this.playerHTML.nativeElement.loadConfig('config3');
+			this.playerHTML.nativeElement.loadConfig('config4');
 		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}

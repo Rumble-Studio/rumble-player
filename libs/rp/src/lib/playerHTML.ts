@@ -109,7 +109,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 					visualChildren.push(new SimpleBackwardButton());
 					break;
         case 'SimplePlaylist':
-          visualChildren.push(new SimplePlaylist());
+          const playlist = new SimplePlaylist()
+          playlist.playlist = this.playerService.playlist
+          visualChildren.push(playlist);
           break;
 				default:
 					break;
