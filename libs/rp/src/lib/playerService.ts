@@ -291,7 +291,14 @@ export class RumblePlayerService {
 	public seekPerPercentage(percentage: number, index?: number) {
 		// Seek to a given percentage of actual song
 		// get current song
-		const song = this.playlist[this._index];
+    let song = null
+    if (index !==undefined && index!==null){
+      song = this.playlist[index];
+    }
+    else{
+      song = this.playlist[this._index];
+    }
+
 		//check if song is initialised
 		if (!song.howl) {
 			song.howl = this.createHowlWithBindings(song);

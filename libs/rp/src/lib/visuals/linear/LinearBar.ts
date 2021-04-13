@@ -1,4 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
+import { RumblePlayerService } from '../../playerService';
 
 export class LinearBar extends GenericVisual {
 	protected _kind = 'LinearBar';
@@ -7,6 +8,10 @@ export class LinearBar extends GenericVisual {
 	progressDiv: HTMLDivElement = document.createElement('div');
 	percentage: number;
 
+  set playerService(player: RumblePlayerService) {
+    console.log('LENGTH',player.playlist.length)
+    super.playerService=player
+  }
 	constructor() {
 		super();
 	}
