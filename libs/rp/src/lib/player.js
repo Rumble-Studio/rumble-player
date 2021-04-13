@@ -140,12 +140,12 @@ export class RumblePlayer extends HTMLElement {
 	getSeekingTime() {
 		return this.audio.currentTime;
 	}
-	getTotalDuration(){
-	  if (this.audio.totalDuration){
-      return this.audio.totalDuration
-    }
-	  return 0;
-  }
+	getTotalDuration() {
+		if (this.audio.totalDuration) {
+			return this.audio.totalDuration;
+		}
+		return 0;
+	}
 	play() {
 		if (this._playlist.length === 0) return;
 		return this.audio

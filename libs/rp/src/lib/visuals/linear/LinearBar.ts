@@ -12,7 +12,6 @@ export class LinearBar extends GenericVisual {
 	}
 
 	protected createHTMLElements() {
-
 		const style = document.createElement('style');
 		this.div = document.createElement('div');
 		this.div.setAttribute('id', 'bar');

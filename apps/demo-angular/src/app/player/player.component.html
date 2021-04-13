@@ -15,7 +15,10 @@ Current position: {{ player.position | number: '1.1-1' }} <br />
 	<li *ngFor="let song of player.playlist; let index = index">
 		<ul>
 			<li>
-				<a [href]="song.file">File</a> &nbsp;<strong *ngIf="player.index == index">[selected]</strong>
+				<a [href]="song.file">File</a> &nbsp;<strong
+					*ngIf="player.index == index"
+					>[selected]</strong
+				>
 			</li>
 			<li>position: {{ song.position | number: '1.1-1' }}</li>
 			<li>playing: {{ song.howl?.playing() }}</li>

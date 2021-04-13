@@ -7,7 +7,6 @@ export class SimpleBackwardButton extends GenericVisual {
 
 	protected dontBuildHTMLElements = true;
 
-
 	constructor(jump = 15) {
 		super(true); // true to delay HTML logic and let jump be set
 		this.jump = jump;

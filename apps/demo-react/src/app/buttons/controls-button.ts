@@ -18,7 +18,7 @@ export class ControlButton extends GenericVisual {
 		super();
 		this.displayName = name;
 		this.task = task;
-		this.createHTMLElements()
+		this.createHTMLElements();
 		console.log('display name', this.displayName);
 		console.log(task);
 	}

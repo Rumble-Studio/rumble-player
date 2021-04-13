@@ -31,23 +31,40 @@ export const config3 = {
 };
 
 export const config4 = {
-  visualChildren: [
-    'LinearBar',
-    'SimplePlayButton',
-    'SimplePauseButton',
-    'SimpleStopButton',
-    'SimpleNextButton',
-    'SimplePrevButton',
-    'SimpleForwardButton',
-    'SimpleBackwardButton',
-    'SimplePlaylist'
-  ],
+	visualChildren: [
+		'LinearBar',
+		'SimplePlayButton',
+		'SimplePauseButton',
+		'SimpleStopButton',
+		'SimpleNextButton',
+		'SimplePrevButton',
+		'SimpleForwardButton',
+		'SimpleBackwardButton',
+		'SimplePlaylist',
+	],
+};
+
+export const config5 = {
+	visualChildren: [
+		'LinearBar',
+		'SimplePlayButton',
+		'SimplePauseButton',
+		'SimpleStopButton',
+		'SimpleNextButton',
+		'SimplePrevButton',
+		'SimpleForwardButton',
+		'SimpleBackwardButton',
+		'SimpleTimeLeft',
+		'SimpleTimeSpent',
+		'SimpleTotalTime',
+		'SimplePlaylist',
+	],
 };
 
 export const configPlayPause = {
-  visualChildren: [
-    'SimplePlayButton',
-    'SimplePauseButton',
-    'SimpleStopButton',
-  ],
+	visualChildren: [
+		'SimplePlayButton',
+		'SimplePauseButton',
+		'SimpleStopButton',
+	],
 };

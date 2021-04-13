@@ -1,13 +1,11 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import {
-  GenericVisual,
-  HTMLRumblePlayer,
-  RumblePlayerService,
+	GenericVisual,
+	HTMLRumblePlayer,
+	RumblePlayerService,
 } from '@rumble-player/rp';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
-
-
 
 class MyDemoButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
@@ -71,7 +69,7 @@ export class PlayerComponent implements AfterViewInit {
 	ngAfterViewInit() {
 		if (this.playerHTML) {
 			this.playerHTML.nativeElement.setPlayer(this.player);
-			this.playerHTML.nativeElement.loadConfig('config4');
+			this.playerHTML.nativeElement.loadConfig('config5');
 		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}

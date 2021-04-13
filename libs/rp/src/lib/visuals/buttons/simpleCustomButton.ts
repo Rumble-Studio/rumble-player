@@ -25,5 +25,3 @@ export class SimpleCustomButton extends GenericVisual {
 }
 
 customElements.define('rs-simple-custom-button', SimpleCustomButton);
-
-

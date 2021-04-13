@@ -1,12 +1,11 @@
 import { playerServiceEvent, RumblePlayerService } from './playerService';
 
 export class GenericVisual extends HTMLElement {
-
 	public percentage = 0;
 	public position = 0;
 	protected list_of_children: HTMLElement[] = [];
-	protected list_of_emitted_events:string[];
-	protected list_of_subcribed_events:string[];
+	protected list_of_emitted_events: string[];
+	protected list_of_subcribed_events: string[];
 
 	protected _kind = 'GenericVisual';
 	get kind() {
@@ -26,8 +25,7 @@ export class GenericVisual extends HTMLElement {
 		return this._playerService;
 	}
 
-
-	constructor(dontBuildHTMLElements=false) {
+	constructor(dontBuildHTMLElements = false) {
 		super();
 
 		this._shadow = this.attachShadow({ mode: 'open' });
@@ -55,7 +53,7 @@ export class GenericVisual extends HTMLElement {
 		this.updateVisual();
 	}
 	protected updateState(state: playerServiceEvent) {
-		console.log('STATE CHANGED',state,this.kind)
+		console.log('STATE CHANGED', state, this.kind);
 	}
 
 	// Generic visual construction

@@ -9,9 +9,19 @@ import {
 	SimplePlayButton,
 	SimplePrevButton,
 	SimpleStopButton,
+	SimpleTimeLeft,
+	SimplePlaylist,
+	SimpleTimeSpent,
+	SimpleTotalTime,
 } from '../index';
-import { config1, config2, config3, config4, configPlayPause } from '../config/configs';
-import { SimplePlaylist } from './visuals/playlist/SimplePlaylist';
+import {
+	config1,
+	config2,
+	config3,
+	config4,
+	config5,
+	configPlayPause,
+} from '../config/configs';
 
 export interface playerConfig {
 	[key: string]: string | string[];
@@ -65,12 +75,15 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'config3':
 					this.setFromConfig(config3);
 					break;
-        case 'configPlayPause':
-          this.setFromConfig(configPlayPause);
-          break;
-        case 'config4':
-          this.setFromConfig(config4);
-          break;
+				case 'configPlayPause':
+					this.setFromConfig(configPlayPause);
+					break;
+				case 'config4':
+					this.setFromConfig(config4);
+					break;
+				case 'config5':
+					this.setFromConfig(config5);
+					break;
 				default:
 					break;
 			}
@@ -108,11 +121,20 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'SimpleBackwardButton':
 					visualChildren.push(new SimpleBackwardButton());
 					break;
-        case 'SimplePlaylist':
-          const playlist = new SimplePlaylist()
-          playlist.playlist = this.playerService.playlist
-          visualChildren.push(playlist);
-          break;
+				case 'SimpleTimeLeft':
+					visualChildren.push(new SimpleTimeLeft());
+					break;
+				case 'SimpleTimeSpent':
+					visualChildren.push(new SimpleTimeSpent());
+					break;
+				case 'SimpleTotalTime':
+					visualChildren.push(new SimpleTotalTime());
+					break;
+				case 'SimplePlaylist':
+					const playlist = new SimplePlaylist();
+					playlist.playlist = this.playerService.playlist;
+					visualChildren.push(playlist);
+					break;
 				default:
 					break;
 			}
@@ -221,8 +243,8 @@ export class HTMLRumblePlayer extends HTMLElement {
 		// this.appendChild(this.layoutContainer);
 		// this.visualChildren.forEach((vc) => this.layoutContainer.appendChild(vc));
 		this.visualChildren.forEach((vc) => {
-		  vc.playerService = this.playerService
-		  this._shadow.appendChild(vc)
+			vc.playerService = this.playerService;
+			this._shadow.appendChild(vc);
 		});
 	}
 

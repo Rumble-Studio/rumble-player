@@ -11,4 +11,4 @@ style.innerHTML = `
 }
   `;
 document.head.appendChild(style);
-export default style
+export default style;
