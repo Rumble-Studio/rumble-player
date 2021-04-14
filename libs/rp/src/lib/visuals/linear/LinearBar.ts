@@ -8,10 +8,10 @@ export class LinearBar extends GenericVisual {
 	progressDiv: HTMLDivElement = document.createElement('div');
 	percentage: number;
 
-  set playerService(player: RumblePlayerService) {
-    console.log('LENGTH',player.playlist.length)
-    super.playerService=player
-  }
+	set playerService(player: RumblePlayerService) {
+		console.log('LENGTH', player.playlist.length);
+		super.playerService = player;
+	}
 	constructor() {
 		super();
 	}

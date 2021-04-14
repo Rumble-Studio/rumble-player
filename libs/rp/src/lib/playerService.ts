@@ -291,13 +291,16 @@ export class RumblePlayerService {
 	public seekPerPercentage(percentage: number, index?: number) {
 		// Seek to a given percentage of actual song
 		// get current song
-    let song = null
-    if (index !==undefined && index!==null){
-      song = this.playlist[index];
-    }
-    else{
-      song = this.playlist[this._index];
-    }
+		const isPlaying = this.isPlaying;
+		this.pause();
+		let song = null;
+		if (index !== undefined && index !== null) {
+			song = this.playlist[index];
+			console.log('SEEK INDEX', index, song);
+			this.index = index;
+		} else {
+			song = this.playlist[this._index];
+		}
 
 		//check if song is initialised
 		if (!song.howl) {
@@ -318,6 +321,9 @@ export class RumblePlayerService {
 		// convert percentage to position
 		// seek
 		//play if playing
+		if (isPlaying) {
+			this.play();
+		}
 	}
 	// Move player head to a given time position (s)
 	public seekPerPosition(position: number, index?: number) {

@@ -58,7 +58,7 @@ export const config5 = {
 		'SimpleTimeSpent',
 		'SimpleTotalTime',
 		'SimplePlaylist',
-    'MultiLinearBar'
+		'MultiLinearBar',
 	],
 };
 

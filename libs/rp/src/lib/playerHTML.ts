@@ -1,18 +1,19 @@
 import { RumblePlayerService } from './playerService';
 import { GenericVisual } from './GenericVisual';
 import {
-  LinearBar,
-  SimpleBackwardButton,
-  SimpleForwardButton,
-  SimpleNextButton,
-  SimplePauseButton,
-  SimplePlayButton,
-  SimplePrevButton,
-  SimpleStopButton,
-  SimpleTimeLeft,
-  SimplePlaylist,
-  SimpleTimeSpent,
-  SimpleTotalTime, MultiLinearBar
+	LinearBar,
+	SimpleBackwardButton,
+	SimpleForwardButton,
+	SimpleNextButton,
+	SimplePauseButton,
+	SimplePlayButton,
+	SimplePrevButton,
+	SimpleStopButton,
+	SimpleTimeLeft,
+	SimplePlaylist,
+	SimpleTimeSpent,
+	SimpleTotalTime,
+	MultiLinearBar,
 } from '../index';
 import {
 	config1,
@@ -42,7 +43,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 	prevRef: () => void;
 	processEventSeekPerPercentageRef: (event: CustomEvent) => void;
 	processEventSeekPerPositionRef: (event: CustomEvent) => void;
-  processEventSeekPerPercentageAndIndexRef: (event: CustomEvent) => void;
+	processEventSeekPerPercentageAndIndexRef: (event: CustomEvent) => void;
 
 	constructor(playerService?: RumblePlayerService) {
 		super();
@@ -60,8 +61,8 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.prevRef = () => this.prev();
 		this.processEventSeekPerPercentageRef = (event: CustomEvent) =>
 			this.processEventSeekPerPercentage(event);
-    this.processEventSeekPerPercentageAndIndexRef = (event: CustomEvent) =>
-      this.processEventSeekPerPercentageAndIndex(event);
+		this.processEventSeekPerPercentageAndIndexRef = (event: CustomEvent) =>
+			this.processEventSeekPerPercentageAndIndex(event);
 		this.processEventSeekPerPositionRef = (event: CustomEvent) =>
 			this.processEventSeekPerPosition(event);
 	}
@@ -98,14 +99,15 @@ export class HTMLRumblePlayer extends HTMLElement {
 	setFromConfig(config: playerConfig) {
 		const visualChildren: GenericVisual[] = [];
 		const layout = config.visualChildren;
+		let playlist;
 		layout.forEach((value) => {
 			switch (value) {
 				case 'LinearBar':
 					visualChildren.push(new LinearBar());
 					break;
-        case 'MultiLinearBar':
-          visualChildren.push(new MultiLinearBar());
-          break;
+				case 'MultiLinearBar':
+					visualChildren.push(new MultiLinearBar());
+					break;
 				case 'SimplePlayButton':
 					visualChildren.push(new SimplePlayButton());
 					break;
@@ -137,7 +139,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 					visualChildren.push(new SimpleTotalTime());
 					break;
 				case 'SimplePlaylist':
-					const playlist = new SimplePlaylist();
+					playlist = new SimplePlaylist();
 					playlist.playlist = this.playerService.playlist;
 					visualChildren.push(playlist);
 					break;
@@ -203,20 +205,21 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.seekPerPercentage(event.detail.percentage);
 	}
 
-  public processEventSeekPerPercentageAndIndex(event: CustomEvent) {
-	  console.log('SEEK INDEX',event.detail.percentage,event.detail.index)
-    //this.seekPerPercentage(event.detail.percentage,event.detail.index);
-  }
+	public processEventSeekPerPercentageAndIndex(event: CustomEvent) {
+		const { index, percentage } = event.detail;
+		if (index !== this.playerService.index) {
+			this.playerService.index = index;
+		}
+		this.seekPerPercentage(percentage, index);
+	}
 
-	public seekPerPercentage(percentage: number,index?:number) {
+	public seekPerPercentage(percentage: number, index?: number) {
 		if (!this.playerService) return;
-		if (index !==undefined && index!==null){
-      this.playerService.seekPerPercentage(percentage,index);
-    }
-		else {
-      this.playerService.seekPerPercentage(percentage);
-    }
-
+		if (index !== undefined && index !== null) {
+			this.playerService.seekPerPercentage(percentage, index);
+		} else {
+			this.playerService.seekPerPercentage(percentage);
+		}
 	}
 
 	public processEventSeekPerPosition(event: CustomEvent) {
@@ -280,10 +283,10 @@ export class HTMLRumblePlayer extends HTMLElement {
 				'seekPerPosition',
 				this.processEventSeekPerPositionRef
 			);
-      vc.addEventListener(
-        'seekPerPercentageAndIndex',
-        this.processEventSeekPerPercentageAndIndexRef
-      );
+			vc.addEventListener(
+				'seekPerPercentageAndIndex',
+				this.processEventSeekPerPercentageAndIndexRef
+			);
 		});
 	}
 
@@ -301,6 +304,10 @@ export class HTMLRumblePlayer extends HTMLElement {
 			vc.removeEventListener(
 				'seekPerPosition',
 				this.processEventSeekPerPositionRef
+			);
+			vc.removeEventListener(
+				'seekPerPercentageAndIndex',
+				this.processEventSeekPerPercentageAndIndexRef
 			);
 		});
 	}
