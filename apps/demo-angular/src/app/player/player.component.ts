@@ -69,6 +69,7 @@ export class PlayerComponent implements AfterViewInit {
 	ngAfterViewInit() {
 		if (this.playerHTML) {
 			this.playerHTML.nativeElement.setPlayer(this.player);
+			//this.player.setPLaylistFromRSSFeedURL('http://127.0.0.1:8000/feed')
 			this.playerHTML.nativeElement.loadConfig('config5');
 		} else {
 			console.warn('PlayerHTML Linear is not available');

@@ -96,7 +96,6 @@ export class RumblePlayerService {
 	set position(value: number) {
 		this._position = value;
 	}
-
 	constructor() {
 		this._playlist = [];
 		this._index = -1;
@@ -344,6 +343,7 @@ export class RumblePlayerService {
 	}
 
 	public setPlaylistFromUrls(urls: string[]) {
+		console.log('RSS set playlist', urls);
 		this.playlist = urls.map((url, index) => {
 			return {
 				title: 'Song ' + index,
@@ -352,6 +352,25 @@ export class RumblePlayerService {
 				id: uuidv4(),
 			} as Song;
 		});
+	}
+	public setPLaylistFromRSSFeedURL(url: string) {
+		return fetch(url)
+			.then((r) => r.text())
+			.then((r) => {
+				const parser = new DOMParser();
+				const dom = parser.parseFromString(r, 'application/xml');
+				const songList = [];
+				dom.documentElement
+					.querySelectorAll('item')
+					.forEach((value, key) => {
+						songList.push(value.querySelector('link').textContent);
+					});
+				console.log('RSS Decoded', songList);
+				this.setPlaylistFromUrls(songList);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
 	}
 
 	async download(index?: number) {
