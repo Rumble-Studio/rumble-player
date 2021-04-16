@@ -1,21 +1,6 @@
 import { RumblePlayerService } from './playerService';
 import { GenericVisual } from './GenericVisual';
 import {
-	LinearBar,
-	SimpleBackwardButton,
-	SimpleForwardButton,
-	SimpleNextButton,
-	SimplePauseButton,
-	SimplePlayButton,
-	SimplePrevButton,
-	SimpleStopButton,
-	SimpleTimeLeft,
-	SimplePlaylist,
-	SimpleTimeSpent,
-	SimpleTotalTime,
-	MultiLinearBar,
-} from '../index';
-import {
 	config1,
 	config2,
 	config3,
@@ -23,6 +8,19 @@ import {
 	config5,
 	configPlayPause,
 } from '../config/configs';
+import { LinearBar } from './visuals/linear/LinearBar';
+import { MultiLinearBar } from './visuals/linear/MultiLinearBar';
+import { SimplePlayButton } from './visuals/buttons/simplePlayButton';
+import { SimplePauseButton } from './visuals/buttons/simplePauseButton';
+import { SimpleStopButton } from './visuals/buttons/simpleStopButton';
+import { SimpleNextButton } from './visuals/buttons/simpleNextButton';
+import { SimplePrevButton } from './visuals/buttons/simplePrevButton';
+import { SimpleForwardButton } from './visuals/buttons/simpleForwardButton';
+import { SimpleBackwardButton } from './visuals/buttons/simpleBackwardButton';
+import { SimpleTimeLeft } from './visuals/SimpleTimeLeft';
+import { SimpleTimeSpent } from './visuals/SimpleTimeSpent';
+import { SimpleTotalTime } from './visuals/SimpleTotalTime';
+import { SimplePlaylist } from './visuals/playlist/SimplePlaylist';
 
 export interface playerConfig {
 	[key: string]: string | string[];
@@ -206,11 +204,19 @@ export class HTMLRumblePlayer extends HTMLElement {
 	}
 
 	public processEventSeekPerPercentageAndIndex(event: CustomEvent) {
-		const { index, percentage } = event.detail;
-		if (index !== this.playerService.index) {
+		const { index, percentage, stopOthers, keepPlaying, updateGlobalIndex } = event.detail;
+
+		const wasPlaying = this.playerService.isPlaying;
+
+		if (stopOthers) this.playerService.stop();
+
+		if (index !== this.playerService.index && updateGlobalIndex) {
 			this.playerService.index = index;
 		}
+
 		this.seekPerPercentage(percentage, index);
+		if (keepPlaying && wasPlaying) this.playerService.play(index);
+
 	}
 
 	public seekPerPercentage(percentage: number, index?: number) {

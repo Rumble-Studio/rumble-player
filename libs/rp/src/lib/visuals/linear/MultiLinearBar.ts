@@ -1,5 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
-import { playerServiceEvent, RumblePlayerService } from '@rumble-player/rp';
+import { RumblePlayerService } from '../../playerService';
 
 export class MultiLinearBar extends GenericVisual {
 	protected _kind = 'MultiLinearBar';
@@ -33,7 +33,7 @@ export class MultiLinearBar extends GenericVisual {
       }
       `;
 		});
-		console.log('DIV is', mainStyle, this.div);
+		// console.log('DIV is', mainStyle, this.div);
 		this._shadow.querySelector('style').textContent = mainStyle;
 		this.list_of_children = [style];
 	}
@@ -67,7 +67,7 @@ export class MultiLinearBar extends GenericVisual {
 			const bcr = div.getBoundingClientRect();
 			const percentage = (event.clientX - bcr.left) / bcr.width;
 			const clickEvent = new CustomEvent('seekPerPercentageAndIndex', {
-				detail: { percentage, index },
+				detail: { percentage, index, stopOthers:true, keepPlaying:true, updateGlobalIndex:true },
 			});
 			this.dispatchEvent(clickEvent);
 		});

@@ -1,4 +1,4 @@
-import { GenericVisual } from '@rumble-player/rp';
+import { GenericVisual } from "../GenericVisual";
 
 export class SimpleTimeLeft extends GenericVisual {
 	private totalDuration = 0;
