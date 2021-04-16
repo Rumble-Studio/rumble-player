@@ -6,7 +6,7 @@ export class SimplePlayButton extends GenericVisual {
 	button: HTMLInputElement;
 	index: number;
 
-	constructor(index = 0) {
+	constructor(index = -2) {
 		super();
 		this.index = index;
 	}

@@ -1,7 +1,7 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
 
-export const UPDATE_DELAY = 100;
+export const UPDATE_DELAY = 500;
 
 export interface Song {
 	id: string; // unique id to identify the song even when we add new song to the playlist
@@ -130,9 +130,18 @@ export class RumblePlayerService {
 		this.newPercentageCallback(this.percentage);
 	}
 
+	getSong(index: number, instanciateHowlIfMissing = true) {
+		const song = this._playlist[index];
+		if (!song.howl && instanciateHowlIfMissing) {
+			song.howl = this.createHowlWithBindings(song);
+		}
+		return song;
+	}
+
 	createHowlWithBindings(song: Song) {
 		const howl = new Howl({
 			src: [song.file],
+			html5: true,
 			onplayerror: (error) => {
 				console.log('error howler playing', error);
 				this.playingOff();
@@ -182,10 +191,8 @@ export class RumblePlayerService {
 		console.log('Asked to play  From Service 2:', indexToPlay);
 
 		// Check howl instance to play
-		const song = this._playlist[indexToPlay];
-		if (!song.howl) {
-			song.howl = this.createHowlWithBindings(song);
-		}
+		const song = this.getSong(indexToPlay);
+
 		// Check if howl is already playing
 		if (song.howl.playing()) {
 			return Promise.resolve(indexToPlay);
@@ -288,57 +295,56 @@ export class RumblePlayerService {
 	}
 
 	public seekPerPercentage(percentage: number, index?: number) {
-		// Seek to a given percentage of actual song
-		// get current song
-		const isPlaying = this.isPlaying;
-		this.pause();
-		let song = null;
-		if (index !== undefined && index !== null) {
-			song = this.playlist[index];
-			console.log('SEEK INDEX', index, song);
-			this.index = index;
-		} else {
-			song = this.playlist[this._index];
-		}
+		if (this._playlist.length === 0) return;
 
-		//check if song is initialised
-		if (!song.howl) {
-			song.howl = this.createHowlWithBindings(song);
-			if (song.howl.state() === 'loading') {
-				song.howl.once('load', () => {
-					song.howl.seek(percentage * song.howl.duration());
-				});
-			} else if (song.howl.state() === 'loaded') {
-				song.howl.seek(percentage * song.howl.duration());
-			}
-		} else {
-			song.howl.seek(percentage * song.howl.duration());
+		let indexToSeek = this.index;
+		if (index !== undefined && index > -1 && index < this.playlist.length) {
+			indexToSeek = index;
 		}
-		this.dispatchPlayerEvent(playerServiceEventType.seek);
-		// console.log('song status ', song.howl.state())
-		//get song duration
-		// convert percentage to position
-		// seek
-		//play if playing
-		if (isPlaying) {
-			this.play();
+		const song = this.getSong(indexToSeek);
+		if (song.howl.state() === 'loading') {
+			song.howl.once('load', () => {
+				const position = percentage * song.howl.duration();
+				this.seekPerPosition(position, indexToSeek);
+			});
+		} else if (song.howl.state() === 'loaded') {
+			const position = percentage * song.howl.duration();
+			this.seekPerPosition(position, indexToSeek);
 		}
 	}
+
 	// Move player head to a given time position (s)
 	public seekPerPosition(position: number, index?: number) {
 		if (this._playlist.length === 0) return;
-		const indexToSeek = index || this.index;
-		const song = this._playlist[indexToSeek];
-		console.log('position is ', position);
-		if (!song.howl) {
-			song.howl = this.createHowlWithBindings(song);
+
+		let indexToSeek = this.index;
+		if (index !== undefined && index > -1 && index < this.playlist.length) {
+			indexToSeek = index;
 		}
+		const song = this.getSong(indexToSeek);
+
 		if (position > song.howl.duration()) {
 			this.next();
 		} else if (position < 0) {
 			song.howl.seek(0);
 		} else {
 			song.howl.seek(position);
+		}
+	}
+
+	public getSongTimeLeft(index?: number) {
+		if (this._playlist.length === 0) return -1;
+
+		let indexToSeek = this.index;
+		if (index !== undefined && index > -1 && index < this.playlist.length) {
+			indexToSeek = index;
+		}
+		const song = this.getSong(indexToSeek);
+		if (song.howl.state() === 'loading') {
+			// TODO: can we improve behaviour with a Promise?
+			return -1;
+		} else if (song.howl.state() === 'loaded') {
+			return song.howl.duration() - <number>song.howl.seek();
 		}
 	}
 
@@ -416,6 +422,7 @@ export class RumblePlayerService {
 		this.playerStateChangedCallback(event);
 	}
 }
+
 enum playerServiceEventType {
 	'play' = 'play',
 	'pause' = 'pause',
@@ -424,12 +431,14 @@ enum playerServiceEventType {
 	'prev' = 'prev',
 	'seek' = 'seek',
 }
+
 export interface playerState {
 	position: number;
 	percentage: number;
 	index: number;
 	playing: boolean;
 }
+
 export interface playerServiceEvent {
 	type: playerServiceEventType;
 	state: playerState;

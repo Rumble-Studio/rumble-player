@@ -26,13 +26,9 @@ export class SimpleTimeLeft extends GenericVisual {
 	}
 
 	protected updateVisual() {
-		super.updateVisual();
-		const position = this.playerService.position;
-		const duration = this.playerService.playlist[
-			this.playerService.index
-		].howl.duration();
+		const timeLeft = this.playerService.getSongTimeLeft()
 		this.time.innerText =
-			'Time Left : ' + Math.round(duration - position).toString();
+			'Time Left : ' + Math.round(timeLeft).toString();
 		this._shadow.querySelector('style').textContent = this.generateStyle();
 	}
 	generateStyle() {

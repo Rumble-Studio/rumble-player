@@ -1,5 +1,13 @@
 # TODO
 
+
+- mettre les fonctions d'estimation du temps passé à venir total dans le playerService
+- n'avoir aucun message d'erreur dans les logs
+- savoir sacrifier le cahier des charges pour sortir une premiere version robuste et ajouter un TODO
+
+
+
+
 -  new components:
    -  create a simplePlaylist visual
       -  parameter: title (optional)
