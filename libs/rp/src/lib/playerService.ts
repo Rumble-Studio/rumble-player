@@ -348,6 +348,22 @@ export class RumblePlayerService {
 		}
 	}
 
+  public getSongTotalTime(index?: number) {
+    if (this._playlist.length === 0) return -1;
+
+    let indexToSeek = this.index;
+    if (index !== undefined && index > -1 && index < this.playlist.length) {
+      indexToSeek = index;
+    }
+    const song = this.getSong(indexToSeek);
+    if (song.howl.state() === 'loading') {
+      // TODO: can we improve behaviour with a Promise?
+      return -1;
+    } else if (song.howl.state() === 'loaded') {
+      return song.howl.duration();
+    }
+  }
+
 	public setPlaylistFromUrls(urls: string[]) {
 		console.log('RSS set playlist', urls);
 		this.playlist = urls.map((url, index) => {

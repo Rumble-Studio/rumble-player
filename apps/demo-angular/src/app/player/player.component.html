@@ -21,7 +21,7 @@ Current position: {{ player.position | number: '1.1-1' }} <br />
 				>
 			</li>
 			<li>position: {{ song.position | number: '1.1-1' }}</li>
-			<li>playing: {{ song.howl?.playing() }}</li>
+			<li>playing: {{ song.howl?.playing() || false }}</li>
 		</ul>
 	</li>
 </ol>

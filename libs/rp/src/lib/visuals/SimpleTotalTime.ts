@@ -27,9 +27,7 @@ export class SimpleTotalTime extends GenericVisual {
 
 	protected updateVisual() {
 		super.updateVisual();
-		const duration = this.playerService.playlist[
-			this.playerService.index
-		].howl.duration();
+		const duration = this.playerService.getSongTotalTime()
 		this.time.innerText = 'Total Time : ' + Math.round(duration).toString();
 		this._shadow.querySelector('style').textContent = this.generateStyle();
 	}
