@@ -52,6 +52,12 @@ export class SimplePlaylist extends GenericVisual {
 		div.style.width = '90%';
 		div.style.minHeight = '20px';
 
+		// Dragging feature
+    div.draggable = true
+    div.ondragover = (ev => {ev.preventDefault()})
+    
+
+
 		const p = document.createElement('p');
 		p.innerText = song.title;
 		div.appendChild(p);
