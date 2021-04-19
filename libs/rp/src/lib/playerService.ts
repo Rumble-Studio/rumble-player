@@ -295,6 +295,7 @@ export class RumblePlayerService {
 	}
 
 	public seekPerPercentage(percentage: number, index?: number) {
+		console.log('SEEK PER PERCENTAGE', percentage, index);
 		if (this._playlist.length === 0) return;
 
 		let indexToSeek = this.index;
@@ -315,6 +316,8 @@ export class RumblePlayerService {
 
 	// Move player head to a given time position (s)
 	public seekPerPosition(position: number, index?: number) {
+		console.log('SEEK PER POSITION', position, index);
+
 		if (this._playlist.length === 0) return;
 
 		let indexToSeek = this.index;
@@ -323,12 +326,24 @@ export class RumblePlayerService {
 		}
 		const song = this.getSong(indexToSeek);
 
-		if (position > song.howl.duration()) {
-			this.next();
-		} else if (position < 0) {
-			song.howl.seek(0);
-		} else {
-			song.howl.seek(position);
+		if (song.howl.state() === 'loading') {
+			song.howl.once('load', () => {
+				if (position > song.howl.duration()) {
+					this.next();
+				} else if (position < 0) {
+					song.howl.seek(0);
+				} else {
+					song.howl.seek(position);
+				}
+			});
+		} else if (song.howl.state() === 'loaded') {
+			if (position > song.howl.duration()) {
+				this.next();
+			} else if (position < 0) {
+				song.howl.seek(0);
+			} else {
+				song.howl.seek(position);
+			}
 		}
 	}
 
@@ -348,21 +363,21 @@ export class RumblePlayerService {
 		}
 	}
 
-  public getSongTotalTime(index?: number) {
-    if (this._playlist.length === 0) return -1;
+	public getSongTotalTime(index?: number) {
+		if (this._playlist.length === 0) return -1;
 
-    let indexToSeek = this.index;
-    if (index !== undefined && index > -1 && index < this.playlist.length) {
-      indexToSeek = index;
-    }
-    const song = this.getSong(indexToSeek);
-    if (song.howl.state() === 'loading') {
-      // TODO: can we improve behaviour with a Promise?
-      return -1;
-    } else if (song.howl.state() === 'loaded') {
-      return song.howl.duration();
-    }
-  }
+		let indexToSeek = this.index;
+		if (index !== undefined && index > -1 && index < this.playlist.length) {
+			indexToSeek = index;
+		}
+		const song = this.getSong(indexToSeek);
+		if (song.howl.state() === 'loading') {
+			// TODO: can we improve behaviour with a Promise?
+			return -1;
+		} else if (song.howl.state() === 'loaded') {
+			return song.howl.duration();
+		}
+	}
 
 	public setPlaylistFromUrls(urls: string[]) {
 		console.log('RSS set playlist', urls);
@@ -375,6 +390,7 @@ export class RumblePlayerService {
 			} as Song;
 		});
 	}
+
 	public setPLaylistFromRSSFeedURL(url: string) {
 		return fetch(url)
 			.then((r) => r.text())
