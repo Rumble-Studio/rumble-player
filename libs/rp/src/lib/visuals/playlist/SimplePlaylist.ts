@@ -55,7 +55,6 @@ export class SimplePlaylist extends GenericVisual {
 		// Dragging feature
     div.draggable = true
     div.ondragover = (ev => {ev.preventDefault()})
-    
 
 
 		const p = document.createElement('p');
