@@ -21,8 +21,8 @@ Current position: {{ player.position | number: '1.1-1' }} <br />
 				>
 			</li>
 
-			<li>loaded: {{ song.loaded }}</li>
-			<li>valid: {{ song.valid }}</li>
+			<li>loaded: {{ song.loaded || false }}</li>
+			<li>valid: {{ song.valid || false }}</li>
 			<li>duration: {{ song.duration | number: '1.1-1' }}</li>
 			<li>position: {{ song.position | number: '1.1-1' }}</li>
 			<li>playing: {{ song.howl?.playing() || false }}</li>

@@ -144,7 +144,7 @@ export class RumblePlayerService {
 		}
 
 		if (!song.howl && instanciateHowlIfMissing) {
-			song.howl = this.createHowlWithBindings(song);
+			song.howl = this.createHowlWithBindings(song,index);
 			if (!song.howl) {
 				song.valid = false;
 			}
@@ -152,8 +152,10 @@ export class RumblePlayerService {
 		return song;
 	}
 
-	createHowlWithBindings(song: Song): Howl | null {
+	createHowlWithBindings(song: Song,index=-1): Howl | null {
 		// Extract the file extension from the URL or base64 data URI.
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this
 		const str = song.file;
 		let ext: RegExpExecArray = /^data:audio\/([^;,]+);/i.exec(str);
 		if (!ext) {
@@ -165,6 +167,10 @@ export class RumblePlayerService {
 			console.error(
 				'This file does not have an extension and will be ignored by the player'
 			);
+      if(index>-1){
+        that._playlist[index].valid=false
+        that._playlist[index].loaded=false
+      }
 			return null;
 		}
 		const howl = new Howl({
@@ -173,19 +179,27 @@ export class RumblePlayerService {
 			onplayerror: (error) => {
 				console.log('error howler playing', error);
 				this.playingOff();
+        if(index>-1){
+          that._playlist[index].valid=false
+          that._playlist[index].loaded=false
+        }
 			},
 			onload: () => {
-				
+
 				// console.log('Song loaded, duration is ', song.howl.duration());
 				// song.duration = song.howl.duration();
-				song.loaded = true;
-				song.valid = true;
+        if(index>-1){
+          that._playlist[index].valid=true
+          that._playlist[index].loaded=true
+        }
 			},
 			onloaderror: (error) => {
 				console.log('error howler loading', error);
 				this.playingOff();
-				song.loaded = false;
-				song.valid = false;
+        if(index>-1){
+          that._playlist[index].valid=false
+          that._playlist[index].loaded=false
+        }
 			},
 			onend: () => {
 				console.log('%cend.', 'color:cyan');
@@ -209,34 +223,15 @@ export class RumblePlayerService {
 		return howl;
 	}
 
-	// preloadPlaylist() {
-	// 	const promises = [];
-	// 	for (const song of this.playlist) {
-	// 		song.howl = this.createHowlWithBindings(song);
 
-	// 		const myPromise = new Promise((resolve) => {
-	// 			song.howl.on('load', () => {
-	// 				console.log('loaded_', song);
-	// 				song.valid = true;
-	// 				resolve(true);
-	// 			});
-	// 			// HOWLER.JS known issue (line 693):
-	// 			song.howl.on('loaderror', () => {
-	// 				console.log('loaded_ error', song);
-	// 				resolve(false);
-	// 			});
-	// 		});
-	// 		promises.push(myPromise);
-	// 	}
-	// 	return promises;
-	// }
 
 	preloadPlaylist() {
-		this._playlist.forEach((song) => this.createHowlWithBindings(song));
+		this._playlist.forEach((song,index) => this.createHowlWithBindings(song,index));
 	}
 
 	// should return as a promise the current index asked to be played
 	public play(index?: number): Promise<number> {
+
 		console.log('Asked to play From Service 1:', index);
 
 		if (index > -1 && index < this.playlist.length) {
@@ -257,12 +252,15 @@ export class RumblePlayerService {
 		}
 
 		// Check if howl is already playing
-		if (song.howl.playing()) {
-			return Promise.resolve(indexToPlay);
-		} else {
-			song.howl.play();
-			return Promise.resolve(indexToPlay);
-		}
+    if(song.valid){
+      if (song.howl.playing()) {
+        return Promise.resolve(indexToPlay);
+      } else {
+        song.howl.play();
+        return Promise.resolve(indexToPlay);
+      }
+    }
+
 	}
 
 	public pause(index?: number) {
@@ -329,6 +327,10 @@ export class RumblePlayerService {
 		}
 
 		// re-use value from before stop
+    if(!this._playlist[this.index].valid){
+      this.next()
+      return
+    }
 		if (isPlaying) {
 			this.play();
 		}
@@ -342,7 +344,8 @@ export class RumblePlayerService {
 		const song = this.getSong(this.index);
 		if (song.howl && song.valid) {
 			const currentPosition = song.howl.seek() as number;
-			if (currentPosition < 2) {
+			if (currentPosition > 2) {
+			  console.log('Will restart play')
 				this.seekPerPosition(0);
 				this.dispatchPlayerEvent(playerServiceEventType.prev);
 				return;
@@ -365,6 +368,10 @@ export class RumblePlayerService {
 		} else {
 			this.index -= 1;
 		}
+    if(!this._playlist[this.index].valid){
+      this.prev()
+      return
+    }
 
 		if (isPlaying) {
 			this.play();

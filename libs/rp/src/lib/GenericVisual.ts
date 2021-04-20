@@ -53,7 +53,7 @@ export class GenericVisual extends HTMLElement {
 		this.updateVisual();
 	}
 	protected updateState(state: playerServiceEvent) {
-		console.log('STATE CHANGED', state, this.kind);
+		//console.log('STATE CHANGED', state, this.kind);
 	}
 
 	// Generic visual construction
