@@ -33,11 +33,11 @@ export class SimplePlaylist extends GenericVisual {
 
 	updateContentVisual() {
 		this.div.innerHTML = '';
-		const p = document.createElement('p')
-    p.innerText = this.playlistTitle
-		this.div.appendChild(p)
-		this._playlist.forEach((value, index,array) => {
-			const line = this.generateLine(value, index,array.length);
+		const p = document.createElement('p');
+		p.innerText = this.playlistTitle;
+		this.div.appendChild(p);
+		this._playlist.forEach((value, index, array) => {
+			const line = this.generateLine(value, index, array.length);
 			this.div.appendChild(line);
 		});
 		this.list_of_children[1] = this.div;
@@ -45,72 +45,43 @@ export class SimplePlaylist extends GenericVisual {
 		this._shadow.querySelector('style').textContent = this.generateStyle();
 		// this.progressDiv.style.width = 100 * this.percentage + 'px';
 	}
-	swapElements(oldIndex:number,newIndex:number){
-    //
-  }
-	generateLine(song: Song, index: number, total:number): HTMLDivElement {
+
+	swapElements(oldIndex: number, newIndex: number) {
+		//
+	}
+
+	generateLine(song: Song, index: number, total: number): HTMLDivElement {
 		// Each line of the playlist
 		const div = document.createElement('div');
 		div.style.display = 'flex';
 		div.style.flexDirection = 'row';
-		div.style.alignItems = 'center'
+		div.style.alignItems = 'center';
 		div.style.justifyContent = 'space-between';
 		div.style.border = '1px solid blue';
 		div.style.width = '90%';
 		div.style.height = '30px';
 
 		// Dragging feature
-    div.draggable = true
+		div.draggable = true;
 
-    div.ondragover = (ev => ev.preventDefault())
-    div.ondragstart = (e => {
-      const startC = e.clientY
-      const startP = e.clientY
-      const shiftY = e.clientY - div.parentElement.getBoundingClientRect().top
-      div.ondragend = (ev => {
-
-        const newTop = ev.clientY - div.parentElement.getBoundingClientRect().top;
-        const minTop = Math.max(1,newTop)
-        const maxTop = Math.min(minTop,total*div.scrollHeight)
-        const finalIndex = Math.floor(maxTop/(div.scrollHeight))
-        console.log(ev.clientY-startC,maxTop,finalIndex)
-      })
-    })
-
-    /*div.onmousedown = (ev => {
-      ev.preventDefault()
-      const shiftY = ev.clientY - div.getBoundingClientRect().top;
-      //console.log(shiftY,ev.clientY,div.getBoundingClientRect().top)
-      // shiftY not needed, the thumb moves only horizontally
-
-      div.addEventListener('mousemove', onMouseMove);
-      div.addEventListener('mouseup', onMouseUp);
-
-      function onMouseMove(event) {
-        let newTop = event.clientY - shiftY - div.parentElement.getBoundingClientRect().top;
-        console.log(newTop)
-
-        // the pointer is out of slider => lock the thumb within the bounaries
-        if (newTop < 0) {
-          newTop = 0;
-        }
-        const bottomEdge = div.parentElement.offsetHeight - div.offsetHeight;
-        if (newTop > bottomEdge) {
-          newTop = bottomEdge;
-        }
-
-        div.style.top = newTop + 'px';
-      }
-
-      function onMouseUp() {
-        div.removeEventListener('mouseup', onMouseUp);
-        div.removeEventListener('mousemove', onMouseMove);
-      }
-    })*/
-
+		div.ondragover = (ev) => ev.preventDefault();
+		div.ondragstart = (e) => {
+			const startC = e.clientY;
+			const startP = e.clientY;
+			const shiftY =
+				e.clientY - div.parentElement.getBoundingClientRect().top;
+			div.ondragend = (ev) => {
+				const newTop =
+					ev.clientY - div.parentElement.getBoundingClientRect().top;
+				const minTop = Math.max(1, newTop);
+				const maxTop = Math.min(minTop, total * div.scrollHeight);
+				const finalIndex = Math.floor(maxTop / div.scrollHeight);
+				console.log(ev.clientY - startC, maxTop, finalIndex);
+			};
+		};
 
 		const p = document.createElement('p');
-		p.innerText = song.title;
+		p.innerText = song.title + '('+song.valid+')';
 		div.appendChild(p);
 		const playButton = document.createElement('input');
 		playButton.setAttribute('type', 'button');

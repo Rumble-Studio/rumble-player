@@ -20,6 +20,10 @@ Current position: {{ player.position | number: '1.1-1' }} <br />
 					>[selected]</strong
 				>
 			</li>
+
+			<li>loaded: {{ song.loaded }}</li>
+			<li>valid: {{ song.valid }}</li>
+			<li>duration: {{ song.duration | number: '1.1-1' }}</li>
 			<li>position: {{ song.position | number: '1.1-1' }}</li>
 			<li>playing: {{ song.howl?.playing() || false }}</li>
 		</ul>

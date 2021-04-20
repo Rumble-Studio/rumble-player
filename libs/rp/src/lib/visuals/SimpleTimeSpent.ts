@@ -1,4 +1,4 @@
-import { GenericVisual } from "../GenericVisual";
+import { GenericVisual } from '../GenericVisual';
 
 export class SimpleTimeSpent extends GenericVisual {
 	private totalDuration = 0;
