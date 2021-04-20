@@ -1,5 +1,6 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
+import { resolve } from '@angular/compiler-cli/src/ngtsc/file_system';
 
 export const UPDATE_DELAY = 500;
 
@@ -8,6 +9,10 @@ export interface Song {
 	title: string;
 	file: string;
 	howl: Howl | null;
+	duration: number | null;
+	loaded: boolean;
+	valid: boolean;
+	image?: string | null;
 	position?: number | null; // current seeking of position of the howl
 }
 
@@ -80,6 +85,7 @@ export class RumblePlayerService {
 		const eventIndexChange = new CustomEvent('newPlaylist', {
 			detail: playlist.length,
 		});
+		//this.preloadPlaylist()
 	}
 
 	// current duration
@@ -115,7 +121,7 @@ export class RumblePlayerService {
 		if (this._playlist.length === 0) return;
 		let duration = 0;
 		this._playlist.forEach((song: Song, songIndex: number) => {
-			if (song.howl) {
+			if (song.howl && song.valid) {
 				song.position = song.howl.seek() as number;
 			} else {
 				song.position = -1;
@@ -138,7 +144,20 @@ export class RumblePlayerService {
 		return song;
 	}
 
-	createHowlWithBindings(song: Song) {
+	createHowlWithBindings(song: Song): Howl | null {
+		// Extract the file extension from the URL or base64 data URI.
+		const str = song.file;
+		let ext: RegExpExecArray = /^data:audio\/([^;,]+);/i.exec(str);
+		if (!ext) {
+			ext = /\.([^.]+)$/.exec(str.split('?', 1)[0]);
+		}
+		const extLowerCase: string = ext ? ext[1].toString().toLowerCase() : '';
+		if (!extLowerCase) {
+			console.error(
+				'This file does not have an extension and will be ignored by the player'
+			);
+			return null;
+		}
 		const howl = new Howl({
 			src: [song.file],
 			html5: true,
@@ -148,10 +167,15 @@ export class RumblePlayerService {
 			},
 			onload: () => {
 				console.log('Song loaded, duration is ', song.howl.duration());
+				song.duration = song.howl.duration();
+				song.loaded = true;
+				song.valid = true;
 			},
 			onloaderror: (error) => {
 				console.log('error howler loading', error);
 				this.playingOff();
+				song.loaded = false;
+				song.valid = false;
 			},
 			onend: () => {
 				console.log('%cend.', 'color:cyan');
@@ -175,6 +199,29 @@ export class RumblePlayerService {
 		return howl;
 	}
 
+	preloadPlaylist() {
+		const promises = [];
+		for (const song of this.playlist) {
+			song.howl = this.createHowlWithBindings(song);
+			const myPromise = new Promise((resolve) => {
+				console.log('ALL LOADED LOADING', song);
+				song.howl.on('load', () => {
+					console.log('loaded_', song);
+					song.valid = true;
+					resolve(true);
+				});
+				// TODO onloaderror doesnt work du to issue
+				// found the error on line 693 of howlerjs
+				song.howl.on('loaderror', () => {
+					console.log('loaded_ error', song);
+					resolve(false);
+				});
+			});
+			promises.push(myPromise);
+		}
+		return promises;
+	}
+
 	// should return as a promise the current index asked to be played
 	public play(index?: number): Promise<number> {
 		console.log('Asked to play From Service 1:', index);
@@ -192,6 +239,9 @@ export class RumblePlayerService {
 
 		// Check howl instance to play
 		const song = this.getSong(indexToPlay);
+		if (song.howl && !song.valid) {
+			return;
+		}
 
 		// Check if howl is already playing
 		if (song.howl.playing()) {
@@ -208,14 +258,14 @@ export class RumblePlayerService {
 		if (index > -1 && index < this.playlist.length) {
 			console.log('Asked to pause:given index is', index);
 			const song = this._playlist[index];
-			if (song.howl) {
+			if (song.howl && song.valid) {
 				console.log('Asked to pause:given index is', index);
 				song.howl.pause();
 			}
 		} else {
 			// we pause all item in the playlist (several can play together)
 			this._playlist.forEach((song: Song, songIndex: number) => {
-				if (song.howl) {
+				if (song.howl && song.valid) {
 					song.howl.pause();
 				}
 			});
@@ -228,14 +278,14 @@ export class RumblePlayerService {
 
 		if (index) {
 			const song = this._playlist[index];
-			if (song.howl) {
+			if (song.howl && song.valid) {
 				song.howl.stop();
 				this.dispatchPlayerEvent(playerServiceEventType.stop);
 			}
 		} else {
 			// we stop all item in the playlist (several can play together)
 			this._playlist.forEach((song: Song, songIndex: number) => {
-				if (song.howl) {
+				if (song.howl && song.valid) {
 					song.howl.stop();
 					this.dispatchPlayerEvent(playerServiceEventType.stop);
 				}
@@ -269,7 +319,7 @@ export class RumblePlayerService {
 		if (this._playlist.length === 0) return;
 
 		const song = this._playlist[this.index];
-		if (song.howl) {
+		if (song.howl && song.valid) {
 			const currentPosition = song.howl.seek() as number;
 			if (currentPosition < 2) {
 				this.seekPerPosition(0);
@@ -356,7 +406,7 @@ export class RumblePlayerService {
 		}
 		const song = this.getSong(indexToSeek);
 		if (song.howl.state() === 'loading') {
-			// TODO: can we improve behaviour with a Promise?
+			// TODO: can we improve behaviour with a Promise?f
 			return -1;
 		} else if (song.howl.state() === 'loaded') {
 			return song.howl.duration() - <number>song.howl.seek();

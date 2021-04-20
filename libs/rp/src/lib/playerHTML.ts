@@ -204,7 +204,13 @@ export class HTMLRumblePlayer extends HTMLElement {
 	}
 
 	public processEventSeekPerPercentageAndIndex(event: CustomEvent) {
-		const { index, percentage, stopOthers, keepPlaying, updateGlobalIndex } = event.detail;
+		const {
+			index,
+			percentage,
+			stopOthers,
+			keepPlaying,
+			updateGlobalIndex,
+		} = event.detail;
 
 		const wasPlaying = this.playerService.isPlaying;
 
@@ -216,7 +222,6 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 		this.seekPerPercentage(percentage, index);
 		if (keepPlaying && wasPlaying) this.playerService.play(index);
-
 	}
 
 	public seekPerPercentage(percentage: number, index?: number) {

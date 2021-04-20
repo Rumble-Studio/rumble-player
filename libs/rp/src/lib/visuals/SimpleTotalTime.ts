@@ -1,4 +1,4 @@
-import { GenericVisual } from "../GenericVisual";
+import { GenericVisual } from '../GenericVisual';
 
 export class SimpleTotalTime extends GenericVisual {
 	private totalDuration = 0;
@@ -27,7 +27,7 @@ export class SimpleTotalTime extends GenericVisual {
 
 	protected updateVisual() {
 		super.updateVisual();
-		const duration = this.playerService.getSongTotalTime()
+		const duration = this.playerService.getSongTotalTime();
 		this.time.innerText = 'Total Time : ' + Math.round(duration).toString();
 		this._shadow.querySelector('style').textContent = this.generateStyle();
 	}
