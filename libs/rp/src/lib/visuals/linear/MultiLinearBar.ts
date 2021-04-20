@@ -41,15 +41,15 @@ export class MultiLinearBar extends GenericVisual {
 	constructor() {
 		super();
 	}
-	async drawOnPreload(player) {
-		const p = player.preloadPlaylist();
-		console.log('ALL LOADED', p);
-		await Promise.all(p)
-			.then((r) => console.log('ALL LOADED'))
-			.catch((er) => {
-				console.error(er);
-			});
-		console.log('ALL LOADED');
+	async drawOnPreload(player:RumblePlayerService) {
+		player.preloadPlaylist();
+		// console.log('ALL LOADED', p);
+		// await Promise.all(p)
+		// 	.then((r) => console.log('ALL LOADED'))
+		// 	.catch((er) => {
+		// 		console.error(er);
+		// 	});
+		// console.log('ALL LOADED');
 		let mainStyle = this.generateStyle();
 		this.div.innerHTML = '';
 		const style = document.createElement('style');
@@ -57,19 +57,19 @@ export class MultiLinearBar extends GenericVisual {
 
 		let maxDuration = 0;
 		let totalDuration = 0;
-		player.playlist.forEach((value) => {
-			if (value.valid) {
-				totalDuration = totalDuration + value.howl.duration();
+		player.playlist.forEach((song) => {
+			if (song.valid) {
+				totalDuration = totalDuration + song.howl.duration();
 			}
-			if (value.valid && value.howl.duration() > maxDuration) {
-				console.log('MAX DURATION', value.howl.duration());
-				maxDuration = value.howl.duration();
+			if (song.valid && song.howl.duration() > maxDuration) {
+				console.log('MAX DURATION', song.howl.duration());
+				maxDuration = song.howl.duration();
 			}
 		});
 		console.log('DURATION PROCESS TOTAL', totalDuration);
-		player.playlist.forEach((value, index, array) => {
+		player.playlist.forEach((song, index, array) => {
 			const div = this.generateSingleBar(index, 50);
-			const actualDuration = value.valid ? value.howl.duration() : 0;
+			const actualDuration = song.valid ? song.howl.duration() : 0;
 			console.log(
 				'DURATION PROCESS ACTUAL',
 				actualDuration,

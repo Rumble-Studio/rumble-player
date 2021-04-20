@@ -138,8 +138,16 @@ export class RumblePlayerService {
 
 	getSong(index: number, instanciateHowlIfMissing = true) {
 		const song = this._playlist[index];
+		if (!song.valid) {
+			// song invalid is return as it is without loading any more howl
+			return song;
+		}
+
 		if (!song.howl && instanciateHowlIfMissing) {
 			song.howl = this.createHowlWithBindings(song);
+			if (!song.howl) {
+				song.valid = false;
+			}
 		}
 		return song;
 	}
@@ -153,6 +161,7 @@ export class RumblePlayerService {
 		}
 		const extLowerCase: string = ext ? ext[1].toString().toLowerCase() : '';
 		if (!extLowerCase) {
+			// howler library can't manage file without extension
 			console.error(
 				'This file does not have an extension and will be ignored by the player'
 			);
@@ -166,8 +175,9 @@ export class RumblePlayerService {
 				this.playingOff();
 			},
 			onload: () => {
-				console.log('Song loaded, duration is ', song.howl.duration());
-				song.duration = song.howl.duration();
+				
+				// console.log('Song loaded, duration is ', song.howl.duration());
+				// song.duration = song.howl.duration();
 				song.loaded = true;
 				song.valid = true;
 			},
@@ -199,27 +209,30 @@ export class RumblePlayerService {
 		return howl;
 	}
 
+	// preloadPlaylist() {
+	// 	const promises = [];
+	// 	for (const song of this.playlist) {
+	// 		song.howl = this.createHowlWithBindings(song);
+
+	// 		const myPromise = new Promise((resolve) => {
+	// 			song.howl.on('load', () => {
+	// 				console.log('loaded_', song);
+	// 				song.valid = true;
+	// 				resolve(true);
+	// 			});
+	// 			// HOWLER.JS known issue (line 693):
+	// 			song.howl.on('loaderror', () => {
+	// 				console.log('loaded_ error', song);
+	// 				resolve(false);
+	// 			});
+	// 		});
+	// 		promises.push(myPromise);
+	// 	}
+	// 	return promises;
+	// }
+
 	preloadPlaylist() {
-		const promises = [];
-		for (const song of this.playlist) {
-			song.howl = this.createHowlWithBindings(song);
-			const myPromise = new Promise((resolve) => {
-				console.log('ALL LOADED LOADING', song);
-				song.howl.on('load', () => {
-					console.log('loaded_', song);
-					song.valid = true;
-					resolve(true);
-				});
-				// TODO onloaderror doesnt work du to issue
-				// found the error on line 693 of howlerjs
-				song.howl.on('loaderror', () => {
-					console.log('loaded_ error', song);
-					resolve(false);
-				});
-			});
-			promises.push(myPromise);
-		}
-		return promises;
+		this._playlist.forEach((song) => this.createHowlWithBindings(song));
 	}
 
 	// should return as a promise the current index asked to be played
@@ -294,12 +307,20 @@ export class RumblePlayerService {
 	}
 
 	public next() {
-		if (this._playlist.length === 0) return;
+		if (this._playlist.length === 0) {
+			console.warn("Can't do next: no file available.");
+			return;
+		}
 
 		// remember value before stopping
 		const isPlaying = this.isPlaying;
-
 		this.stop();
+
+		// if no other item is valid with stop
+		if (!this._playlist.some((s) => s.valid)) {
+			console.warn("Can't do next: no file valid.");
+			return;
+		}
 
 		if (this.index + 1 >= this._playlist.length) {
 			this.index = 0;
@@ -318,7 +339,7 @@ export class RumblePlayerService {
 		console.log('PREV BUTTON CALLED');
 		if (this._playlist.length === 0) return;
 
-		const song = this._playlist[this.index];
+		const song = this.getSong(this.index);
 		if (song.howl && song.valid) {
 			const currentPosition = song.howl.seek() as number;
 			if (currentPosition < 2) {
@@ -332,6 +353,13 @@ export class RumblePlayerService {
 		const isPlaying = this.isPlaying;
 
 		this.stop();
+
+		// if no other item is valid with stop
+		if (!this._playlist.some((s) => s.valid)) {
+			console.warn("Can't do prev: no file valid.");
+			return;
+		}
+
 		if (this.index - 1 < 0) {
 			this.index = this._playlist.length - 1;
 		} else {
@@ -405,6 +433,9 @@ export class RumblePlayerService {
 			indexToSeek = index;
 		}
 		const song = this.getSong(indexToSeek);
+		if (!song.valid) {
+			return -1;
+		}
 		if (song.howl.state() === 'loading') {
 			// TODO: can we improve behaviour with a Promise?f
 			return -1;
@@ -421,6 +452,9 @@ export class RumblePlayerService {
 			indexToSeek = index;
 		}
 		const song = this.getSong(indexToSeek);
+		if (!song.valid) {
+			return -1;
+		}
 		if (song.howl.state() === 'loading') {
 			// TODO: can we improve behaviour with a Promise?
 			return -1;

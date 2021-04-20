@@ -45,9 +45,11 @@ export class SimplePlaylist extends GenericVisual {
 		this._shadow.querySelector('style').textContent = this.generateStyle();
 		// this.progressDiv.style.width = 100 * this.percentage + 'px';
 	}
+
 	swapElements(oldIndex: number, newIndex: number) {
 		//
 	}
+
 	generateLine(song: Song, index: number, total: number): HTMLDivElement {
 		// Each line of the playlist
 		const div = document.createElement('div');
@@ -78,39 +80,8 @@ export class SimplePlaylist extends GenericVisual {
 			};
 		};
 
-		/*div.onmousedown = (ev => {
-      ev.preventDefault()
-      const shiftY = ev.clientY - div.getBoundingClientRect().top;
-      //console.log(shiftY,ev.clientY,div.getBoundingClientRect().top)
-      // shiftY not needed, the thumb moves only horizontally
-
-      div.addEventListener('mousemove', onMouseMove);
-      div.addEventListener('mouseup', onMouseUp);
-
-      function onMouseMove(event) {
-        let newTop = event.clientY - shiftY - div.parentElement.getBoundingClientRect().top;
-        console.log(newTop)
-
-        // the pointer is out of slider => lock the thumb within the bounaries
-        if (newTop < 0) {
-          newTop = 0;
-        }
-        const bottomEdge = div.parentElement.offsetHeight - div.offsetHeight;
-        if (newTop > bottomEdge) {
-          newTop = bottomEdge;
-        }
-
-        div.style.top = newTop + 'px';
-      }
-
-      function onMouseUp() {
-        div.removeEventListener('mouseup', onMouseUp);
-        div.removeEventListener('mousemove', onMouseMove);
-      }
-    })*/
-
 		const p = document.createElement('p');
-		p.innerText = song.title;
+		p.innerText = song.title + '('+song.valid+')';
 		div.appendChild(p);
 		const playButton = document.createElement('input');
 		playButton.setAttribute('type', 'button');
