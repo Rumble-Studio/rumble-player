@@ -12,23 +12,23 @@ export class MultiLinearBar extends GenericVisual {
 
 	set playerService(player: RumblePlayerService) {
 		super.playerService = player;
-		this.initView()
+		this.initView();
 	}
 
 	constructor() {
 		super();
 	}
-	initView(){
-    this.cleanShadow()
-    this.div.innerHTML = '';
-    let mainStyle = this.generateStyle();
-    const style = document.createElement('style');
-    this.div.setAttribute('id', 'bar');
-    this._playerService.playlist.forEach((value, index, array) => {
-      const div = this.generateSingleBar(index, 50);
-      div.shadowRoot.appendChild(document.createElement('style'));
-      this.shadowRoot.appendChild(div);
-      const tempStyle = `
+	initView() {
+		this.cleanShadow();
+		this.div.innerHTML = '';
+		let mainStyle = this.generateStyle();
+		const style = document.createElement('style');
+		this.div.setAttribute('id', 'bar');
+		this._playerService.playlist.forEach((value, index, array) => {
+			const div = this.generateSingleBar(index, 50);
+			div.shadowRoot.appendChild(document.createElement('style'));
+			this.shadowRoot.appendChild(div);
+			const tempStyle = `
       #bar${index.toString()}{
         width: ${100 / array.length}%;
         background-color: ${['red', 'green'][index % 2]};
@@ -39,50 +39,53 @@ export class MultiLinearBar extends GenericVisual {
         height:15px
       }
       `;
-      mainStyle = mainStyle + tempStyle;
-    });
-    this._shadow.querySelector('style').textContent = mainStyle;
-    this.list_of_children = [style];
-    this._playerService.preloadPlaylist();
-    this.drawOnPreload();
-  }
+			mainStyle = mainStyle + tempStyle;
+		});
+		this._shadow.querySelector('style').textContent = mainStyle;
+		this.list_of_children = [style];
+		this._playerService.preloadPlaylist();
+		this.drawOnPreload();
+	}
 	drawOnPreload() {
-
 		this.div.innerHTML = '';
 		const style = document.createElement('style');
 		this.div.setAttribute('id', 'bar');
 
+		this._playerService.playlist.forEach((song, index, array) => {
+			let mainStyle = this.generateStyle();
+			song.onload = (loadedSong) => {
+				if (
+					loadedSong.valid &&
+					loadedSong.howl.duration() > this.maxDuration
+				) {
+					console.log('MAX DURATION', loadedSong.howl.duration());
+					this.maxDuration = loadedSong.howl.duration();
+				}
+				if (loadedSong.valid) {
+					console.log(loadedSong);
+					this.totalDuration =
+						this.totalDuration + loadedSong.howl.duration();
+					const div = this.generateSingleBar(index, 50);
+					const actualDuration = song.valid ? song.howl.duration() : 0;
+					console.log(
+						'DURATION PROCESS ACTUAL',
+						actualDuration,
+						(100 * actualDuration) / this.totalDuration
+					);
 
-		this._playerService.playlist.forEach((song,index,array) => {
-      let mainStyle = this.generateStyle();
-		  song.onload=(loadedSong)=>{
-
-        if (loadedSong.valid && loadedSong.howl.duration() > this.maxDuration) {
-          console.log('MAX DURATION', loadedSong.howl.duration());
-          this.maxDuration = loadedSong.howl.duration();
-        }
-        if (loadedSong.valid) {
-          console.log(loadedSong)
-          this.totalDuration = this.totalDuration + loadedSong.howl.duration();
-          const div = this.generateSingleBar(index, 50);
-          const actualDuration = song.valid ? song.howl.duration() : 0;
-          console.log(
-            'DURATION PROCESS ACTUAL',
-            actualDuration,
-            (100 * actualDuration) / this.totalDuration
-          );
-
-          div.shadowRoot.appendChild(document.createElement('style'));
-          this.shadowRoot.replaceChild(
-            div,
-            this.shadowRoot.querySelectorAll('div').item(index)
-          );
-          for (let i = 0; i < index; i++) {
-            if(array[i].valid){
-              const actualDuration = array[i].howl.duration();
-              const tempStyle = `
+					div.shadowRoot.appendChild(document.createElement('style'));
+					this.shadowRoot.replaceChild(
+						div,
+						this.shadowRoot.querySelectorAll('div').item(index)
+					);
+					for (let i = 0; i < index; i++) {
+						if (array[i].valid) {
+							const actualDuration = array[i].howl.duration();
+							const tempStyle = `
               #bar${i.toString()}{
-                width: ${Math.floor((100 * actualDuration) / this.totalDuration)}%;
+                width: ${Math.floor(
+							(100 * actualDuration) / this.totalDuration
+						)}%;
                 background-color: ${['red', 'green'][i % 2]};
                 border: 1px solid blue;
                 box-sizing: border-box;
@@ -91,15 +94,19 @@ export class MultiLinearBar extends GenericVisual {
                 height:15px
               }
               `;
-              mainStyle = mainStyle + tempStyle;
-              this._shadow.querySelector('style').textContent = mainStyle;
-              this.list_of_children = [style];
-            }
-          }
-          if(song.valid ){
-            const tempStyle = `
+							mainStyle = mainStyle + tempStyle;
+							this._shadow.querySelector(
+								'style'
+							).textContent = mainStyle;
+							this.list_of_children = [style];
+						}
+					}
+					if (song.valid) {
+						const tempStyle = `
             #bar${index.toString()}{
-              width: ${Math.floor((100 * actualDuration) / this.totalDuration)}%;
+              width: ${Math.floor(
+						(100 * actualDuration) / this.totalDuration
+					)}%;
               background-color: ${['red', 'green'][index % 2]};
               box-sizing: border-box;
               position:relative;
@@ -107,26 +114,28 @@ export class MultiLinearBar extends GenericVisual {
               height:15px
             }
             `;
-            mainStyle = mainStyle + tempStyle;
-            this._shadow.querySelector('style').textContent = mainStyle;
-            this.list_of_children = [style];
-          }
-        }
-      }
-
+						mainStyle = mainStyle + tempStyle;
+						this._shadow.querySelector('style').textContent = mainStyle;
+						this.list_of_children = [style];
+					}
+				}
+			};
 		});
-		console.log('DURATION PROCESS TOTAL', this.totalDuration,this.shadowRoot);
-
+		console.log(
+			'DURATION PROCESS TOTAL',
+			this.totalDuration,
+			this.shadowRoot
+		);
 	}
 
-	cleanShadow(){
-    const shadowLength = this.shadowRoot.children.length
-    const elt = Array.from(this.shadowRoot.children)
-    for (let i=0; i < length; i++) {
-      this.shadowRoot.removeChild(elt[i])
-    }
-    console.log('SHADOW IS',this.shadowRoot)
-  }
+	cleanShadow() {
+		const shadowLength = this.shadowRoot.children.length;
+		const elt = Array.from(this.shadowRoot.children);
+		for (let i = 0; i < length; i++) {
+			this.shadowRoot.removeChild(elt[i]);
+		}
+		console.log('SHADOW IS', this.shadowRoot);
+	}
 
 	protected createHTMLElements() {
 		const style = document.createElement('style');
@@ -165,11 +174,11 @@ export class MultiLinearBar extends GenericVisual {
 		});
 		return div;
 	};
-  protected updateState(state: playerServiceEvent) {
-    if (state.type === 'newPlaylist') {
-      //this.initView()
-    }
-  }
+	protected updateState(state: playerServiceEvent) {
+		if (state.type === 'newPlaylist') {
+			//this.initView()
+		}
+	}
 
 	updateVisual() {
 		if (this._playerService) {

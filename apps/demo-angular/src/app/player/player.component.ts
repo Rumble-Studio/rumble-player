@@ -5,7 +5,10 @@ import {
 	RumblePlayerService,
 } from '@rumble-player/rp';
 
-import { fakePlaylist, fakePlaylistWithImage } from '../../config/dummyAudioData.config';
+import {
+	fakePlaylist,
+	fakePlaylistWithImage,
+} from '../../config/dummyAudioData.config';
 
 class MyDemoButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
@@ -92,7 +95,7 @@ export class PlayerComponent implements AfterViewInit {
 	// 	}
 	// 	return visualChildren;
 	// }
-  addSong() {
-    this.playerHTML.nativeElement.playerService.addSong(fakePlaylist[0])
-  }
+	addSong() {
+		this.playerHTML.nativeElement.playerService.addSong(fakePlaylist[0]);
+	}
 }

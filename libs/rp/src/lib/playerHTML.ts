@@ -88,9 +88,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'config5':
 					this.setFromConfig(config5);
 					break;
-        case 'config6':
-          this.setFromConfig(config6);
-          break;
+				case 'config6':
+					this.setFromConfig(config6);
+					break;
 				default:
 					break;
 			}
@@ -104,7 +104,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		const layout = config.visualChildren;
 		let playlist;
 		let image;
-		layout.forEach((value,index) => {
+		layout.forEach((value, index) => {
 			switch (value) {
 				case 'LinearBar':
 					visualChildren.push(new LinearBar());
@@ -142,14 +142,14 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'SimpleTotalTime':
 					visualChildren.push(new SimpleTotalTime());
 					break;
-        case 'SimpleImage':
-          image = new SimpleImage()
-          image.player = this.playerService
-          visualChildren.push(image);
-          break;
+				case 'SimpleImage':
+					image = new SimpleImage();
+					image.player = this.playerService;
+					visualChildren.push(image);
+					break;
 				case 'SimplePlaylist':
 					playlist = new SimplePlaylist();
-					playlist.playerService=this.playerService
+					playlist.playerService = this.playerService;
 					playlist.playlist = this.playerService.playlist;
 					visualChildren.push(playlist);
 					break;

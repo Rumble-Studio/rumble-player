@@ -80,22 +80,25 @@ export class SimplePlaylist extends GenericVisual {
 			};
 		};
 
-		const image = document.createElement('img')
-    image.setAttribute('src',song.image)
-    image.style.maxHeight='100px'
+		const image = document.createElement('img');
+		image.setAttribute('src', song.image);
+		image.style.maxHeight = '100px';
 		const p = document.createElement('p');
-    p.innerText = song.title + (song.valid == undefined ?' (false) ':' ('+String(song.valid)+')');
-    if(index===this._playerService.index){
-      p.style.fontWeight = 'bold'
-      p.innerHTML = song.title + ' (SELECTED)'
-    }
+		p.innerText =
+			song.title +
+			(song.valid == undefined
+				? ' (false) '
+				: ' (' + String(song.valid) + ')');
+		if (index === this._playerService.index) {
+			p.style.fontWeight = 'bold';
+			p.innerHTML = song.title + ' (SELECTED)';
+		}
 
-		song.onload=(song:Song)=>{
-		  const text = div.querySelector('p')
+		song.onload = (song: Song) => {
+			const text = div.querySelector('p');
 
-      text.innerHTML = song.title + '('+song.valid+')'
-
-    }
+			text.innerHTML = song.title + '(' + song.valid + ')';
+		};
 		div.appendChild(p);
 		const playButton = document.createElement('input');
 		playButton.setAttribute('type', 'button');
@@ -112,23 +115,23 @@ export class SimplePlaylist extends GenericVisual {
 		pauseButton.addEventListener('click', () => {
 			this._playerService.pause(index);
 		});
-		div.appendChild(image)
+		div.appendChild(image);
 		div.appendChild(playButton);
 		div.appendChild(pauseButton);
 		return div;
 	}
 
-  protected updateState(state: playerServiceEvent) {
-    if (state.type === 'newPlaylist') {
-      this.updateContentVisual()
-    }
-    if (state.type === 'play') {
-      console.log('PLAYED')
-      this.updateContentVisual()
-    }
-  }
+	protected updateState(state: playerServiceEvent) {
+		if (state.type === 'newPlaylist') {
+			this.updateContentVisual();
+		}
+		if (state.type === 'play') {
+			console.log('PLAYED');
+			this.updateContentVisual();
+		}
+	}
 
-  generateStyle() {
+	generateStyle() {
 		return `
 		#container{
 			width:90%;
