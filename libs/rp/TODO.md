@@ -1,61 +1,23 @@
 # TODO
 
-~~- create a method in playerService to add a song on demand
-playerService.addSong(song:Song)~~
 
-~~- depuis demo angular: ajouter un bouton pour appeler "playerService.addSong" with a new dummy song~~
+prendre du recul pour voir que c'est pas fini! Il y a pleins de petits bugs, pleins de edge case qui ne marche pas, l'affichage global n'est pas clair: le style de la playlist prend trop de place: RETIRE LE STYLE ! Je répète: RETIRE LE STYLE! Je veux une liste ordered (<ol>) avec des items (<li>) et pas des grands rectangles. On fera une custom playlist plus tard.
 
-~~- trouver un moyen pour que le visualChildren "simplePlaylist" et~~ "multiLinearBar" restent up-to-date avec l'état de la playlist.
 
--  ~~show which song is being played in playlist (with "selected" suffixe and bold text)~~
-   ~~- mettre à jour les songs de la playlist quand leurs états évoluent (avoid "undefined" on valid property)~~
+à faire pour la démo:
+- mettre un style CSS sur les artworks de la playlist pour corriger la taille: width:100px, height: 100px et object fit en cover
+- corriger/recoller la multilinearBar (découpée en morceau aujourd'hui) (ajouter overflow scroll horizontal)
+- ajouter un song avec le boutton "add song" ne semble pas pre-loader le fichier
+- play un song ajouté entraine une erreur dans les logs
+- faire en sorte que la simplePlaylist ne permette pas de jouer plusieurs morceaux ensemble (via les properties de l'event) (DEJA DEMANDé AUPARAVANT)
+- ajouter un dummy song qui n'a pas d'image (pour montrer "[NO IMAGE]")
+-  ajouter une option sur la multilinear bar pour "remplir" le progress de tous les song avant le song being played (et remplacer le blanc par une couleur semi transparente) : cela sera le behaviour par défaut.
+- composant simpleImage: ajouter du margin et un petit titre "image of selected song:" et mettre une taille max aussi: 300px
 
--  ajouter une option sur la multilinear bar pour remplir tous les song avant le song being played (et rempalcer le blanc par une couleur semi transparente)
 
-~~- improve multilinearbar poour respecter les durees de chaque song dans le rendu~~
-~~- add image to Song class~~
-~~- fill image proerty with rss feed~~
-~~- show image if any in playlist (100px \* 100px) sinon "[no image]"~~
-~~- composant simpleImage (show image of song of global index exactement comme Spotify)~~
-
--  remplacer dans playerHTML tous les noms mde fonction pour respecte le format "processEventXXXXXXX" par exemple "play()" devient "processEventPlay(event?:Event)" ou "processEventPlay(event?:CustomEvent)"
+-  remplacer dans playerHTML tous les noms de fonction pour respecte le format "processEventXXXXXXX" par exemple "play()" devient "processEventPlay(event?:Event)" ou "processEventPlay(event?:CustomEvent)"
 -  faire en sorte que la playlist puisse émettre un custom event "play" with "index to be played" qui sera processé par playerHTML avec en option le fait de stopper les autres (comme la multiLinearBar) et en option la possibilité de repartir de zéro (resetPosition)
    detail: { index, stopOthers:true, updateGlobalIndex:true, resetPosition:true },
 
-~~- FAIRE UNE NOTE: quel format de fichier RSS pour les podcasts ? .rss VS .html VS .xml (où mettre du style)~~
-~~- sur le playerService: setPLaylistFromRSSFeedURL~~
 
 -  re-order playlist (drag and drop)
-
-## archive code:
-
-    	/*div.onmousedown = (ev => {
-      ev.preventDefault()
-      const shiftY = ev.clientY - div.getBoundingClientRect().top;
-      //console.log(shiftY,ev.clientY,div.getBoundingClientRect().top)
-      // shiftY not needed, the thumb moves only horizontally
-
-      div.addEventListener('mousemove', onMouseMove);
-      div.addEventListener('mouseup', onMouseUp);
-
-      function onMouseMove(event) {
-        let newTop = event.clientY - shiftY - div.parentElement.getBoundingClientRect().top;
-        console.log(newTop)
-
-        // the pointer is out of slider => lock the thumb within the bounaries
-        if (newTop < 0) {
-          newTop = 0;
-        }
-        const bottomEdge = div.parentElement.offsetHeight - div.offsetHeight;
-        if (newTop > bottomEdge) {
-          newTop = bottomEdge;
-        }
-
-        div.style.top = newTop + 'px';
-      }
-
-      function onMouseUp() {
-        div.removeEventListener('mouseup', onMouseUp);
-        div.removeEventListener('mousemove', onMouseMove);
-      }
-    })*/
