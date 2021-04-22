@@ -168,6 +168,7 @@ export class MultiLinearBar extends GenericVisual {
 					stopOthers: true,
 					keepPlaying: true,
 					updateGlobalIndex: true,
+          finishOthers:false
 				},
 			});
 			this.dispatchEvent(clickEvent);
