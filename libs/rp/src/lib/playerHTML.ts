@@ -138,6 +138,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 					break;
 				case 'SimplePlaylist':
 					playlist = new SimplePlaylist();
+					playlist.playerService=this.playerService
 					playlist.playlist = this.playerService.playlist;
 					visualChildren.push(playlist);
 					break;

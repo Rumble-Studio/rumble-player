@@ -5,10 +5,10 @@
 
 ~~- depuis demo angular: ajouter un bouton pour appeler "playerService.addSong" with a new dummy song~~
 
-- trouver un moyen pour que le visualChildren "simplePlaylist" et "multiLinearBar" restent up-to-date avec l'état de la playlist.
+~~- trouver un moyen pour que le visualChildren "simplePlaylist" et~~ "multiLinearBar" restent up-to-date avec l'état de la playlist.
 
-- show which song is being played in playlist (with "selected" suffixe and bold text)
-- mettre à jour les songs de la playlist quand leurs états évoluent (avoid "undefined" on valid property)
+- ~~show which song is being played in playlist (with "selected" suffixe and bold text)~~
+~~- mettre à jour les songs de la playlist quand leurs états évoluent (avoid "undefined" on valid property)~~
 
 
 - ajouter une option sur la multilinear bar pour remplir tous les song avant le song being played (et rempalcer le blanc par une couleur semi transparente)

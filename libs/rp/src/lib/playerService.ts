@@ -227,7 +227,7 @@ export class RumblePlayerService {
 
 
 	preloadPlaylist() {
-		this._playlist.forEach((song,index) => this.createHowlWithBindings(song,index));
+		this._playlist.forEach((song,index) => song.howl=this.createHowlWithBindings(song,index));
 	}
 
 	addSong(url:string){

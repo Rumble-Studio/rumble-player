@@ -81,10 +81,17 @@ export class SimplePlaylist extends GenericVisual {
 		};
 
 		const p = document.createElement('p');
-		p.innerText = song.title + '(false)';
+    p.innerText = song.title + (song.valid == undefined ?' (false) ':' ('+String(song.valid)+')');
+    if(index===this._playerService.index){
+      p.style.fontWeight = 'bold'
+      p.innerHTML = song.title + ' (SELECTED)'
+    }
+
 		song.onload=(song:Song)=>{
 		  const text = div.querySelector('p')
+
       text.innerHTML = song.title + '('+song.valid+')'
+
     }
 		div.appendChild(p);
 		const playButton = document.createElement('input');
@@ -109,6 +116,10 @@ export class SimplePlaylist extends GenericVisual {
 
   protected updateState(state: playerServiceEvent) {
     if (state.type === 'newPlaylist') {
+      this.updateContentVisual()
+    }
+    if (state.type === 'play') {
+      console.log('PLAYED')
       this.updateContentVisual()
     }
   }
