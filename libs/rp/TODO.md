@@ -1,9 +1,9 @@
 # TODO
 
-- create a method in playerService to add a song on demand 
-  playerService.addSong(song:Song)
+~~- create a method in playerService to add a song on demand 
+  playerService.addSong(song:Song)~~
 
-- depuis demo angular: ajouter un bouton pour appeler "playerService.addSong" with a new dummy song
+~~- depuis demo angular: ajouter un bouton pour appeler "playerService.addSong" with a new dummy song~~
 
 - trouver un moyen pour que le visualChildren "simplePlaylist" et "multiLinearBar" restent up-to-date avec l'état de la playlist.
 

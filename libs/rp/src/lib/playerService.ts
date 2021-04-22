@@ -14,7 +14,9 @@ export interface Song {
 	valid: boolean;
 	image?: string | null;
 	position?: number | null; // current seeking of position of the howl
+  onload?: (song: Song)=>void;
 }
+
 
 function downloadFile(file: File) {
 	// Convert your blob into a Blob URL (a special url that points to an object in the browser’s memory)
@@ -82,9 +84,7 @@ export class RumblePlayerService {
 		this.stop(); // stop before doing anything else
 		this._playlist = playlist;
 		this.index = this._playlist.length > 0 ? 0 : -1;
-		const eventIndexChange = new CustomEvent('newPlaylist', {
-			detail: playlist.length,
-		});
+		this.dispatchPlayerEvent(playerServiceEventType.newPlaylist)
 		//this.preloadPlaylist()
 	}
 
@@ -192,6 +192,7 @@ export class RumblePlayerService {
           that._playlist[index].valid=true
           that._playlist[index].loaded=true
         }
+        song.onload(song)
 			},
 			onloaderror: (error) => {
 				console.log('error howler loading', error);
@@ -228,6 +229,19 @@ export class RumblePlayerService {
 	preloadPlaylist() {
 		this._playlist.forEach((song,index) => this.createHowlWithBindings(song,index));
 	}
+
+	addSong(url:string){
+	  const index = this._playlist.length
+    const song = this.generateSongFromUrl(url,index)
+    console.log('ADD SONG',song,index)
+    const newPlaylist = this.playlist
+    newPlaylist.push(song)
+    console.log('ADD SONG',this.playlist,newPlaylist)
+
+    this.playlist = newPlaylist
+    this.playlist[index].howl = this.createHowlWithBindings(song,index)
+
+  }
 
 	// should return as a promise the current index asked to be played
 	public play(index?: number): Promise<number> {
@@ -481,6 +495,14 @@ export class RumblePlayerService {
 			} as Song;
 		});
 	}
+	public generateSongFromUrl(url:string,index:number){
+    return {
+      title: 'Song ' + index,
+      file: url,
+      howl: null,
+      id: uuidv4(),
+    } as Song;
+  }
 
 	public setPLaylistFromRSSFeedURL(url: string) {
 		return fetch(url)
@@ -553,6 +575,7 @@ enum playerServiceEventType {
 	'next' = 'next',
 	'prev' = 'prev',
 	'seek' = 'seek',
+  'newPlaylist' = 'newPlaylist'
 }
 
 export interface playerState {

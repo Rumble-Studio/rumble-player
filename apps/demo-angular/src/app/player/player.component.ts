@@ -92,4 +92,7 @@ export class PlayerComponent implements AfterViewInit {
 	// 	}
 	// 	return visualChildren;
 	// }
+  addSong() {
+    this.playerHTML.nativeElement.playerService.addSong(fakePlaylist[0])
+  }
 }

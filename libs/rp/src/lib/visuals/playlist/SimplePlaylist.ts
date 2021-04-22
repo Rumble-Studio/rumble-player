@@ -1,5 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
-import { Song } from '../../playerService';
+import { playerServiceEvent, Song } from '../../playerService';
 
 export class SimplePlaylist extends GenericVisual {
 	protected _kind = 'SimplePlaylist';
@@ -81,7 +81,11 @@ export class SimplePlaylist extends GenericVisual {
 		};
 
 		const p = document.createElement('p');
-		p.innerText = song.title + '('+song.valid+')';
+		p.innerText = song.title + '(false)';
+		song.onload=(song:Song)=>{
+		  const text = div.querySelector('p')
+      text.innerHTML = song.title + '('+song.valid+')'
+    }
 		div.appendChild(p);
 		const playButton = document.createElement('input');
 		playButton.setAttribute('type', 'button');
@@ -103,7 +107,13 @@ export class SimplePlaylist extends GenericVisual {
 		return div;
 	}
 
-	generateStyle() {
+  protected updateState(state: playerServiceEvent) {
+    if (state.type === 'newPlaylist') {
+      this.updateContentVisual()
+    }
+  }
+
+  generateStyle() {
 		return `
 		#container{
 			width:90%;
