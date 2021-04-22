@@ -62,6 +62,25 @@ export const config5 = {
 	],
 };
 
+export const config6 = {
+  visualChildren: [
+    'LinearBar',
+    'SimplePlayButton',
+    'SimplePauseButton',
+    'SimpleStopButton',
+    'SimpleNextButton',
+    'SimplePrevButton',
+    'SimpleForwardButton',
+    'SimpleBackwardButton',
+    'SimpleTimeLeft',
+    'SimpleTimeSpent',
+    'SimpleTotalTime',
+    'SimplePlaylist',
+    'SimpleImage',
+    'MultiLinearBar',
+  ],
+};
+
 export const configPlayPause = {
 	visualChildren: [
 		'SimplePlayButton',

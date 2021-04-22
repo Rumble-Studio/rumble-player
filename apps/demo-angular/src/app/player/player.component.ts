@@ -5,7 +5,7 @@ import {
 	RumblePlayerService,
 } from '@rumble-player/rp';
 
-import { fakePlaylist } from '../../config/dummyAudioData.config';
+import { fakePlaylist, fakePlaylistWithImage } from '../../config/dummyAudioData.config';
 
 class MyDemoButton extends GenericVisual {
 	protected _kind = 'SimplePlayButton';
@@ -55,7 +55,7 @@ export class PlayerComponent implements AfterViewInit {
 	constructor() {
 		this.eventsHistory = [];
 		this.player = new RumblePlayerService();
-		this.player.setPlaylistFromUrls(fakePlaylist);
+		this.player.setPlaylistFromObject(fakePlaylistWithImage);
 	}
 
 	togglePlayer() {
@@ -70,7 +70,7 @@ export class PlayerComponent implements AfterViewInit {
 		if (this.playerHTML) {
 			this.playerHTML.nativeElement.setPlayer(this.player);
 			//this.player.setPLaylistFromRSSFeedURL('http://127.0.0.1:8000/feed')
-			this.playerHTML.nativeElement.loadConfig('config5');
+			this.playerHTML.nativeElement.loadConfig('config6');
 		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}

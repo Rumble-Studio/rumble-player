@@ -59,7 +59,7 @@ export class SimplePlaylist extends GenericVisual {
 		div.style.justifyContent = 'space-between';
 		div.style.border = '1px solid blue';
 		div.style.width = '90%';
-		div.style.height = '30px';
+		div.style.height = '100px';
 
 		// Dragging feature
 		div.draggable = true;
@@ -80,6 +80,9 @@ export class SimplePlaylist extends GenericVisual {
 			};
 		};
 
+		const image = document.createElement('img')
+    image.setAttribute('src',song.image)
+    image.style.maxHeight='100px'
 		const p = document.createElement('p');
     p.innerText = song.title + (song.valid == undefined ?' (false) ':' ('+String(song.valid)+')');
     if(index===this._playerService.index){
@@ -109,6 +112,7 @@ export class SimplePlaylist extends GenericVisual {
 		pauseButton.addEventListener('click', () => {
 			this._playerService.pause(index);
 		});
+		div.appendChild(image)
 		div.appendChild(playButton);
 		div.appendChild(pauseButton);
 		return div;

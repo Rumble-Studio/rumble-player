@@ -495,6 +495,17 @@ export class RumblePlayerService {
 			} as Song;
 		});
 	}
+  public setPlaylistFromObject(data: any[]) {
+    this.playlist = data.map((object, index) => {
+      return {
+        title: 'Song ' + index,
+        file: object.file,
+        howl: null,
+        id: uuidv4(),
+        image: object.image
+      } as Song;
+    });
+  }
 	public generateSongFromUrl(url:string,index:number){
     return {
       title: 'Song ' + index,

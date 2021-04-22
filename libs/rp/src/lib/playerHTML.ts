@@ -6,6 +6,7 @@ import {
 	config3,
 	config4,
 	config5,
+	config6,
 	configPlayPause,
 } from '../config/configs';
 import { LinearBar } from './visuals/linear/LinearBar';
@@ -20,6 +21,7 @@ import { SimpleBackwardButton } from './visuals/buttons/simpleBackwardButton';
 import { SimpleTimeLeft } from './visuals/SimpleTimeLeft';
 import { SimpleTimeSpent } from './visuals/SimpleTimeSpent';
 import { SimpleTotalTime } from './visuals/SimpleTotalTime';
+import { SimpleImage } from './visuals/SimpleImage';
 import { SimplePlaylist } from './visuals/playlist/SimplePlaylist';
 
 export interface playerConfig {
@@ -86,6 +88,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'config5':
 					this.setFromConfig(config5);
 					break;
+        case 'config6':
+          this.setFromConfig(config6);
+          break;
 				default:
 					break;
 			}
@@ -98,7 +103,8 @@ export class HTMLRumblePlayer extends HTMLElement {
 		const visualChildren: GenericVisual[] = [];
 		const layout = config.visualChildren;
 		let playlist;
-		layout.forEach((value) => {
+		let image;
+		layout.forEach((value,index) => {
 			switch (value) {
 				case 'LinearBar':
 					visualChildren.push(new LinearBar());
@@ -136,6 +142,11 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'SimpleTotalTime':
 					visualChildren.push(new SimpleTotalTime());
 					break;
+        case 'SimpleImage':
+          image = new SimpleImage()
+          image.player = this.playerService
+          visualChildren.push(image);
+          break;
 				case 'SimplePlaylist':
 					playlist = new SimplePlaylist();
 					playlist.playerService=this.playerService
