@@ -76,9 +76,9 @@ export const config6 = {
 		'SimpleTimeSpent',
 		'SimpleTotalTime',
 		'SimplePlaylist',
-		'SimpleImage',
 		'MultiLinearBar',
-	],
+    'SimpleImage'
+  ],
 };
 
 export const configPlayPause = {

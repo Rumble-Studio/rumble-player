@@ -15,17 +15,18 @@ export class SimpleImage extends GenericVisual {
 	protected createHTMLElements() {
 		super.createHTMLElements();
 		const wrapper = document.createElement('div');
-		wrapper.style.backgroundColor = 'blue';
-		wrapper.style.height = '100px';
-		wrapper.style.width = '100px';
+		wrapper.style.height = '300px';
+		wrapper.style.width = '300px';
 		const image = document.createElement('img');
-		image.style.maxHeight = '100px';
+		image.style.maxHeight = '300px';
 		if (this.src && this.src.length > 0) {
 			image.setAttribute('src', this.src);
 		}
 		wrapper.appendChild(image);
 		const style = document.createElement('style');
-		this.list_of_children = [style, wrapper];
+		const title = document.createElement('p')
+    title.innerHTML = 'image of selected song : '
+		this.list_of_children = [style,title, wrapper];
 	}
 
 	protected bindHTMLElements() {

@@ -163,7 +163,7 @@ export class RumblePlayerService {
 		const extLowerCase: string = ext ? ext[1].toString().toLowerCase() : '';
 		if (!extLowerCase) {
 			// howler library can't manage file without extension
-			console.error(
+			console.warn(
 				'This file does not have an extension and will be ignored by the player'
 			);
 			if (index > -1) {
@@ -239,6 +239,7 @@ export class RumblePlayerService {
 		this.playlist = newPlaylist;
 		this.playlist[index].howl = this.createHowlWithBindings(song, index);
 	}
+
 
 	// should return as a promise the current index asked to be played
 	public play(index?: number): Promise<number> {

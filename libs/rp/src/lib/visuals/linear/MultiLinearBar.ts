@@ -20,10 +20,9 @@ export class MultiLinearBar extends GenericVisual {
 	}
 	initView() {
 		this.cleanShadow();
-		this.div.innerHTML = '';
 		let mainStyle = this.generateStyle();
 		const style = document.createElement('style');
-		this.div.setAttribute('id', 'bar');
+		this.shadowRoot.appendChild(style)
 		this._playerService.playlist.forEach((value, index, array) => {
 			const div = this.generateSingleBar(index, 50);
 			div.shadowRoot.appendChild(document.createElement('style'));
@@ -41,16 +40,13 @@ export class MultiLinearBar extends GenericVisual {
       `;
 			mainStyle = mainStyle + tempStyle;
 		});
-		this._shadow.querySelector('style').textContent = mainStyle;
+		//this._shadow.querySelector('style').textContent = mainStyle;
 		this.list_of_children = [style];
 		this._playerService.preloadPlaylist();
 		this.drawOnPreload();
 	}
 	drawOnPreload() {
-		this.div.innerHTML = '';
 		const style = document.createElement('style');
-		this.div.setAttribute('id', 'bar');
-
 		this._playerService.playlist.forEach((song, index, array) => {
 			let mainStyle = this.generateStyle();
 			song.onload = (loadedSong) => {
@@ -83,9 +79,9 @@ export class MultiLinearBar extends GenericVisual {
 							const actualDuration = array[i].howl.duration();
 							const tempStyle = `
               #bar${i.toString()}{
-                width: ${Math.floor(
+                flex: ${Math.floor(
 							(100 * actualDuration) / this.totalDuration
-						)}%;
+						)}px;
                 background-color: ${['red', 'green'][i % 2]};
                 border: 1px solid blue;
                 box-sizing: border-box;
@@ -104,9 +100,9 @@ export class MultiLinearBar extends GenericVisual {
 					if (song.valid) {
 						const tempStyle = `
             #bar${index.toString()}{
-              width: ${Math.floor(
+              flex: ${Math.floor(
 						(100 * actualDuration) / this.totalDuration
-					)}%;
+					)}px;
               background-color: ${['red', 'green'][index % 2]};
               box-sizing: border-box;
               position:relative;
@@ -129,18 +125,20 @@ export class MultiLinearBar extends GenericVisual {
 	}
 
 	cleanShadow() {
-		const shadowLength = this.shadowRoot.children.length;
-		const elt = Array.from(this.shadowRoot.children);
-		for (let i = 0; i < length; i++) {
-			this.shadowRoot.removeChild(elt[i]);
-		}
-		console.log('SHADOW IS', this.shadowRoot);
+		// const shadowLength = this.shadowRoot.children.length;
+		// const elt = Array.from(this.shadowRoot.children);
+		// for (let i = 0; i < length; i++) {
+		// 	this.shadowRoot.removeChild(elt[i]);
+		// }
+		// console.log('SHADOW IS', this.shadowRoot);
+    this.shadowRoot.removeChild(this.shadowRoot.querySelector('style'))
+    while (this.shadowRoot.querySelectorAll('div').length>0){
+      this.shadowRoot.removeChild(this.shadowRoot.querySelector('div'))
+    }
 	}
 
 	protected createHTMLElements() {
 		const style = document.createElement('style');
-		this.div = document.createElement('div');
-		this.div.setAttribute('id', 'bar');
 
 		this.list_of_children = [style];
 	}
@@ -177,7 +175,7 @@ export class MultiLinearBar extends GenericVisual {
 	};
 	protected updateState(state: playerServiceEvent) {
 		if (state.type === 'newPlaylist') {
-			//this.initView()
+			this.initView()
 		}
 	}
 
@@ -190,6 +188,7 @@ export class MultiLinearBar extends GenericVisual {
       #progressBar${index.toString()}{
         width: ${100 * percentage}%;
         background-color: white;
+        opacity: 0.5;
         height:14px
       }`;
 		}
@@ -197,11 +196,11 @@ export class MultiLinearBar extends GenericVisual {
 
 	generateStyle() {
 		return `
-		#bar{
-			height:15px;
-			position:relative;
-			background-color: green;
-			cursor:pointer;
+		:host{
+		  overflow: scroll;
+		  background-color: blue;
+		  display:flex;
+		  flex-direction:row
 		}
 		`;
 	}

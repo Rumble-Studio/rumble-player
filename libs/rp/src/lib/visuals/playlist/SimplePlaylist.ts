@@ -35,11 +35,13 @@ export class SimplePlaylist extends GenericVisual {
 		this.div.innerHTML = '';
 		const p = document.createElement('p');
 		p.innerText = this.playlistTitle;
+		const ul = document.createElement('ul')
 		this.div.appendChild(p);
 		this._playlist.forEach((value, index, array) => {
 			const line = this.generateLine(value, index, array.length);
-			this.div.appendChild(line);
+			ul.appendChild(line);
 		});
+		this.div.appendChild(ul)
 		this.list_of_children[1] = this.div;
 		super.setInnerHTML();
 		this._shadow.querySelector('style').textContent = this.generateStyle();
@@ -50,7 +52,7 @@ export class SimplePlaylist extends GenericVisual {
 		//
 	}
 
-	generateLine(song: Song, index: number, total: number): HTMLDivElement {
+	generateLine(song: Song, index: number, total: number): HTMLDivElement | HTMLLIElement {
 		// Each line of the playlist
 		const div = document.createElement('div');
 		div.style.display = 'flex';
@@ -60,6 +62,25 @@ export class SimplePlaylist extends GenericVisual {
 		div.style.border = '1px solid blue';
 		div.style.width = '90%';
 		div.style.height = '100px';
+
+    // Each line of the playlist V2
+    const li = document.createElement('li');
+    li.draggable = true
+    li.ondragover = (ev) => ev.preventDefault();
+    li.ondragstart = (e) => {
+      const startC = e.clientY;
+      const startP = e.clientY;
+      const shiftY =
+        e.clientY - li.parentElement.getBoundingClientRect().top;
+      li.ondragend = (ev) => {
+        const newTop =
+          ev.clientY - li.parentElement.getBoundingClientRect().top;
+        const minTop = Math.max(1, newTop);
+        const maxTop = Math.min(minTop, total * li.scrollHeight);
+        const finalIndex = Math.floor(maxTop / li.scrollHeight);
+        console.log(ev.clientY - startC, maxTop, finalIndex);
+      };
+    };
 
 		// Dragging feature
 		div.draggable = true;
@@ -80,9 +101,23 @@ export class SimplePlaylist extends GenericVisual {
 			};
 		};
 
+		const wrapper = document.createElement('div')
+    wrapper.style.position = 'relative'
+    wrapper.style.height = '50px';
+    wrapper.style.width = '50px';
 		const image = document.createElement('img');
-		image.setAttribute('src', song.image);
-		image.style.maxHeight = '100px';
+		const noImage = document.createElement('p')
+    noImage.style.position='absolute'
+    noImage.style.fontWeight='bold'
+    if(song.image){
+      image.setAttribute('src', song.image);
+    }
+    else {
+      noImage.innerHTML='[NO IMAGE]'
+    }
+		image.style.maxHeight = '50px';
+		wrapper.appendChild(noImage)
+    wrapper.appendChild(image)
 		const p = document.createElement('p');
 		p.innerText =
 			song.title +
@@ -94,31 +129,37 @@ export class SimplePlaylist extends GenericVisual {
 			p.innerHTML = song.title + ' (SELECTED)';
 		}
 
-		song.onload = (song: Song) => {
-			const text = div.querySelector('p');
 
-			text.innerHTML = song.title + '(' + song.valid + ')';
-		};
-		div.appendChild(p);
 		const playButton = document.createElement('input');
 		playButton.setAttribute('type', 'button');
 		playButton.setAttribute('value', 'play');
 		playButton.addEventListener('click', () => {
-			this._playerService.play(index).then((r) => {
-				//
-			});
+		  if (song.valid){
+        this._playerService.pause()
+        this._playerService.play(index).then((r) => {
+          //
+        });
+      }
 		});
 
 		const pauseButton = document.createElement('input');
 		pauseButton.setAttribute('type', 'button');
 		pauseButton.setAttribute('value', 'pause');
 		pauseButton.addEventListener('click', () => {
-			this._playerService.pause(index);
+      if (song.valid){
+        this._playerService.pause(index)
+      }
 		});
-		div.appendChild(image);
-		div.appendChild(playButton);
-		div.appendChild(pauseButton);
-		return div;
+    song.onload = (song: Song) => {
+      const text = div.querySelector('p');
+
+      text.innerHTML = song.title + '(' + song.valid + ')';
+    };
+    li.appendChild(p);
+		li.appendChild(wrapper);
+		li.appendChild(playButton);
+		li.appendChild(pauseButton);
+		return li;
 	}
 
 	protected updateState(state: playerServiceEvent) {
@@ -168,3 +209,93 @@ class SongLine extends HTMLElement {
 }
 
 customElements.define('rs-simple-playlist', SimplePlaylist);
+
+// generateLine(song: Song, index: number, total: number): HTMLDivElement | HTMLLIElement {
+//   // Each line of the playlist
+//   const div = document.createElement('div');
+//   div.style.display = 'flex';
+//   div.style.flexDirection = 'row';
+//   div.style.alignItems = 'center';
+//   div.style.justifyContent = 'space-between';
+//   div.style.border = '1px solid blue';
+//   div.style.width = '90%';
+//   div.style.height = '100px';
+//
+//   // Each line of the playlist V2
+//   const li = document.createElement('li');
+//   li.draggable = true
+//   li.ondragover = (ev) => ev.preventDefault();
+//   li.ondragstart = (e) => {
+//     const startC = e.clientY;
+//     const startP = e.clientY;
+//     const shiftY =
+//       e.clientY - li.parentElement.getBoundingClientRect().top;
+//     li.ondragend = (ev) => {
+//       const newTop =
+//         ev.clientY - li.parentElement.getBoundingClientRect().top;
+//       const minTop = Math.max(1, newTop);
+//       const maxTop = Math.min(minTop, total * li.scrollHeight);
+//       const finalIndex = Math.floor(maxTop / li.scrollHeight);
+//       console.log(ev.clientY - startC, maxTop, finalIndex);
+//     };
+//   };
+//
+//   // Dragging feature
+//   div.draggable = true;
+//
+//   div.ondragover = (ev) => ev.preventDefault();
+//   div.ondragstart = (e) => {
+//     const startC = e.clientY;
+//     const startP = e.clientY;
+//     const shiftY =
+//       e.clientY - div.parentElement.getBoundingClientRect().top;
+//     div.ondragend = (ev) => {
+//       const newTop =
+//         ev.clientY - div.parentElement.getBoundingClientRect().top;
+//       const minTop = Math.max(1, newTop);
+//       const maxTop = Math.min(minTop, total * div.scrollHeight);
+//       const finalIndex = Math.floor(maxTop / div.scrollHeight);
+//       console.log(ev.clientY - startC, maxTop, finalIndex);
+//     };
+//   };
+//
+//   const image = document.createElement('img');
+//   image.setAttribute('src', song.image);
+//   image.style.maxHeight = '50px';
+//   const p = document.createElement('p');
+//   p.innerText =
+//     song.title +
+//     (song.valid == undefined
+//       ? ' (false) '
+//       : ' (' + String(song.valid) + ')');
+//   if (index === this._playerService.index) {
+//     p.style.fontWeight = 'bold';
+//     p.innerHTML = song.title + ' (SELECTED)';
+//   }
+//
+//   song.onload = (song: Song) => {
+//     const text = div.querySelector('p');
+//
+//     text.innerHTML = song.title + '(' + song.valid + ')';
+//   };
+//   li.appendChild(p);
+//   const playButton = document.createElement('input');
+//   playButton.setAttribute('type', 'button');
+//   playButton.setAttribute('value', 'play');
+//   playButton.addEventListener('click', () => {
+//     this._playerService.play(index).then((r) => {
+//       //
+//     });
+//   });
+//
+//   const pauseButton = document.createElement('input');
+//   pauseButton.setAttribute('type', 'button');
+//   pauseButton.setAttribute('value', 'pause');
+//   pauseButton.addEventListener('click', () => {
+//     this._playerService.pause(index);
+//   });
+//   li.appendChild(image);
+//   li.appendChild(playButton);
+//   li.appendChild(pauseButton);
+//   return li;
+// }
