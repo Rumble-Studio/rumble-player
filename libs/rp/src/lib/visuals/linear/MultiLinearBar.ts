@@ -22,14 +22,14 @@ export class MultiLinearBar extends GenericVisual {
 		this.cleanShadow();
 		let mainStyle = this.generateStyle();
 		const style = document.createElement('style');
-		this.shadowRoot.appendChild(style)
-    const array = this._playerService.playlist
-    for(let index=0;index<array.length;index++){
-      const value = array[index]
-      const div = this.generateSingleBar(index, 50);
-      div.shadowRoot.appendChild(document.createElement('style'));
-      this.shadowRoot.appendChild(div);
-      const tempStyle = `
+		this.shadowRoot.appendChild(style);
+		const array = this._playerService.playlist;
+		for (let index = 0; index < array.length; index++) {
+			const value = array[index];
+			const div = this.generateSingleBar(index, 50);
+			div.shadowRoot.appendChild(document.createElement('style'));
+			this.shadowRoot.appendChild(div);
+			const tempStyle = `
       #bar${index.toString()}{
         width: ${100 / array.length}%;
         background-color: ${['red', 'green'][index % 2]};
@@ -40,9 +40,9 @@ export class MultiLinearBar extends GenericVisual {
         height:15px
       }
       `;
-      mainStyle = mainStyle + tempStyle;
-      console.log('STYLING',mainStyle)
-    }
+			mainStyle = mainStyle + tempStyle;
+			console.log('STYLING', mainStyle);
+		}
 		this._shadow.querySelector('style').textContent = mainStyle;
 		this.list_of_children = [style];
 		this._playerService.preloadPlaylist();
@@ -50,43 +50,43 @@ export class MultiLinearBar extends GenericVisual {
 	}
 	drawOnPreload() {
 		const style = document.createElement('style');
-		const array = this._playerService.playlist
-		for(let index=0;index<array.length;index++){
-		  const song = array[index]
-      let mainStyle = this.generateStyle();
-      song.onload = (loadedSong) => {
-        if (
-          loadedSong.valid &&
-          loadedSong.howl.duration() > this.maxDuration
-        ) {
-          console.log('MAX DURATION', loadedSong.howl.duration());
-          this.maxDuration = loadedSong.howl.duration();
-        }
-        if (loadedSong.valid) {
-          console.log(loadedSong);
-          this.totalDuration =
-            this.totalDuration + loadedSong.howl.duration();
-          const div = this.generateSingleBar(index, 50);
-          const actualDuration =  song.howl.duration() ;
-          console.log(
-            'DURATION PROCESS ACTUAL',
-            actualDuration,
-            (100 * actualDuration) / this.totalDuration
-          );
+		const array = this._playerService.playlist;
+		for (let index = 0; index < array.length; index++) {
+			const song = array[index];
+			let mainStyle = this.generateStyle();
+			song.onload = (loadedSong) => {
+				if (
+					loadedSong.valid &&
+					loadedSong.howl.duration() > this.maxDuration
+				) {
+					console.log('MAX DURATION', loadedSong.howl.duration());
+					this.maxDuration = loadedSong.howl.duration();
+				}
+				if (loadedSong.valid) {
+					console.log(loadedSong);
+					this.totalDuration =
+						this.totalDuration + loadedSong.howl.duration();
+					const div = this.generateSingleBar(index, 50);
+					const actualDuration = song.howl.duration();
+					console.log(
+						'DURATION PROCESS ACTUAL',
+						actualDuration,
+						(100 * actualDuration) / this.totalDuration
+					);
 
-          div.shadowRoot.appendChild(document.createElement('style'));
-          this.shadowRoot.replaceChild(
-            div,
-            this.shadowRoot.querySelectorAll('div').item(index)
-          );
-          for (let i = 0; i < array.length; i++) {
-            if (array[i].valid) {
-              const actualDuration = array[i].howl.duration();
-              const tempStyle = `
+					div.shadowRoot.appendChild(document.createElement('style'));
+					this.shadowRoot.replaceChild(
+						div,
+						this.shadowRoot.querySelectorAll('div').item(index)
+					);
+					for (let i = 0; i < array.length; i++) {
+						if (array[i].valid) {
+							const actualDuration = array[i].howl.duration();
+							const tempStyle = `
               #bar${i.toString()}{
                 flex: ${Math.floor(
-                (100 * actualDuration) / this.totalDuration
-              )}px;
+							(100 * actualDuration) / this.totalDuration
+						)}px;
                 background-color: ${['red', 'green'][i % 2]};
                 border: 1px solid blue;
                 box-sizing: border-box;
@@ -95,39 +95,38 @@ export class MultiLinearBar extends GenericVisual {
                 height:15px
               }
               `;
-              mainStyle = mainStyle + tempStyle;
-              this._shadow.querySelector(
-                'style'
-              ).textContent = mainStyle;
-              this.list_of_children = [style];
-            }
-          }
-          // if (song.valid) {
-          //   const tempStyle = `
-          //   #bar${index.toString()}{
-          //     flex: ${Math.floor(
-          //     (100 * actualDuration) / this.totalDuration
-          //   )}px;
-          //     background-color: ${['red', 'green'][index % 2]};
-          //     box-sizing: border-box;
-          //     position:relative;
-          //     display:inline-block;
-          //     height:15px
-          //   }
-          //   `;
-          //   mainStyle = mainStyle + tempStyle;
-          //   this._shadow.querySelector('style').textContent = mainStyle;
-          //   this.list_of_children = [style];
-          // }
-          //mainStyle = mainStyle + tempStyle;
-          this._shadow.querySelector('style').textContent = mainStyle;
-          this.list_of_children = [style];
-        }
-        else {
-          console.log('LOADED NOT LOADED',loadedSong)
-        }
-      };
-    }
+							mainStyle = mainStyle + tempStyle;
+							this._shadow.querySelector(
+								'style'
+							).textContent = mainStyle;
+							this.list_of_children = [style];
+						}
+					}
+					// if (song.valid) {
+					//   const tempStyle = `
+					//   #bar${index.toString()}{
+					//     flex: ${Math.floor(
+					//     (100 * actualDuration) / this.totalDuration
+					//   )}px;
+					//     background-color: ${['red', 'green'][index % 2]};
+					//     box-sizing: border-box;
+					//     position:relative;
+					//     display:inline-block;
+					//     height:15px
+					//   }
+					//   `;
+					//   mainStyle = mainStyle + tempStyle;
+					//   this._shadow.querySelector('style').textContent = mainStyle;
+					//   this.list_of_children = [style];
+					// }
+					//mainStyle = mainStyle + tempStyle;
+					this._shadow.querySelector('style').textContent = mainStyle;
+					this.list_of_children = [style];
+				} else {
+					console.log('LOADED NOT LOADED', loadedSong);
+				}
+			};
+		}
 		console.log(
 			'DURATION PROCESS TOTAL',
 			this.totalDuration,
@@ -142,17 +141,17 @@ export class MultiLinearBar extends GenericVisual {
 		// 	this.shadowRoot.removeChild(elt[i]);
 		// }
 		// console.log('SHADOW IS', this.shadowRoot);
-    this.shadowRoot.removeChild(this.shadowRoot.querySelector('style'))
-    while (this.shadowRoot.querySelectorAll('div').length>0){
-      this.shadowRoot.removeChild(this.shadowRoot.querySelector('div'))
-    }
+		this.shadowRoot.removeChild(this.shadowRoot.querySelector('style'));
+		while (this.shadowRoot.querySelectorAll('div').length > 0) {
+			this.shadowRoot.removeChild(this.shadowRoot.querySelector('div'));
+		}
 	}
 
 	protected createHTMLElements() {
 		const style = document.createElement('style');
-    this.style.marginTop='5px'
-    this.style.marginBottom='5px'
-    this.style.overflow = 'scroll'
+		this.style.marginTop = '5px';
+		this.style.marginBottom = '5px';
+		this.style.overflow = 'scroll';
 		this.list_of_children = [style];
 	}
 
@@ -179,16 +178,17 @@ export class MultiLinearBar extends GenericVisual {
 					stopOthers: true,
 					keepPlaying: true,
 					updateGlobalIndex: true,
-          finishOthers:false
+					finishOthers: false,
 				},
 			});
 			this.dispatchEvent(clickEvent);
+			this.updatePreviousOnTrackSeek(index);
 		});
 		return div;
 	};
 	protected updateState(state: playerServiceEvent) {
 		if (state.type === 'newPlaylist') {
-			this.initView()
+			this.initView();
 		}
 	}
 
@@ -204,6 +204,32 @@ export class MultiLinearBar extends GenericVisual {
         opacity: 0.5;
         height:14px
       }`;
+		}
+	}
+	updatePreviousOnTrackSeek(index: number) {
+		if (this._playerService) {
+			for (let i = 0; i < index; i++) {
+				const bar = this._shadow.children.item(i + 1);
+				const progressBar = bar.shadowRoot.querySelector('style');
+				progressBar.textContent = `
+        #progressBar${i.toString()}{
+          width: 100%;
+          background-color: white;
+          opacity: 0.5;
+          height:14px
+        }`;
+			}
+			for (let i = index + 1; i < this._playerService.playlist.length; i++) {
+				const bar = this._shadow.children.item(i + 1);
+				const progressBar = bar.shadowRoot.querySelector('style');
+				progressBar.textContent = `
+        #progressBar${i.toString()}{
+          width: 0%;
+          background-color: white;
+          opacity: 0.5;
+          height:14px
+        }`;
+			}
 		}
 	}
 

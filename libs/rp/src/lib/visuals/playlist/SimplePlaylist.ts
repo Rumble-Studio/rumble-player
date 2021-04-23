@@ -35,13 +35,13 @@ export class SimplePlaylist extends GenericVisual {
 		this.div.innerHTML = '';
 		const p = document.createElement('p');
 		p.innerText = this.playlistTitle;
-		const ul = document.createElement('ul')
+		const ul = document.createElement('ul');
 		this.div.appendChild(p);
 		this._playlist.forEach((value, index, array) => {
 			const line = this.generateLine(value, index, array.length);
 			ul.appendChild(line);
 		});
-		this.div.appendChild(ul)
+		this.div.appendChild(ul);
 		this.list_of_children[1] = this.div;
 		super.setInnerHTML();
 		this._shadow.querySelector('style').textContent = this.generateStyle();
@@ -52,26 +52,26 @@ export class SimplePlaylist extends GenericVisual {
 		//
 	}
 
-	generateLine(song: Song, index: number, total: number): HTMLDivElement | HTMLLIElement {
+	generateLine(
+		song: Song,
+		index: number,
+		total: number
+	): HTMLDivElement | HTMLLIElement {
 		// Each line of the playlist
 		const div = document.createElement('div');
 
-
-    // Each line of the playlist V2
-    const li = document.createElement('li');
-
-
+		// Each line of the playlist V2
+		const li = document.createElement('li');
 
 		const image = document.createElement('img');
-		const noImage = document.createElement('p')
-    //noImage.style.position='absolute'
-    noImage.style.fontWeight='bold'
-    if(song.image){
-      image.setAttribute('src', song.image);
-    }
-    else {
-      noImage.innerHTML='[NO IMAGE]'
-    }
+		const noImage = document.createElement('p');
+		//noImage.style.position='absolute'
+		noImage.style.fontWeight = 'bold';
+		if (song.image) {
+			image.setAttribute('src', song.image);
+		} else {
+			noImage.innerHTML = '[NO IMAGE]';
+		}
 		image.style.maxHeight = '50px';
 		const p = document.createElement('p');
 		p.innerText =
@@ -84,33 +84,32 @@ export class SimplePlaylist extends GenericVisual {
 			p.innerHTML = song.title + ' (SELECTED)';
 		}
 
-
 		const playButton = document.createElement('input');
 		playButton.setAttribute('type', 'button');
 		playButton.setAttribute('value', 'play');
 		playButton.addEventListener('click', () => {
-		  if (song.valid){
-        this._playerService.pause()
-        this._playerService.play(index).then((r) => {
-          //
-        });
-      }
+			if (song.valid) {
+				this._playerService.pause();
+				this._playerService.play(index).then((r) => {
+					//
+				});
+			}
 		});
 
 		const pauseButton = document.createElement('input');
 		pauseButton.setAttribute('type', 'button');
 		pauseButton.setAttribute('value', 'pause');
 		pauseButton.addEventListener('click', () => {
-      if (song.valid){
-        this._playerService.pause()
-      }
+			if (song.valid) {
+				this._playerService.pause();
+			}
 		});
-    song.onload = (song: Song) => {
-      const text = div.querySelector('p');
+		song.onload = (song: Song) => {
+			const text = div.querySelector('p');
 
-      text.innerHTML = song.title + '(' + song.valid + ')';
-    };
-    li.appendChild(p);
+			text.innerHTML = song.title + '(' + song.valid + ')';
+		};
+		li.appendChild(p);
 		li.appendChild(noImage);
 		li.appendChild(image);
 		li.appendChild(playButton);

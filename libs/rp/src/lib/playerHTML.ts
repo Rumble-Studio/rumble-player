@@ -222,24 +222,23 @@ export class HTMLRumblePlayer extends HTMLElement {
 			stopOthers,
 			keepPlaying,
 			updateGlobalIndex,
-      finishOthers
+			finishOthers,
 		} = event.detail;
 
 		const wasPlaying = this.playerService.isPlaying;
 
 		if (stopOthers) this.playerService.stop();
 
-		if (finishOthers && index>0){
-		  this.playerService.stop()
-		  this.playerService.index=0
-      while (this.playerService.index<index){
-		    this.playerService.seekPerPercentage(99)
-        this.playerService.play()
-        this.playerService.pause()
-        this.playerService.next()
-      }
-
-    }
+		if (finishOthers && index > 0) {
+			this.playerService.stop();
+			this.playerService.index = 0;
+			while (this.playerService.index < index) {
+				this.playerService.seekPerPercentage(99);
+				this.playerService.play();
+				this.playerService.pause();
+				this.playerService.next();
+			}
+		}
 
 		if (index !== this.playerService.index && updateGlobalIndex) {
 			this.playerService.index = index;

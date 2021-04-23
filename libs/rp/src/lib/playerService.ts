@@ -240,7 +240,6 @@ export class RumblePlayerService {
 		this.playlist[index].howl = this.createHowlWithBindings(song, index);
 	}
 
-
 	// should return as a promise the current index asked to be played
 	public play(index?: number): Promise<number> {
 		console.log('Asked to play From Service 1:', index);

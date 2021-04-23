@@ -24,9 +24,9 @@ export class SimpleImage extends GenericVisual {
 		}
 		wrapper.appendChild(image);
 		const style = document.createElement('style');
-		const title = document.createElement('p')
-    title.innerHTML = 'image of selected song : '
-		this.list_of_children = [style,title, wrapper];
+		const title = document.createElement('p');
+		title.innerHTML = 'image of selected song : ';
+		this.list_of_children = [style, title, wrapper];
 	}
 
 	protected bindHTMLElements() {
