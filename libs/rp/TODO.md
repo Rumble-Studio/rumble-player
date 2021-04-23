@@ -20,4 +20,4 @@
    detail: { index, stopOthers:true, updateGlobalIndex:true, resetPosition:true },
 
 
--  re-order playlist (drag and drop)
+-  ##### AVOID DOUBLE SAME CSS

@@ -54,7 +54,8 @@ export class LinearBar extends GenericVisual {
 		#progressBar {
 			width: ${100 * percentage}%;
 			height: 100%;
-			background-color: blue;
+			background-color: white;
+			opacity:0.5
 		}`;
 	}
 }

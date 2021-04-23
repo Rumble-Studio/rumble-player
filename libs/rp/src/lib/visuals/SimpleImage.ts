@@ -15,10 +15,10 @@ export class SimpleImage extends GenericVisual {
 	protected createHTMLElements() {
 		super.createHTMLElements();
 		const wrapper = document.createElement('div');
-		wrapper.style.height = '300px';
-		wrapper.style.width = '300px';
+		wrapper.style.height = '200px';
+		wrapper.style.width = '200px';
 		const image = document.createElement('img');
-		image.style.maxHeight = '300px';
+		image.style.maxHeight = '200px';
 		if (this.src && this.src.length > 0) {
 			image.setAttribute('src', this.src);
 		}

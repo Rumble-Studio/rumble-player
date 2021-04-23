@@ -23,11 +23,13 @@ export class MultiLinearBar extends GenericVisual {
 		let mainStyle = this.generateStyle();
 		const style = document.createElement('style');
 		this.shadowRoot.appendChild(style)
-		this._playerService.playlist.forEach((value, index, array) => {
-			const div = this.generateSingleBar(index, 50);
-			div.shadowRoot.appendChild(document.createElement('style'));
-			this.shadowRoot.appendChild(div);
-			const tempStyle = `
+    const array = this._playerService.playlist
+    for(let index=0;index<array.length;index++){
+      const value = array[index]
+      const div = this.generateSingleBar(index, 50);
+      div.shadowRoot.appendChild(document.createElement('style'));
+      this.shadowRoot.appendChild(div);
+      const tempStyle = `
       #bar${index.toString()}{
         width: ${100 / array.length}%;
         background-color: ${['red', 'green'][index % 2]};
@@ -38,50 +40,53 @@ export class MultiLinearBar extends GenericVisual {
         height:15px
       }
       `;
-			mainStyle = mainStyle + tempStyle;
-		});
-		//this._shadow.querySelector('style').textContent = mainStyle;
+      mainStyle = mainStyle + tempStyle;
+      console.log('STYLING',mainStyle)
+    }
+		this._shadow.querySelector('style').textContent = mainStyle;
 		this.list_of_children = [style];
 		this._playerService.preloadPlaylist();
 		this.drawOnPreload();
 	}
 	drawOnPreload() {
 		const style = document.createElement('style');
-		this._playerService.playlist.forEach((song, index, array) => {
-			let mainStyle = this.generateStyle();
-			song.onload = (loadedSong) => {
-				if (
-					loadedSong.valid &&
-					loadedSong.howl.duration() > this.maxDuration
-				) {
-					console.log('MAX DURATION', loadedSong.howl.duration());
-					this.maxDuration = loadedSong.howl.duration();
-				}
-				if (loadedSong.valid) {
-					console.log(loadedSong);
-					this.totalDuration =
-						this.totalDuration + loadedSong.howl.duration();
-					const div = this.generateSingleBar(index, 50);
-					const actualDuration = song.valid ? song.howl.duration() : 0;
-					console.log(
-						'DURATION PROCESS ACTUAL',
-						actualDuration,
-						(100 * actualDuration) / this.totalDuration
-					);
+		const array = this._playerService.playlist
+		for(let index=0;index<array.length;index++){
+		  const song = array[index]
+      let mainStyle = this.generateStyle();
+      song.onload = (loadedSong) => {
+        if (
+          loadedSong.valid &&
+          loadedSong.howl.duration() > this.maxDuration
+        ) {
+          console.log('MAX DURATION', loadedSong.howl.duration());
+          this.maxDuration = loadedSong.howl.duration();
+        }
+        if (loadedSong.valid) {
+          console.log(loadedSong);
+          this.totalDuration =
+            this.totalDuration + loadedSong.howl.duration();
+          const div = this.generateSingleBar(index, 50);
+          const actualDuration =  song.howl.duration() ;
+          console.log(
+            'DURATION PROCESS ACTUAL',
+            actualDuration,
+            (100 * actualDuration) / this.totalDuration
+          );
 
-					div.shadowRoot.appendChild(document.createElement('style'));
-					this.shadowRoot.replaceChild(
-						div,
-						this.shadowRoot.querySelectorAll('div').item(index)
-					);
-					for (let i = 0; i < index; i++) {
-						if (array[i].valid) {
-							const actualDuration = array[i].howl.duration();
-							const tempStyle = `
+          div.shadowRoot.appendChild(document.createElement('style'));
+          this.shadowRoot.replaceChild(
+            div,
+            this.shadowRoot.querySelectorAll('div').item(index)
+          );
+          for (let i = 0; i < array.length; i++) {
+            if (array[i].valid) {
+              const actualDuration = array[i].howl.duration();
+              const tempStyle = `
               #bar${i.toString()}{
                 flex: ${Math.floor(
-							(100 * actualDuration) / this.totalDuration
-						)}px;
+                (100 * actualDuration) / this.totalDuration
+              )}px;
                 background-color: ${['red', 'green'][i % 2]};
                 border: 1px solid blue;
                 box-sizing: border-box;
@@ -90,33 +95,39 @@ export class MultiLinearBar extends GenericVisual {
                 height:15px
               }
               `;
-							mainStyle = mainStyle + tempStyle;
-							this._shadow.querySelector(
-								'style'
-							).textContent = mainStyle;
-							this.list_of_children = [style];
-						}
-					}
-					if (song.valid) {
-						const tempStyle = `
-            #bar${index.toString()}{
-              flex: ${Math.floor(
-						(100 * actualDuration) / this.totalDuration
-					)}px;
-              background-color: ${['red', 'green'][index % 2]};
-              box-sizing: border-box;
-              position:relative;
-              display:inline-block;
-              height:15px
+              mainStyle = mainStyle + tempStyle;
+              this._shadow.querySelector(
+                'style'
+              ).textContent = mainStyle;
+              this.list_of_children = [style];
             }
-            `;
-						mainStyle = mainStyle + tempStyle;
-						this._shadow.querySelector('style').textContent = mainStyle;
-						this.list_of_children = [style];
-					}
-				}
-			};
-		});
+          }
+          // if (song.valid) {
+          //   const tempStyle = `
+          //   #bar${index.toString()}{
+          //     flex: ${Math.floor(
+          //     (100 * actualDuration) / this.totalDuration
+          //   )}px;
+          //     background-color: ${['red', 'green'][index % 2]};
+          //     box-sizing: border-box;
+          //     position:relative;
+          //     display:inline-block;
+          //     height:15px
+          //   }
+          //   `;
+          //   mainStyle = mainStyle + tempStyle;
+          //   this._shadow.querySelector('style').textContent = mainStyle;
+          //   this.list_of_children = [style];
+          // }
+          //mainStyle = mainStyle + tempStyle;
+          this._shadow.querySelector('style').textContent = mainStyle;
+          this.list_of_children = [style];
+        }
+        else {
+          console.log('LOADED NOT LOADED',loadedSong)
+        }
+      };
+    }
 		console.log(
 			'DURATION PROCESS TOTAL',
 			this.totalDuration,
@@ -139,7 +150,9 @@ export class MultiLinearBar extends GenericVisual {
 
 	protected createHTMLElements() {
 		const style = document.createElement('style');
-
+    this.style.marginTop='5px'
+    this.style.marginBottom='5px'
+    this.style.overflow = 'scroll'
 		this.list_of_children = [style];
 	}
 
@@ -212,6 +225,8 @@ export class MultiLinearBar extends GenericVisual {
     	position:relative;
 			background-color: blue;
 			cursor:pointer;
+			margin-top:5px
+			margin-bottom:5px
 		}
 		`;
 	}

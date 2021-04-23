@@ -55,59 +55,16 @@ export class SimplePlaylist extends GenericVisual {
 	generateLine(song: Song, index: number, total: number): HTMLDivElement | HTMLLIElement {
 		// Each line of the playlist
 		const div = document.createElement('div');
-		div.style.display = 'flex';
-		div.style.flexDirection = 'row';
-		div.style.alignItems = 'center';
-		div.style.justifyContent = 'space-between';
-		div.style.border = '1px solid blue';
-		div.style.width = '90%';
-		div.style.height = '100px';
+
 
     // Each line of the playlist V2
     const li = document.createElement('li');
-    li.draggable = true
-    li.ondragover = (ev) => ev.preventDefault();
-    li.ondragstart = (e) => {
-      const startC = e.clientY;
-      const startP = e.clientY;
-      const shiftY =
-        e.clientY - li.parentElement.getBoundingClientRect().top;
-      li.ondragend = (ev) => {
-        const newTop =
-          ev.clientY - li.parentElement.getBoundingClientRect().top;
-        const minTop = Math.max(1, newTop);
-        const maxTop = Math.min(minTop, total * li.scrollHeight);
-        const finalIndex = Math.floor(maxTop / li.scrollHeight);
-        console.log(ev.clientY - startC, maxTop, finalIndex);
-      };
-    };
 
-		// Dragging feature
-		div.draggable = true;
 
-		div.ondragover = (ev) => ev.preventDefault();
-		div.ondragstart = (e) => {
-			const startC = e.clientY;
-			const startP = e.clientY;
-			const shiftY =
-				e.clientY - div.parentElement.getBoundingClientRect().top;
-			div.ondragend = (ev) => {
-				const newTop =
-					ev.clientY - div.parentElement.getBoundingClientRect().top;
-				const minTop = Math.max(1, newTop);
-				const maxTop = Math.min(minTop, total * div.scrollHeight);
-				const finalIndex = Math.floor(maxTop / div.scrollHeight);
-				console.log(ev.clientY - startC, maxTop, finalIndex);
-			};
-		};
 
-		const wrapper = document.createElement('div')
-    wrapper.style.position = 'relative'
-    wrapper.style.height = '50px';
-    wrapper.style.width = '50px';
 		const image = document.createElement('img');
 		const noImage = document.createElement('p')
-    noImage.style.position='absolute'
+    //noImage.style.position='absolute'
     noImage.style.fontWeight='bold'
     if(song.image){
       image.setAttribute('src', song.image);
@@ -116,8 +73,6 @@ export class SimplePlaylist extends GenericVisual {
       noImage.innerHTML='[NO IMAGE]'
     }
 		image.style.maxHeight = '50px';
-		wrapper.appendChild(noImage)
-    wrapper.appendChild(image)
 		const p = document.createElement('p');
 		p.innerText =
 			song.title +
@@ -147,7 +102,7 @@ export class SimplePlaylist extends GenericVisual {
 		pauseButton.setAttribute('value', 'pause');
 		pauseButton.addEventListener('click', () => {
       if (song.valid){
-        this._playerService.pause(index)
+        this._playerService.pause()
       }
 		});
     song.onload = (song: Song) => {
@@ -156,7 +111,8 @@ export class SimplePlaylist extends GenericVisual {
       text.innerHTML = song.title + '(' + song.valid + ')';
     };
     li.appendChild(p);
-		li.appendChild(wrapper);
+		li.appendChild(noImage);
+		li.appendChild(image);
 		li.appendChild(playButton);
 		li.appendChild(pauseButton);
 		return li;

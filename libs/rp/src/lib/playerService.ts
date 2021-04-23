@@ -494,7 +494,7 @@ export class RumblePlayerService {
 	public setPlaylistFromObject(data: any[]) {
 		this.playlist = data.map((object, index) => {
 			return {
-				title: 'Song ' + index,
+				title: object.title,
 				file: object.file,
 				howl: null,
 				id: uuidv4(),

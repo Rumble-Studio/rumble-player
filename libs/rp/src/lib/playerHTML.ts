@@ -231,11 +231,12 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 		if (finishOthers && index>0){
 		  this.playerService.stop()
-		  for (let i=0;i<index;i++){
-		    if(this.playerService.playlist[i].howl){
-		      this.playerService.index=i
-		      this.playerService.seekPerPercentage(100)
-        }
+		  this.playerService.index=0
+      while (this.playerService.index<index){
+		    this.playerService.seekPerPercentage(99)
+        this.playerService.play()
+        this.playerService.pause()
+        this.playerService.next()
       }
 
     }
