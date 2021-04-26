@@ -1,30 +1,89 @@
 # TODO
 
-~~prendre du recul pour voir que c'est pas fini! Il y a pleins de petits bugs, pleins de edge case qui ne marche pas, l'affichage global n'est pas clair: le style de la playlist prend trop de place: RETIRE LE STYLE ! Je répète: RETIRE LE STYLE! Je veux une liste ordered (<ol>) avec des items (<li>) et pas des grands rectangles. On fera une custom playlist plus tard.~~
+## Todolist
 
-à faire pour la démo:
+- quand la playlist est vide:
+   - mettre un message global "Playlist empty" -> visual child "SimpleInfoMessage"
+   - desactiver tous les boutons
+   - (ou que le fichier "being played" est incorrect) faire en sorte que les visual children de type "time" affiche "n.a" instead of -1.
 
--  mettre un style CSS sur les artworks de la playlist pour corriger la taille: width:100px, height: 100px et object fit en cover
-~~-  corriger/recoller la multilinearBar (découpée en morceau aujourd'hui) (ajouter overflow scroll horizontal)~~
-   ~~- ajouter un song avec le boutton "add song" ne semble pas pre-loader le fichier~~ Si
-   ~~- play un song ajouté entraine une erreur dans les logs~~
-   ~~- faire en sorte que la simplePlaylist ne permette pas de jouer plusieurs morceaux ensemble (via les properties de l'event) (DEJA DEMANDé AUPARAVANT)~~
-   ~~- ajouter un dummy song qui n'a pas d'image (pour montrer "[NO IMAGE]")~~
-~~-  ajouter une option sur la multilinear bar pour "remplir" le progress de tous les song avant le song being played (et remplacer le blanc par une couleur semi transparente) : cela sera le behaviour par défaut.~~
-   ~~- composant simpleImage: ajouter du margin et un petit titre "image of selected song:" et mettre une taille max aussi: 300px~~
+- fonction de la MLB: reset incorrect: blink behaviour à corriger
+- play should not reset the song (even if there is only one song)
 
-~~-  remplacer dans playerHTML tous les noms de fonction pour respecte le format "processEventXXXXXXX" par exemple "play()" devient "processEventPlay(event?:Event)" ou "processEventPlay(event?:CustomEvent)"~~
--  ~~~~faire en sorte que la playlist puisse émettre un custom event "play" with "index to be played" qui sera processé par playerHTML avec en option le fait de stopper les autres (comme la multiLinearBar) et en option la possibilité de repartir de zéro (resetPosition)
-   detail: { index, stopOthers:true, updateGlobalIndex:true, startSongAgain:false },~~~~
+- la valeur par défaut du champ RSS feed doit valoir https://feeds.buzzsprout.com/159584.rss
+- un form angular doit TOUJOURS avoir un un formControl
 
-input au dessus du player (rss feed url pour mettre a jour le playerservice )
-supprimer depuis la playlist
-show all track on multilinearbar
-remplir avec le rss de thevoicetechpodcast
-~~next/prev button update multilinearbar (toujours pleine a gauche )~~
+- le bouton "add song" ne fonctionne qu'une seule fois
+- quand on clique directement sur la multi linear bar comme toute premiere étape le seek ne se voit pas (meme s'il fonctionne)
+
+## Code archive
 
 
+${actualDuration===this.minDuration?'100px':String(Math.floor(
+                (100*(actualDuration / this.minDuration))) +
+ 
+
+
+ ```javascript
+
+// TOUT CE CODE VA DANS UPDATE VISUAL
+// OUI OUI: on calcule tout à chaque fois!!!!
+// playlist -> updated
+// multiLinearBar.updateVisual
+
+// lister les song
+// lister les durées
+// le résultat: un array de durées  (EN SECONDE)
+const durationsArray =  [
+    24.5, // 0
+    950.2, // 1 [5s] 1%
+    -1,
+    3660.5,
+    -2,
+    -1,
+    17
+]
+// transformer ce array en sub linear sizes
+// si c'est pas chargé ou avec erreur ou duree nulle: => duree = 1s
+const minSize = 10
+const maxRatio = 100
+const currentMaxSize = durationsArray.some(d=>d>0)? Math.max(durationsArray):5
+const maxSizeToUse = currentMaxSize>maxRatio*minSize?maxRatio*minSize:currentMaxSize
+const durationsToUse = durationsArray.map(d=>d<=0?minSize:d).map(d=>d>maxSizeToUse?maxSizeToUse:d)
+let durationsToUse = [
+    24,
+    100,
+    10,
+    100, // 3eme
+    10,
+    10,
+    17
+]
+// => can be directly used as percentage value in width property
+durationsToUse = durationsToUse/sum(durationsToUse) // normalization => like percentage
+
+const cumulativeDurations = cumsum(durationsToUse) // last element should equal 1
+
+// HoW TO SEEK ON CLICK?
+// clicked at: 5% multi linear bar
+// WHAT TO DO ?
+// clicked at 50% * cumulativeDurations[-1]
+// clicked at 135.5s
+const computedDuration = clickedPercentage * cumulativeDurations[-1] //the last factor should be one)
+const indexToSeek = cumulativeDurations.find(d=>d>computedDuration) // = 3
+const songComputedDuration = computedDuration - cumulativeDurations[index] // = 1.5
+const songPercentage = songComputedDuration / durationsToUse[index]
+playerService.seekPerPercentage(indexToSeek, songPercentage)
+
+// HOW TO SHOW CURRENT POSITION
+// [------|------------------|------------|-------|---|----]
+// [--------------25%
+const indexBeingPlayed = 1
+const currentPosition = 27 // (s)
+const virtualPosition = cumulativeDurations[indexBeingPlayed]+currentPosition/durationsArray[indexBeingPlayed] * durationsToUse[indexBeingPlayed]
+const percentageToDisplayOnMultiLinearBar = virtualPosition / cumulativeDurations[-1]
 
 
 
--  ##### AVOID DOUBLE SAME CSS
+
+ ```

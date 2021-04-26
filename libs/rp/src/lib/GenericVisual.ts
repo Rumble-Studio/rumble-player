@@ -34,22 +34,26 @@ export class GenericVisual extends HTMLElement {
 			this.setInnerHTML();
 			this.bindHTMLElements();
 		}
-		console.log('GENERIC VISUAL CONSTRUCTOR CALLED');
+		// console.log('GENERIC VISUAL CONSTRUCTOR CALLED');
 	}
 
 	// HTML hooks
 
 	connectedCallback() {
-		console.log(
-			'%c[GenericVisual](connectedCallback)',
-			'color:crimson',
-			this.kind
-		);
+		// console.log(
+		// 	'%c[GenericVisual](connectedCallback)',
+		// 	'color:crimson',
+		// 	this.kind
+		// );
 		this.updateVisual();
 	}
 
 	attributeChangedCallback() {
-		console.log('Custom square element attributes changed.');
+		// console.log(
+		// 	'%c[GenericVisual](attributeChangedCallback)',
+		// 	'color:crimson',
+		// 	this.kind
+		// );
 		this.updateVisual();
 	}
 	protected updateState(state: playerServiceEvent) {
@@ -62,14 +66,14 @@ export class GenericVisual extends HTMLElement {
 	 * build the HTML object to fill the DOM
 	 */
 	protected createHTMLElements() {
-		console.log('[GenericVisual](createHTMLElements)', 'nothing to create');
+		// console.log('[GenericVisual](createHTMLElements)', 'nothing to create');
 	}
 
 	/**
 	 * create the event listeners on the HTML child nodes
 	 */
 	protected bindHTMLElements() {
-		console.log('[GenericVisual](bindHTMLElements)', 'nothing to bind');
+		// console.log('[GenericVisual](bindHTMLElements)', 'nothing to bind');
 	}
 
 	/**

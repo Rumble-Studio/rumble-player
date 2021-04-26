@@ -18,11 +18,54 @@ export class MultiLinearBar extends GenericVisual {
 
 	constructor() {
 		super();
-		this.style.position = 'relative'
-		this.style.backgroundColor='yellow'
-    //this.style.minWidth = '100%'
-		this.style.overflow='scroll'
 	}
+
+	protected createHTMLElements() {
+		const style = document.createElement('style');
+		this.style.position = 'relative';
+		this.style.backgroundColor = 'yellow';
+		this.style.marginTop = '5px';
+		this.style.marginBottom = '5px';
+		this.list_of_children = [style];
+	}
+
+	protected bindHTMLElements() {
+		//
+	}
+
+	protected updateVisual() {
+
+		// remplir à gauche de la tete de lecture et vider à droite de la tete
+
+
+
+
+
+
+
+
+
+
+		// update sub linear bar based on percentage and index
+		if (this._playerService) {
+			const { index, percentage } = this._playerService;
+			const bar = this._shadow.children.item(index + 1);
+			const progressBar = bar.shadowRoot?.querySelector('style');
+			if (progressBar) {
+				progressBar.textContent = `
+      #progressBar${index.toString()}{
+        width: ${100 * percentage}%;
+        background-color: white;
+        opacity: 0.5;
+        height:14px
+      }`;
+			}
+		}
+	}
+
+
+
+
 	initView() {
 		this.cleanShadow();
 		let mainStyle = this.generateStyle();
@@ -38,20 +81,17 @@ export class MultiLinearBar extends GenericVisual {
       #bar${index.toString()}{
         width: ${100 / array.length}%;
         background-color: ${['red', 'green'][index % 2]};
-        border-width:1px;
-        border-color:${['red', 'green'][index % 2]};
-
-        height:15px
+        height:10px
       }
       `;
 			mainStyle = mainStyle + tempStyle;
-			//console.log('STYLING', mainStyle);
 		}
 		this._shadow.querySelector('style').textContent = mainStyle;
 		this.list_of_children = [style];
 		this._playerService.preloadPlaylist();
 		this.drawOnPreload();
 	}
+
 	drawOnPreload() {
 		const style = document.createElement('style');
 		const array = this._playerService.playlist;
@@ -66,14 +106,13 @@ export class MultiLinearBar extends GenericVisual {
 				) {
 					console.log('MAX DURATION', loadedSong.howl.duration());
 					this.maxDuration = loadedSong.howl.duration();
+				} else if (
+					loadedSong.valid &&
+					loadedSong.howl.duration() < this.minDuration
+				) {
+					console.log('MIN DURATION', loadedSong.howl.duration());
+					this.minDuration = loadedSong.howl.duration();
 				}
-				else if (
-          loadedSong.valid &&
-          loadedSong.howl.duration() < this.minDuration
-        ) {
-          console.log('MIN DURATION', loadedSong.howl.duration());
-          this.minDuration = loadedSong.howl.duration();
-        }
 				if (loadedSong.valid) {
 					console.log(loadedSong);
 					this.totalDuration =
@@ -93,11 +132,11 @@ export class MultiLinearBar extends GenericVisual {
 					);
 					for (let i = 0; i < array.length; i++) {
 						if (array[i].valid) {
-              const actualDuration = array[i].howl.duration();
+							const actualDuration = array[i].howl.duration();
 
-              //console.log('REMISE VALIDE',array[i],Math.floor(
-                //(100 * actualDuration) / this.totalDuration
-              //))
+							//console.log('REMISE VALIDE',array[i],Math.floor(
+							//(100 * actualDuration) / this.totalDuration
+							//))
 							const tempStyle = `
               #bar${i.toString()}{
                 width: 150px;
@@ -114,28 +153,7 @@ export class MultiLinearBar extends GenericVisual {
 							).textContent = mainStyle;
 							this.list_of_children = [style];
 						}
-						else{
-						  //console.log('REMISE INVALIDE',array[i])
-            }
 					}
-					// if (song.valid) {
-					//   const tempStyle = `
-					//   #bar${index.toString()}{
-					//     flex: ${Math.floor(
-					//     (100 * actualDuration) / this.totalDuration
-					//   )}px;
-					//     background-color: ${['red', 'green'][index % 2]};
-					//     box-sizing: border-box;
-					//     position:relative;
-					//     display:inline-block;
-					//     height:15px
-					//   }
-					//   `;
-					//   mainStyle = mainStyle + tempStyle;
-					//   this._shadow.querySelector('style').textContent = mainStyle;
-					//   this.list_of_children = [style];
-					// }
-					//mainStyle = mainStyle + tempStyle;
 					this._shadow.querySelector('style').textContent = mainStyle;
 					this.list_of_children = [style];
 				} else {
@@ -143,40 +161,18 @@ export class MultiLinearBar extends GenericVisual {
 				}
 			};
 		}
-		console.log(
-			'DURATION PROCESS TOTAL',
-			this.totalDuration,
-			this.shadowRoot
-		);
 	}
 
 	cleanShadow() {
-		// const shadowLength = this.shadowRoot.children.length;
-		// const elt = Array.from(this.shadowRoot.children);
-		// for (let i = 0; i < length; i++) {
-		// 	this.shadowRoot.removeChild(elt[i]);
-		// }
-		// console.log('SHADOW IS', this.shadowRoot);
 		this.shadowRoot.removeChild(this.shadowRoot.querySelector('style'));
 		while (this.shadowRoot.querySelectorAll('div').length > 0) {
 			this.shadowRoot.removeChild(this.shadowRoot.querySelector('div'));
 		}
 	}
 
-	protected createHTMLElements() {
-		const style = document.createElement('style');
-		this.style.marginTop = '5px';
-		this.style.marginBottom = '5px';
-		this.style.overflow = 'scroll';
-		this.list_of_children = [style];
-	}
-
-	protected bindHTMLElements() {
-		//
-	}
-	generateSingleBar = (index: number, percentage: number) => {
+	generateSingleBar(index: number, percentage: number) {
 		const div = document.createElement('div');
-		div.style.display = 'inline-block'
+		div.style.display = 'inline-block';
 		div.attachShadow({ mode: 'open' });
 		div.setAttribute('id', 'bar' + index.toString());
 		const progressDiv = document.createElement('div');
@@ -202,51 +198,36 @@ export class MultiLinearBar extends GenericVisual {
 			this.updatePreviousOnTrackSeek(index);
 		});
 		return div;
-	};
-	protected updateState(state: playerServiceEvent) {
+	}
+
+	updateState(state: playerServiceEvent) {
 		if (state.type === 'newPlaylist') {
 			this.initView();
 		}
-    if (state.type === 'next') {
-      this.updatePreviousOnTrackSeek(state.state.index);
-    }
-    if (state.type === 'prev') {
-      this.updatePreviousOnTrackSeek(state.state.index);
-    }
-    if (state.type === 'stop') {
-      this.updatePreviousOnTrackSeek(0);
-    }
-	}
-
-	updateVisual() {
-		if (this._playerService) {
-			const { index, percentage } = this._playerService;
-			const bar = this._shadow.children.item(index + 1);
-			const progressBar = bar.shadowRoot?.querySelector('style');
-			if(progressBar){
-        progressBar.textContent = `
-      #progressBar${index.toString()}{
-        width: ${100 * percentage}%;
-        background-color: white;
-        opacity: 0.5;
-        height:14px
-      }`;
-      }
+		if (state.type === 'next') {
+			this.updatePreviousOnTrackSeek(state.state.index);
+		}
+		if (state.type === 'prev') {
+			this.updatePreviousOnTrackSeek(state.state.index);
+		}
+		if (state.type === 'stop') {
+			this.updatePreviousOnTrackSeek(0);
 		}
 	}
+	
 	updatePreviousOnTrackSeek(index: number) {
 		if (this._playerService) {
-		  if (index===0){
-        const bar = this._shadow.children.item( 1);
-        const progressBar = bar.shadowRoot.querySelector('style');
-        progressBar.textContent = `
+			if (index === 0) {
+				const bar = this._shadow.children.item(1);
+				const progressBar = bar.shadowRoot.querySelector('style');
+				progressBar.textContent = `
         #progressBar${0}{
           width: 0%;
           background-color: white;
           opacity: 0.5;
           height:14px
         }`;
-      }
+			}
 			for (let i = 0; i < index; i++) {
 				const bar = this._shadow.children.item(i + 1);
 				const progressBar = bar.shadowRoot.querySelector('style');
@@ -272,19 +253,15 @@ export class MultiLinearBar extends GenericVisual {
 		}
 	}
 
-	generateStyle(width?:number) {
+	generateStyle(width?: number) {
 		return `
 		:host{
-		  width:900px
-		  overflow: scroll;
-		  background-color: black;
-		  display:block;
 		  cursor:progress;
 		  position:relative;
-		  height:15px
 		}
 		`;
 	}
+
 	generateProgressStyle(percentage: number, index: number) {
 		return `
 		#progressBar${index}{
@@ -301,7 +278,3 @@ export class MultiLinearBar extends GenericVisual {
 }
 
 customElements.define('rs-multi-linear-bar', MultiLinearBar);
-/*
-${actualDuration===this.minDuration?'100px':String(Math.floor(
-                (100*(actualDuration / this.minDuration))) +
- */

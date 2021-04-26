@@ -9,7 +9,6 @@ export class LinearBar extends GenericVisual {
 	percentage: number;
 
 	set playerService(player: RumblePlayerService) {
-		console.log('LENGTH', player.playlist.length);
 		super.playerService = player;
 	}
 	constructor() {

@@ -37,9 +37,7 @@ export class SimplePlaylist extends GenericVisual {
 		p.innerText = this.playlistTitle;
 		const ul = document.createElement('ul');
 		this.div.appendChild(p);
-    console.log('LES ELEMENTS',this._playlist)
 		this.playerService.playlist.forEach((value, index, array) => {
-
 			const line = this.generateLine(value, index, array.length);
 			ul.appendChild(line);
 		});
@@ -93,17 +91,18 @@ export class SimplePlaylist extends GenericVisual {
 			if (song.valid) {
 				//this._playerService.pause();
 				//this._playerService.play(index).then((r) => {
-					//
+				//
 				//});
-				const event = new CustomEvent('play',{
-				  detail: {
-            index,
-            stopOthers:true,
-            updateGlobalIndex:true,
-            resetPosition:true
-          }
-        })
-        this.dispatchEvent(event)
+				const event = new CustomEvent('play', {
+					detail: {
+						index,
+						stopOthers: true,
+						keepPlaying: true,
+						updateGlobalIndex: true,
+						startSongAgain: false,
+					},
+				});
+				this.dispatchEvent(event);
 			}
 		});
 

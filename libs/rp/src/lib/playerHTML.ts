@@ -37,7 +37,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 	playerService: RumblePlayerService | null;
 
 	processEventPlayRef: (event?: CustomEvent) => void;
-	processEventPauseRef: () => void;
+	processEventPauseRef: (options) => void;
 	processEventStopRef: () => void;
 	processEventNextRef: () => void;
 	processEventPrevRef: () => void;
@@ -55,9 +55,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 		}
 
 		this.processEventPlayRef = (event?: CustomEvent) => {
-		  event?this.play(event):this.play()
+			event ? this.play(event) : this.play();
 		};
-		this.processEventPauseRef = () => this.pause();
+		this.processEventPauseRef = (options) => this.pause(options);
 		this.processEventStopRef = () => this.stop();
 		this.processEventNextRef = () => this.next();
 		this.processEventPrevRef = () => this.prev();
@@ -188,36 +188,35 @@ export class HTMLRumblePlayer extends HTMLElement {
 	}
 
 	public play(event?: CustomEvent) {
-	  if(event){
-	    const {
-        index,
-        stopOthers,
-        updateGlobalIndex,
-        resetPosition
-      } = event.detail
-      if(updateGlobalIndex){
-        this.playerService.index=index
-      }
-      if (stopOthers){
-        this.pause()
-      }
-      if (resetPosition){
-        this.stop()
-        this.seekPerPercentage(0)
-      }
-      this.playerService.play(index).then(r=>{
-        //
-      })
-      return;
-    }
+		if (event) {
+			const {
+				index,
+				stopOthers,
+				updateGlobalIndex,
+				startSongAgain,
+			} = event.detail;
+			if (updateGlobalIndex) {
+				this.playerService.index = index;
+			}
+			if (stopOthers) {
+				const pauseOthers = true;
+				this.pause({ index, pauseOthers });
+			}
+			if (startSongAgain) {
+				this.stop();
+				this.seekPerPercentage(0);
+			}
+			this.playerService.play(index);
+			return;
+		}
 		console.log('PLAY', this.playerService);
 		if (!this.playerService) return;
 		this.playerService.play();
 	}
 
-	public pause() {
+	public pause(options) {
 		if (!this.playerService) return;
-		this.playerService.pause();
+		this.playerService.pause(options);
 	}
 
 	public stop() {
@@ -325,10 +324,10 @@ export class HTMLRumblePlayer extends HTMLElement {
 			vc.playerService = this.playerService;
 			this._shadow.appendChild(vc);
 		});
-		const style = document.createElement('style')
-    style.textContent = this.generateStyle()
-    this._shadow.appendChild(style)
-    //this._shadow.querySelector('style').textContent =
+		const style = document.createElement('style');
+		style.textContent = this.generateStyle();
+		this._shadow.appendChild(style);
+		//this._shadow.querySelector('style').textContent =
 	}
 
 	startListeningToVisualChildren() {
@@ -374,15 +373,15 @@ export class HTMLRumblePlayer extends HTMLElement {
 			);
 		});
 	}
-  generateStyle() {
-    return `
+	generateStyle() {
+		return `
 		:host{
 		  overflow: scroll;
 		  background-color: blue;
 
 		}
 		`;
-  }
+	}
 }
 
 customElements.define('rumble-player', HTMLRumblePlayer);

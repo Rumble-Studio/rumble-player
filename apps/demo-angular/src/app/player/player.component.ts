@@ -54,14 +54,14 @@ export class PlayerComponent implements AfterViewInit {
 	playerHTML: ElementRef<HTMLRumblePlayer> | undefined;
 
 	public eventsHistory: string[];
-  private RSSLink: any;
+	public RSSLink: string;
 
 	constructor() {
 		this.eventsHistory = [];
 		this.player = new RumblePlayerService();
+		this.RSSLink = 'https://feeds.buzzsprout.com/159584.rss';
 		//this.player.setPlaylistFromObject(fakePlaylistWithImage);
-
-  }
+	}
 
 	togglePlayer() {
 		if (this.player.isPlaying) {
@@ -75,10 +75,10 @@ export class PlayerComponent implements AfterViewInit {
 		if (this.playerHTML) {
 			this.playerHTML.nativeElement.setPlayer(this.player);
 			this.playerHTML.nativeElement.loadConfig('config6');
-      // this.player.setPLaylistFromRSSFeedURL('https://feeds.buzzsprout.com/159584.rss').then(r => {
-      //   console.log(r)
-      // })
-    } else {
+			// this.player.setPLaylistFromRSSFeedURL('https://feeds.buzzsprout.com/159584.rss').then(r => {
+			//   console.log(r)
+			// })
+		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}
 	}
@@ -103,10 +103,10 @@ export class PlayerComponent implements AfterViewInit {
 		this.playerHTML.nativeElement.playerService.addSong(fakePlaylist[0]);
 	}
 
-  changeRSS($event) {
-    this.RSSLink = $event.target.value
-  }
-  setRSS() {
-    this.player.setPLaylistFromRSSFeedURL(this.RSSLink)
-  }
+	changeRSS($event) {
+		this.RSSLink = $event.target.value;
+	}
+	setRSS() {
+		this.player.setPLaylistFromRSSFeedURL(this.RSSLink);
+	}
 }

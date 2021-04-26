@@ -185,8 +185,6 @@ export class RumblePlayerService {
 				}
 			},
 			onload: () => {
-				// console.log('Song loaded, duration is ', song.howl.duration());
-				// song.duration = song.howl.duration();
 				if (index > -1) {
 					that._playlist[index].valid = true;
 					that._playlist[index].loaded = true;
@@ -273,18 +271,24 @@ export class RumblePlayerService {
 		}
 	}
 
-	public pause(index?: number) {
+	public pause(options?: { index?: number; pauseOthers?: boolean }) {
 		if (this._playlist.length === 0) return;
-		console.log('Asked to pause', index);
-		if (index > -1 && index < this.playlist.length) {
-			console.log('Asked to pause:given index is', index);
-			const song = this._playlist[index];
+
+		if (options && (options.index > -1 && options.index < this.playlist.length) && !options.pauseOthers) {
+			// should pause only 1 song
+			const song = this._playlist[options.index];
 			if (song.howl && song.valid) {
-				console.log('Asked to pause:given index is', index);
 				song.howl.pause();
 			}
+		} if (options && (options.index > -1 && options.index < this.playlist.length) && options.pauseOthers) {
+			// should pause OTHERS only
+			this._playlist.forEach((song: Song, songIndex: number) => {
+				if (song.howl && song.valid && songIndex != options.index) {
+					song.howl.pause();
+				}
+			});
 		} else {
-			// we pause all item in the playlist (several can play together)
+			// we pause all song in the playlist (several can play together)
 			this._playlist.forEach((song: Song, songIndex: number) => {
 				if (song.howl && song.valid) {
 					song.howl.pause();
@@ -304,7 +308,7 @@ export class RumblePlayerService {
 				this.dispatchPlayerEvent(playerServiceEventType.stop);
 			}
 		} else {
-			// we stop all item in the playlist (several can play together)
+			// we stop all songs in the playlist (several can play together)
 			this._playlist.forEach((song: Song, songIndex: number) => {
 				if (song.howl && song.valid) {
 					song.howl.stop();
@@ -324,7 +328,7 @@ export class RumblePlayerService {
 		const isPlaying = this.isPlaying;
 		this.stop();
 
-		// if no other item is valid with stop
+		// if no other song is valid we stop
 		if (!this._playlist.some((s) => s.valid)) {
 			console.warn("Can't do next: no file valid.");
 			return;
@@ -367,7 +371,7 @@ export class RumblePlayerService {
 
 		this.stop();
 
-		// if no other item is valid with stop
+		// if no other song is valid we stop
 		if (!this._playlist.some((s) => s.valid)) {
 			console.warn("Can't do prev: no file valid.");
 			return;
@@ -521,16 +525,20 @@ export class RumblePlayerService {
 				dom.documentElement
 					.querySelectorAll('item')
 					.forEach((value, key) => {
+						const title = value.querySelector('title').textContent;
+						const file = value
+							.querySelector('enclosure')
+							.getAttribute('url');
+						const image = value
+							.getElementsByTagName('itunes:image')
+							.item(0)
+							.getAttribute('href');
 
-            const title = value.querySelector('title').textContent
-            const file = value.querySelector('enclosure').getAttribute('url')
-            const image = value.getElementsByTagName('itunes:image').item(0).getAttribute('href')
-
-            const song = {title,file,image}
-            songList.push(song)
+						const song = { title, file, image };
+						songList.push(song);
 					});
-				console.log('RSS Decoded', songList.slice(0,10));
-				this.setPlaylistFromObject(songList.slice(0,10));
+				console.log('RSS Decoded', songList.slice(0, 10));
+				this.setPlaylistFromObject(songList.slice(0, 10));
 			})
 			.catch((err) => {
 				console.error(err);
