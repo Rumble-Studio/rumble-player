@@ -36,11 +36,11 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	playerService: RumblePlayerService | null;
 
-	playRef: () => void;
-	pauseRef: () => void;
-	stopRef: () => void;
-	nextRef: () => void;
-	prevRef: () => void;
+	processEventPlayRef: (event?: CustomEvent) => void;
+	processEventPauseRef: () => void;
+	processEventStopRef: () => void;
+	processEventNextRef: () => void;
+	processEventPrevRef: () => void;
 	processEventSeekPerPercentageRef: (event: CustomEvent) => void;
 	processEventSeekPerPositionRef: (event: CustomEvent) => void;
 	processEventSeekPerPercentageAndIndexRef: (event: CustomEvent) => void;
@@ -54,11 +54,13 @@ export class HTMLRumblePlayer extends HTMLElement {
 			this.playerService = null;
 		}
 
-		this.playRef = () => this.play();
-		this.pauseRef = () => this.pause();
-		this.stopRef = () => this.stop();
-		this.nextRef = () => this.next();
-		this.prevRef = () => this.prev();
+		this.processEventPlayRef = (event?: CustomEvent) => {
+		  event?this.play(event):this.play()
+		};
+		this.processEventPauseRef = () => this.pause();
+		this.processEventStopRef = () => this.stop();
+		this.processEventNextRef = () => this.next();
+		this.processEventPrevRef = () => this.prev();
 		this.processEventSeekPerPercentageRef = (event: CustomEvent) =>
 			this.processEventSeekPerPercentage(event);
 		this.processEventSeekPerPercentageAndIndexRef = (event: CustomEvent) =>
@@ -185,7 +187,29 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.startListeningToVisualChildren();
 	}
 
-	public play() {
+	public play(event?: CustomEvent) {
+	  if(event){
+	    const {
+        index,
+        stopOthers,
+        updateGlobalIndex,
+        resetPosition
+      } = event.detail
+      if(updateGlobalIndex){
+        this.playerService.index=index
+      }
+      if (stopOthers){
+        this.pause()
+      }
+      if (resetPosition){
+        this.stop()
+        this.seekPerPercentage(0)
+      }
+      this.playerService.play(index).then(r=>{
+        //
+      })
+      return;
+    }
 		console.log('PLAY', this.playerService);
 		if (!this.playerService) return;
 		this.playerService.play();
@@ -305,11 +329,11 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	startListeningToVisualChildren() {
 		this.visualChildren.forEach((vc) => {
-			vc.addEventListener('pause', this.pauseRef);
-			vc.addEventListener('play', this.playRef);
-			vc.addEventListener('stop', this.stopRef);
-			vc.addEventListener('next', this.nextRef);
-			vc.addEventListener('prev', this.prevRef);
+			vc.addEventListener('pause', this.processEventPauseRef);
+			vc.addEventListener('play', this.processEventPlayRef);
+			vc.addEventListener('stop', this.processEventStopRef);
+			vc.addEventListener('next', this.processEventNextRef);
+			vc.addEventListener('prev', this.processEventPrevRef);
 			vc.addEventListener(
 				'seekPerPercentage',
 				this.processEventSeekPerPercentageRef
@@ -327,11 +351,11 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	stopListeningToVisualChildren() {
 		this.visualChildren.forEach((vc) => {
-			vc.removeEventListener('pause', this.pauseRef);
-			vc.removeEventListener('play', this.playRef);
-			vc.removeEventListener('stop', this.stopRef);
-			vc.removeEventListener('next', this.nextRef);
-			vc.removeEventListener('prev', this.prevRef);
+			vc.removeEventListener('pause', this.processEventPauseRef);
+			vc.removeEventListener('play', this.processEventPlayRef);
+			vc.removeEventListener('stop', this.processEventStopRef);
+			vc.removeEventListener('next', this.processEventNextRef);
+			vc.removeEventListener('prev', this.processEventPrevRef);
 			vc.removeEventListener(
 				'seekPerPercentage',
 				this.processEventSeekPerPercentageRef

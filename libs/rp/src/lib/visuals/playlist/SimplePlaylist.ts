@@ -89,10 +89,19 @@ export class SimplePlaylist extends GenericVisual {
 		playButton.setAttribute('value', 'play');
 		playButton.addEventListener('click', () => {
 			if (song.valid) {
-				this._playerService.pause();
-				this._playerService.play(index).then((r) => {
+				//this._playerService.pause();
+				//this._playerService.play(index).then((r) => {
 					//
-				});
+				//});
+				const event = new CustomEvent('play',{
+				  detail: {
+            index,
+            stopOthers:true,
+            updateGlobalIndex:true,
+            resetPosition:true
+          }
+        })
+        this.dispatchEvent(event)
 			}
 		});
 
