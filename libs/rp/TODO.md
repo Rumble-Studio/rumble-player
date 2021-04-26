@@ -14,7 +14,17 @@
    ~~- composant simpleImage: ajouter du margin et un petit titre "image of selected song:" et mettre une taille max aussi: 300px~~
 
 ~~-  remplacer dans playerHTML tous les noms de fonction pour respecte le format "processEventXXXXXXX" par exemple "play()" devient "processEventPlay(event?:Event)" ou "processEventPlay(event?:CustomEvent)"~~
--  ~~faire en sorte que la playlist puisse émettre un custom event "play" with "index to be played" qui sera processé par playerHTML avec en option le fait de stopper les autres (comme la multiLinearBar) et en option la possibilité de repartir de zéro (resetPosition)
-   detail: { index, stopOthers:true, updateGlobalIndex:true, resetPosition:true },~~
+-  ~~~~faire en sorte que la playlist puisse émettre un custom event "play" with "index to be played" qui sera processé par playerHTML avec en option le fait de stopper les autres (comme la multiLinearBar) et en option la possibilité de repartir de zéro (resetPosition)
+   detail: { index, stopOthers:true, updateGlobalIndex:true, startSongAgain:false },~~~~
+
+input au dessus du player (rss feed url pour mettre a jour le playerservice )
+supprimer depuis la playlist
+show all track on multilinearbar
+remplir avec le rss de thevoicetechpodcast
+~~next/prev button update multilinearbar (toujours pleine a gauche )~~
+
+
+
+
 
 -  ##### AVOID DOUBLE SAME CSS

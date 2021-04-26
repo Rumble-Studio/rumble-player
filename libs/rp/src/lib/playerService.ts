@@ -1,6 +1,7 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
 import { resolve } from '@angular/compiler-cli/src/ngtsc/file_system';
+import { escapeXml } from '@angular/compiler/src/i18n/serializers/xml_helper';
 
 export const UPDATE_DELAY = 500;
 
@@ -356,7 +357,7 @@ export class RumblePlayerService {
 			if (currentPosition > 2) {
 				console.log('Will restart play');
 				this.seekPerPosition(0);
-				this.dispatchPlayerEvent(playerServiceEventType.prev);
+				this.dispatchPlayerEvent(playerServiceEventType.play);
 				return;
 			}
 		}
@@ -516,14 +517,20 @@ export class RumblePlayerService {
 			.then((r) => {
 				const parser = new DOMParser();
 				const dom = parser.parseFromString(r, 'application/xml');
-				const songList = [];
+				const songList = [] as any[];
 				dom.documentElement
 					.querySelectorAll('item')
 					.forEach((value, key) => {
-						songList.push(value.querySelector('link').textContent);
+
+            const title = value.querySelector('title').textContent
+            const file = value.querySelector('enclosure').getAttribute('url')
+            const image = value.getElementsByTagName('itunes:image').item(0).getAttribute('href')
+
+            const song = {title,file,image}
+            songList.push(song)
 					});
-				console.log('RSS Decoded', songList);
-				this.setPlaylistFromUrls(songList);
+				console.log('RSS Decoded', songList.slice(0,10));
+				this.setPlaylistFromObject(songList.slice(0,10));
 			})
 			.catch((err) => {
 				console.error(err);

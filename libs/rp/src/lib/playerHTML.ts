@@ -325,6 +325,10 @@ export class HTMLRumblePlayer extends HTMLElement {
 			vc.playerService = this.playerService;
 			this._shadow.appendChild(vc);
 		});
+		const style = document.createElement('style')
+    style.textContent = this.generateStyle()
+    this._shadow.appendChild(style)
+    //this._shadow.querySelector('style').textContent =
 	}
 
 	startListeningToVisualChildren() {
@@ -370,6 +374,15 @@ export class HTMLRumblePlayer extends HTMLElement {
 			);
 		});
 	}
+  generateStyle() {
+    return `
+		:host{
+		  overflow: scroll;
+		  background-color: blue;
+
+		}
+		`;
+  }
 }
 
 customElements.define('rumble-player', HTMLRumblePlayer);

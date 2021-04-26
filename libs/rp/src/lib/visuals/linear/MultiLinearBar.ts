@@ -7,6 +7,7 @@ export class MultiLinearBar extends GenericVisual {
 	div: HTMLDivElement = document.createElement('div');
 	percentage: number;
 	maxDuration = 0;
+	minDuration = Infinity;
 	totalDuration = 0;
 	styles: string[] = [];
 
@@ -17,6 +18,10 @@ export class MultiLinearBar extends GenericVisual {
 
 	constructor() {
 		super();
+		this.style.position = 'relative'
+		this.style.backgroundColor='yellow'
+    //this.style.minWidth = '100%'
+		this.style.overflow='scroll'
 	}
 	initView() {
 		this.cleanShadow();
@@ -35,13 +40,12 @@ export class MultiLinearBar extends GenericVisual {
         background-color: ${['red', 'green'][index % 2]};
         border-width:1px;
         border-color:${['red', 'green'][index % 2]};
-        position:relative;
-        display:inline-block;
+
         height:15px
       }
       `;
 			mainStyle = mainStyle + tempStyle;
-			console.log('STYLING', mainStyle);
+			//console.log('STYLING', mainStyle);
 		}
 		this._shadow.querySelector('style').textContent = mainStyle;
 		this.list_of_children = [style];
@@ -51,6 +55,7 @@ export class MultiLinearBar extends GenericVisual {
 	drawOnPreload() {
 		const style = document.createElement('style');
 		const array = this._playerService.playlist;
+		//let accumulatedWidth=0
 		for (let index = 0; index < array.length; index++) {
 			const song = array[index];
 			let mainStyle = this.generateStyle();
@@ -62,6 +67,13 @@ export class MultiLinearBar extends GenericVisual {
 					console.log('MAX DURATION', loadedSong.howl.duration());
 					this.maxDuration = loadedSong.howl.duration();
 				}
+				else if (
+          loadedSong.valid &&
+          loadedSong.howl.duration() < this.minDuration
+        ) {
+          console.log('MIN DURATION', loadedSong.howl.duration());
+          this.minDuration = loadedSong.howl.duration();
+        }
 				if (loadedSong.valid) {
 					console.log(loadedSong);
 					this.totalDuration =
@@ -81,18 +93,19 @@ export class MultiLinearBar extends GenericVisual {
 					);
 					for (let i = 0; i < array.length; i++) {
 						if (array[i].valid) {
-							const actualDuration = array[i].howl.duration();
+              const actualDuration = array[i].howl.duration();
+
+              //console.log('REMISE VALIDE',array[i],Math.floor(
+                //(100 * actualDuration) / this.totalDuration
+              //))
 							const tempStyle = `
               #bar${i.toString()}{
-                flex: ${Math.floor(
-							(100 * actualDuration) / this.totalDuration
-						)}px;
+                width: 150px;
                 background-color: ${['red', 'green'][i % 2]};
                 border: 1px solid blue;
                 box-sizing: border-box;
-                position:relative;
-                display:inline-block;
-                height:15px
+
+                height:15px;
               }
               `;
 							mainStyle = mainStyle + tempStyle;
@@ -101,6 +114,9 @@ export class MultiLinearBar extends GenericVisual {
 							).textContent = mainStyle;
 							this.list_of_children = [style];
 						}
+						else{
+						  //console.log('REMISE INVALIDE',array[i])
+            }
 					}
 					// if (song.valid) {
 					//   const tempStyle = `
@@ -160,6 +176,7 @@ export class MultiLinearBar extends GenericVisual {
 	}
 	generateSingleBar = (index: number, percentage: number) => {
 		const div = document.createElement('div');
+		div.style.display = 'inline-block'
 		div.attachShadow({ mode: 'open' });
 		div.setAttribute('id', 'bar' + index.toString());
 		const progressDiv = document.createElement('div');
@@ -190,24 +207,46 @@ export class MultiLinearBar extends GenericVisual {
 		if (state.type === 'newPlaylist') {
 			this.initView();
 		}
+    if (state.type === 'next') {
+      this.updatePreviousOnTrackSeek(state.state.index);
+    }
+    if (state.type === 'prev') {
+      this.updatePreviousOnTrackSeek(state.state.index);
+    }
+    if (state.type === 'stop') {
+      this.updatePreviousOnTrackSeek(0);
+    }
 	}
 
 	updateVisual() {
 		if (this._playerService) {
 			const { index, percentage } = this._playerService;
 			const bar = this._shadow.children.item(index + 1);
-			const progressBar = bar.shadowRoot.querySelector('style');
-			progressBar.textContent = `
+			const progressBar = bar.shadowRoot?.querySelector('style');
+			if(progressBar){
+        progressBar.textContent = `
       #progressBar${index.toString()}{
         width: ${100 * percentage}%;
         background-color: white;
         opacity: 0.5;
         height:14px
       }`;
+      }
 		}
 	}
 	updatePreviousOnTrackSeek(index: number) {
 		if (this._playerService) {
+		  if (index===0){
+        const bar = this._shadow.children.item( 1);
+        const progressBar = bar.shadowRoot.querySelector('style');
+        progressBar.textContent = `
+        #progressBar${0}{
+          width: 0%;
+          background-color: white;
+          opacity: 0.5;
+          height:14px
+        }`;
+      }
 			for (let i = 0; i < index; i++) {
 				const bar = this._shadow.children.item(i + 1);
 				const progressBar = bar.shadowRoot.querySelector('style');
@@ -233,13 +272,16 @@ export class MultiLinearBar extends GenericVisual {
 		}
 	}
 
-	generateStyle() {
+	generateStyle(width?:number) {
 		return `
 		:host{
+		  width:900px
 		  overflow: scroll;
-		  background-color: blue;
-		  display:flex;
-		  flex-direction:row
+		  background-color: black;
+		  display:block;
+		  cursor:progress;
+		  position:relative;
+		  height:15px
 		}
 		`;
 	}
@@ -259,3 +301,7 @@ export class MultiLinearBar extends GenericVisual {
 }
 
 customElements.define('rs-multi-linear-bar', MultiLinearBar);
+/*
+${actualDuration===this.minDuration?'100px':String(Math.floor(
+                (100*(actualDuration / this.minDuration))) +
+ */

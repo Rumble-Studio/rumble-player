@@ -37,7 +37,9 @@ export class SimplePlaylist extends GenericVisual {
 		p.innerText = this.playlistTitle;
 		const ul = document.createElement('ul');
 		this.div.appendChild(p);
-		this._playlist.forEach((value, index, array) => {
+    console.log('LES ELEMENTS',this._playlist)
+		this.playerService.playlist.forEach((value, index, array) => {
+
 			const line = this.generateLine(value, index, array.length);
 			ul.appendChild(line);
 		});
