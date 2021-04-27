@@ -27,7 +27,7 @@ export class SimpleTimeLeft extends GenericVisual {
 
 	protected updateVisual() {
 		const timeLeft = this.playerService.getSongTimeLeft();
-		this.time.innerText = 'Time Left : ' + Math.round(timeLeft).toString();
+		this.time.innerText = timeLeft>=0?'Time Left : ' + Math.round(timeLeft).toString():'Time Left : N/A';
 		this._shadow.querySelector('style').textContent = this.generateStyle();
 	}
 	generateStyle() {

@@ -11,6 +11,7 @@ import {
 } from '../config/configs';
 import { LinearBar } from './visuals/linear/LinearBar';
 import { MultiLinearBar } from './visuals/linear/MultiLinearBar';
+import { SimpleMultiLinearBar } from './visuals/linear/SimpleMultiLinearBar';
 import { SimplePlayButton } from './visuals/buttons/simplePlayButton';
 import { SimplePauseButton } from './visuals/buttons/simplePauseButton';
 import { SimpleStopButton } from './visuals/buttons/simpleStopButton';
@@ -114,6 +115,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'MultiLinearBar':
 					visualChildren.push(new MultiLinearBar());
 					break;
+        case 'SimpleMultiLinearBar':
+          visualChildren.push(new SimpleMultiLinearBar());
+          break;
 				case 'SimplePlayButton':
 					visualChildren.push(new SimplePlayButton());
 					break;

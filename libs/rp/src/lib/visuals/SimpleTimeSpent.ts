@@ -27,7 +27,7 @@ export class SimpleTimeSpent extends GenericVisual {
 
 	protected updateVisual() {
 		const position = this.playerService.position;
-		this.time.innerText = 'Time Spent : ' + Math.round(position).toString();
+		this.time.innerText = position>=0? 'Time Spent : ' + Math.round(position).toString():'Time Spent : N/A';
 		this._shadow.querySelector('style').textContent = this.generateStyle();
 	}
 	generateStyle() {

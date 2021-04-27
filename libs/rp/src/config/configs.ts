@@ -65,7 +65,7 @@ export const config5 = {
 export const config6 = {
 	visualChildren: [
 		'SimplePlaylist',
-		'MultiLinearBar',
+		'SimpleMultiLinearBar',
 		'LinearBar',
 		'SimpleImage',
 		'SimplePlayButton',

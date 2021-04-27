@@ -1,9 +1,10 @@
 
 
-<div>
+<form [formControl]='myForm'>
   <input style='display: inline' type='url' [value]="RSSLink">
   <button (click)='setRSS()'>SET</button>
-</div>
+  <input type='submit' style='display: none'>
+</form>
 
 
 

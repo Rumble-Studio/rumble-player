@@ -23,6 +23,7 @@ export * from './lib/visuals/SimpleTotalTime';
 // linear
 export * from './lib/visuals/linear/LinearBar';
 export * from './lib/visuals/linear/MultiLinearBar';
+export * from './lib/visuals/linear/SimpleMultiLinearBar';
 
 // image
 export * from './lib/visuals/SimpleImage';

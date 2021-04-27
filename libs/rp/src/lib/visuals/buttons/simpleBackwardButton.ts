@@ -1,4 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
+import { playerServiceEvent } from '../../playerService';
 
 export class SimpleBackwardButton extends GenericVisual {
 	protected _kind = 'SimpleBackwardButton';
@@ -19,6 +20,8 @@ export class SimpleBackwardButton extends GenericVisual {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', 'backward(' + this.jump + 's)');
+		this.button.disabled = true
+
 		this.list_of_children = [this.button];
 	}
 
@@ -30,6 +33,14 @@ export class SimpleBackwardButton extends GenericVisual {
 			this.dispatchEvent(e);
 		});
 	}
+  protected updateState(state: playerServiceEvent) {
+    if (state.type === 'newPlaylist') {
+      if(this.playerService.playlist.length>0){
+        this.button.disabled = false
+      }
+    }
+
+  }
 }
 
 customElements.define('rs-simple-backward-button', SimpleBackwardButton);

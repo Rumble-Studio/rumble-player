@@ -1,7 +1,6 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
-import { resolve } from '@angular/compiler-cli/src/ngtsc/file_system';
-import { escapeXml } from '@angular/compiler/src/i18n/serializers/xml_helper';
+
 
 export const UPDATE_DELAY = 500;
 
@@ -85,7 +84,7 @@ export class RumblePlayerService {
 		this._playlist = playlist;
 		this.index = this._playlist.length > 0 ? 0 : -1;
 		this.dispatchPlayerEvent(playerServiceEventType.newPlaylist);
-		//this.preloadPlaylist()
+		this.preloadPlaylist()
 	}
 
 	// current duration
@@ -155,6 +154,7 @@ export class RumblePlayerService {
 	createHowlWithBindings(song: Song, index = -1): Howl | null {
 		// Extract the file extension from the URL or base64 data URI.
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
+    console.log('HOWL CREATING')
 		const that = this;
 		const str = song.file;
 		let ext: RegExpExecArray = /^data:audio\/([^;,]+);/i.exec(str);
@@ -185,6 +185,7 @@ export class RumblePlayerService {
 				}
 			},
 			onload: () => {
+			  console.log('LOADED')
 				if (index > -1) {
 					that._playlist[index].valid = true;
 					that._playlist[index].loaded = true;

@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import {
 	GenericVisual,
 	HTMLRumblePlayer,
@@ -50,6 +51,8 @@ customElements.define('rs-demo-play-button', MyDemoButton);
 export class PlayerComponent implements AfterViewInit {
 	public player: RumblePlayerService;
 
+  myForm =  new FormControl();
+
 	@ViewChild('playerHTML')
 	playerHTML: ElementRef<HTMLRumblePlayer> | undefined;
 
@@ -99,6 +102,7 @@ export class PlayerComponent implements AfterViewInit {
 	// 	}
 	// 	return visualChildren;
 	// }
+
 	addSong() {
 		this.playerHTML.nativeElement.playerService.addSong(fakePlaylist[0]);
 	}

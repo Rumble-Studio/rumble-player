@@ -37,6 +37,11 @@ export class SimplePlaylist extends GenericVisual {
 		p.innerText = this.playlistTitle;
 		const ul = document.createElement('ul');
 		this.div.appendChild(p);
+		const infoMessage = document.createElement('p')
+    infoMessage.style.fontWeight = 'bold'
+    infoMessage.style.fontSize = 'large'
+    infoMessage.innerHTML=this.playerService.playlist.length===0? 'Playlist empty':''
+    this.div.appendChild(infoMessage)
 		this.playerService.playlist.forEach((value, index, array) => {
 			const line = this.generateLine(value, index, array.length);
 			ul.appendChild(line);
@@ -83,6 +88,7 @@ export class SimplePlaylist extends GenericVisual {
 			p.style.fontWeight = 'bold';
 			p.innerHTML = song.title + ' (SELECTED)';
 		}
+    li.appendChild(p);
 
 		const playButton = document.createElement('input');
 		playButton.setAttribute('type', 'button');
@@ -104,6 +110,7 @@ export class SimplePlaylist extends GenericVisual {
 				});
 				this.dispatchEvent(event);
 			}
+
 		});
 
 		const pauseButton = document.createElement('input');
@@ -115,11 +122,12 @@ export class SimplePlaylist extends GenericVisual {
 			}
 		});
 		song.onload = (song: Song) => {
-			const text = div.querySelector('p');
+		  console.log(div)
+			const text = li.querySelector('p');
 
 			text.innerHTML = song.title + '(' + song.valid + ')';
 		};
-		li.appendChild(p);
+
 		li.appendChild(noImage);
 		li.appendChild(image);
 		li.appendChild(playButton);
@@ -130,6 +138,7 @@ export class SimplePlaylist extends GenericVisual {
 	protected updateState(state: playerServiceEvent) {
 		if (state.type === 'newPlaylist') {
 			this.updateContentVisual();
+			console.log('NEW PLAYLIST')
 		}
 		if (state.type === 'play') {
 			console.log('PLAYED');

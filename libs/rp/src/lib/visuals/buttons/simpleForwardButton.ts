@@ -1,4 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
+import { playerServiceEvent } from '../../playerService';
 
 export class SimpleForwardButton extends GenericVisual {
 	protected _kind = 'SimpleForwardButton';
@@ -19,7 +20,9 @@ export class SimpleForwardButton extends GenericVisual {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', 'forward(' + this.jump + 's)');
-		this.list_of_children = [this.button];
+    this.button.disabled = true
+
+    this.list_of_children = [this.button];
 	}
 
 	protected bindHTMLElements() {
@@ -30,6 +33,14 @@ export class SimpleForwardButton extends GenericVisual {
 			this.dispatchEvent(e);
 		});
 	}
+  protected updateState(state: playerServiceEvent) {
+    if (state.type === 'newPlaylist') {
+      if(this.playerService.playlist.length>0){
+        this.button.disabled = false
+      }
+    }
+
+  }
 }
 
 customElements.define('rs-simple-forward-button', SimpleForwardButton);
