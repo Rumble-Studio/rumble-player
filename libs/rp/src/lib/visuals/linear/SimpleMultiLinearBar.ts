@@ -35,9 +35,12 @@ export class SimpleMultiLinearBar extends GenericVisual {
 	protected bindHTMLElements() {
 		//
 	}
-	protected updateState(state: playerServiceEvent) {
-		//
-	}
+  protected updateState(state: playerServiceEvent) {
+    if (state.type === 'newPlaylist') {
+      this.updateVisual()
+    }
+
+  }
 	protected updateVisual() {
 		const style = this.shadowRoot.querySelector('style');
 		const div = this.shadowRoot.getElementById('mainBar');
@@ -85,11 +88,11 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		const virtualPosition =
 			(currentPosition / virtualDurationsArray[indexBeingPlayed]) *
 				durationsToUse[indexBeingPlayed] +
-				indexBeingPlayed >
+      (indexBeingPlayed >
 			0
 				? cumulativeDurations[indexBeingPlayed - 1]
-				: 0;
-        
+				: 0);
+
 		console.log({ virtualPosition });
 		let tempStyle = this.generateHostStyle();
 		if (div) {
@@ -135,11 +138,17 @@ export class SimpleMultiLinearBar extends GenericVisual {
 					(d) => d > computedDuration
 				); // = 3
 				const songComputedDuration =
-					computedDuration - cumulativeDurations[indexToSeek]; // = 1.5
-				this.playerService.seekPerPercentage(
-					indexToSeek,
-					songComputedDuration
-				);
+					cumulativeDurations[indexToSeek] - computedDuration; // = 1.5
+        // const nextDiv = this.shadowRoot.getElementById('subLineardiv'+(indexToSeek.toString()))
+        // const subBcr= nextDiv.getBoundingClientRect()
+        // const x = subBcr.width + subBcr.left
+        // const x = *(durationsToUse[indexToSeek]-Math.min(0,durationsToUse[indexToSeek]))
+        //
+        console.log(indexToSeek,computedDuration,songComputedDuration)
+				// this.playerService.seekPerPercentage(
+				// 	indexToSeek,
+				// 	songComputedDuration
+				// );
 			};
 			this.list_of_children = [style, div];
 		} else {
@@ -156,6 +165,7 @@ export class SimpleMultiLinearBar extends GenericVisual {
 
 		//console.log(durationArray,durationsToUse,cumulativeDurations,totalVirtualDuration)
 	}
+
 	generateHostStyle() {
 		return `
 		:host{
@@ -164,13 +174,13 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		  position:relative;
 		  background-color:yellow;
 		}
-    
+
     #mainBar{
       height: 30px;
       margin-block:10px;
       position:relative;
       width: 100%;}
-      
+
       `;
 	}
 }
