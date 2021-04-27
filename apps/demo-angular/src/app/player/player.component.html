@@ -1,12 +1,10 @@
 
 
-<form [formControl]='myForm'>
+<form>
   <input style='display: inline' type='url' [value]="RSSLink">
   <button (click)='setRSS()'>SET</button>
   <input type='submit' style='display: none'>
 </form>
-
-
 
 <div class="playerContainer" #playerContainer>
 	<rumble-player #playerHTML> </rumble-player>

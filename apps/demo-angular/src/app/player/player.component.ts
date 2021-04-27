@@ -51,8 +51,6 @@ customElements.define('rs-demo-play-button', MyDemoButton);
 export class PlayerComponent implements AfterViewInit {
 	public player: RumblePlayerService;
 
-  myForm =  new FormControl();
-
 	@ViewChild('playerHTML')
 	playerHTML: ElementRef<HTMLRumblePlayer> | undefined;
 
@@ -104,11 +102,12 @@ export class PlayerComponent implements AfterViewInit {
 	// }
 
 	addSong() {
-		this.playerHTML.nativeElement.playerService.addSong(fakePlaylist[0]);
+		if (this.playerHTML?.nativeElement.playerService)
+			this.playerHTML.nativeElement.playerService.addSong(fakePlaylist[0]);
 	}
 
-	changeRSS($event) {
-		this.RSSLink = $event.target.value;
+	changeRSS(event:any) {
+		this.RSSLink = event.target.value;
 	}
 	setRSS() {
 		this.player.setPLaylistFromRSSFeedURL(this.RSSLink);
