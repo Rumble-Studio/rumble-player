@@ -60,7 +60,7 @@ export class PlayerComponent implements AfterViewInit {
 	constructor() {
 		this.eventsHistory = [];
 		this.player = new RumblePlayerService();
-		this.RSSLink = 'https://feeds.buzzsprout.com/159584.rss';
+		this.RSSLink = 'https://feed.rumblestudio.app/collection/xjIPbCryeIQpV3ut5dXb';
 		//this.player.setPlaylistFromObject(fakePlaylistWithImage);
 	}
 

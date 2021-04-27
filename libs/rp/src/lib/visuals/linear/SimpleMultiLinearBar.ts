@@ -1,8 +1,6 @@
 import { GenericVisual } from '../../GenericVisual';
 import { playerServiceEvent } from '../../playerService';
 
-const cumulativeSum = ((sum) => (value) => (sum += value))(0);
-
 function cumSum(a) {
 	const result = [a[0]];
 
@@ -15,9 +13,6 @@ function cumSum(a) {
 
 export class SimpleMultiLinearBar extends GenericVisual {
 	protected _kind = 'SimpleMultiLinearBar';
-	private durationArray = [] as number[];
-	private div: HTMLDivElement;
-	private initialStyled = false;
 	constructor() {
 		super();
 		this.createHTMLElements();
@@ -35,12 +30,11 @@ export class SimpleMultiLinearBar extends GenericVisual {
 	protected bindHTMLElements() {
 		//
 	}
-  protected updateState(state: playerServiceEvent) {
-    if (state.type === 'newPlaylist') {
-      this.updateVisual()
-    }
-
-  }
+	protected updateState(state: playerServiceEvent) {
+		if (state.type === 'newPlaylist') {
+			this.updateVisual();
+		}
+	}
 	protected updateVisual() {
 		const style = this.shadowRoot.querySelector('style');
 		const div = this.shadowRoot.getElementById('mainBar');
@@ -83,15 +77,11 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		const currentPosition =
 			this.playerService.position >= 0 ? this.playerService.position : 0;
 
-
-    // TODO: les valeurs sont incorrects
+		// TODO: les valeurs sont incorrects
 		const virtualPosition =
 			(currentPosition / virtualDurationsArray[indexBeingPlayed]) *
 				durationsToUse[indexBeingPlayed] +
-      (indexBeingPlayed >
-			0
-				? cumulativeDurations[indexBeingPlayed - 1]
-				: 0);
+			(indexBeingPlayed > 0 ? cumulativeDurations[indexBeingPlayed - 1] : 0);
 
 		console.log({ virtualPosition });
 		let tempStyle = this.generateHostStyle();
@@ -101,7 +91,6 @@ export class SimpleMultiLinearBar extends GenericVisual {
 			durationsToUse.forEach((value, index) => {
 				const subLineardiv = document.createElement('div');
 				subLineardiv.setAttribute('id', 'subLineardiv' + index.toString());
-				console.log('VALUE', value);
 				tempStyle += `
           #subLineardiv${index}{
             height:100%;
@@ -132,38 +121,37 @@ export class SimpleMultiLinearBar extends GenericVisual {
 			div.onclick = (event) => {
 				const bcr = div.getBoundingClientRect();
 				const clickedPercentage = (event.clientX - bcr.left) / bcr.width;
-				const computedDuration = clickedPercentage; //the last factor should be one)
+				const computedDuration = clickedPercentage;
 
 				const indexToSeek = cumulativeDurations.findIndex(
 					(d) => d > computedDuration
-				); // = 3
+				);
+
+				console.log('Clicked on multi linear bar ', { indexToSeek });
+
 				const songComputedDuration =
-					cumulativeDurations[indexToSeek] - computedDuration; // = 1.5
-        // const nextDiv = this.shadowRoot.getElementById('subLineardiv'+(indexToSeek.toString()))
-        // const subBcr= nextDiv.getBoundingClientRect()
-        // const x = subBcr.width + subBcr.left
-        // const x = *(durationsToUse[indexToSeek]-Math.min(0,durationsToUse[indexToSeek]))
-        //
-        console.log(indexToSeek,computedDuration,songComputedDuration)
-				// this.playerService.seekPerPercentage(
-				// 	indexToSeek,
-				// 	songComputedDuration
-				// );
+					computedDuration -
+					(indexToSeek > 0 ? cumulativeDurations[indexToSeek - 1] : 0);
+
+				const percentageOfSongToSeek =
+					songComputedDuration / durationsToUse[indexToSeek];
+
+				const clickEvent = new CustomEvent('seekPerPercentageAndIndex', {
+					detail: {
+						percentage:percentageOfSongToSeek,
+						index:indexToSeek,
+						stopOthers: true,
+						keepPlaying: true,
+						updateGlobalIndex: true,
+						finishOthers: false,
+					},
+				});
+				this.dispatchEvent(clickEvent);
 			};
 			this.list_of_children = [style, div];
 		} else {
 			console.log('STYLE IS NOT AVAILABLE');
 		}
-
-		// const cumulativeDurationsPercentage = durationsToUse.map((value,index,array)=>{
-		//   let sum=0
-		//   for(let i=0;i<=index;i++){
-		//     sum+=array[i]
-		//   }
-		//   return sum
-		// })
-
-		//console.log(durationArray,durationsToUse,cumulativeDurations,totalVirtualDuration)
 	}
 
 	generateHostStyle() {

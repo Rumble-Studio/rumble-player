@@ -1,7 +1,6 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
 
-
 export const UPDATE_DELAY = 500;
 
 export interface Song {
@@ -84,7 +83,7 @@ export class RumblePlayerService {
 		this._playlist = playlist;
 		this.index = this._playlist.length > 0 ? 0 : -1;
 		this.dispatchPlayerEvent(playerServiceEventType.newPlaylist);
-		this.preloadPlaylist()
+		this.preloadPlaylist();
 	}
 
 	// current duration
@@ -113,13 +112,13 @@ export class RumblePlayerService {
 	}
 
 	getRank(song: Song) {
-		return this._playlist.map((s) => s.id).indexOf(song.id);
+		return this.playlist.map((s) => s.id).indexOf(song.id);
 	}
 
 	updatePositions() {
-		if (this._playlist.length === 0) return;
+		if (this.playlist.length === 0) return;
 		let duration = 0;
-		this._playlist.forEach((song: Song, songIndex: number) => {
+		this.playlist.forEach((song: Song, songIndex: number) => {
 			if (song.howl && song.valid) {
 				song.position = song.howl.seek() as number;
 			} else {
@@ -136,7 +135,7 @@ export class RumblePlayerService {
 	}
 
 	getSong(index: number, instanciateHowlIfMissing = true) {
-		const song = this._playlist[index];
+		const song = this.playlist[index];
 		if (!song.valid) {
 			// song invalid is return as it is without loading any more howl
 			return song;
@@ -154,8 +153,7 @@ export class RumblePlayerService {
 	createHowlWithBindings(song: Song, index = -1): Howl | null {
 		// Extract the file extension from the URL or base64 data URI.
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
-    console.log('HOWL CREATING')
-		const that = this;
+		console.log('HOWL CREATING');
 		const str = song.file;
 		let ext: RegExpExecArray = /^data:audio\/([^;,]+);/i.exec(str);
 		if (!ext) {
@@ -168,8 +166,8 @@ export class RumblePlayerService {
 				'This file does not have an extension and will be ignored by the player'
 			);
 			if (index > -1) {
-				that._playlist[index].valid = false;
-				that._playlist[index].loaded = false;
+				this.playlist[index].valid = false;
+				this.playlist[index].loaded = false;
 			}
 			return null;
 		}
@@ -177,27 +175,27 @@ export class RumblePlayerService {
 			src: [song.file],
 			html5: true,
 			onplayerror: (error) => {
-				console.log('error howler playing', error);
+				console.error('error howler playing', error);
 				this.playingOff();
 				if (index > -1) {
-					that._playlist[index].valid = false;
-					that._playlist[index].loaded = false;
+					this.playlist[index].valid = false;
+					this.playlist[index].loaded = false;
 				}
 			},
 			onload: () => {
-			  console.log('LOADED')
+				console.log('LOADED');
 				if (index > -1) {
-					that._playlist[index].valid = true;
-					that._playlist[index].loaded = true;
+					this.playlist[index].valid = true;
+					this.playlist[index].loaded = true;
 				}
 				song.onload(song);
 			},
 			onloaderror: (error) => {
-				console.log('error howler loading', error);
+				console.error('error howler loading', error);
 				this.playingOff();
 				if (index > -1) {
-					that._playlist[index].valid = false;
-					that._playlist[index].loaded = false;
+					this.playlist[index].valid = false;
+					this.playlist[index].loaded = false;
 				}
 			},
 			onend: () => {
@@ -223,13 +221,13 @@ export class RumblePlayerService {
 	}
 
 	preloadPlaylist() {
-		this._playlist.forEach(
+		this.playlist.forEach(
 			(song, index) => (song.howl = this.createHowlWithBindings(song, index))
 		);
 	}
 
 	addSong(url: string) {
-		const index = this._playlist.length;
+		const index = this.playlist.length;
 		const song = this.generateSongFromUrl(url, index);
 		console.log('ADD SONG', song, index);
 		const newPlaylist = this.playlist;
@@ -250,7 +248,7 @@ export class RumblePlayerService {
 		}
 
 		// if no playlist index is -1
-		if (this._playlist.length === 0) return Promise.resolve(-1);
+		if (this.playlist.length === 0) return Promise.resolve(-1);
 
 		const indexToPlay = this.index;
 		console.log('Asked to play  From Service 2:', indexToPlay);
@@ -273,24 +271,35 @@ export class RumblePlayerService {
 	}
 
 	public pause(options?: { index?: number; pauseOthers?: boolean }) {
-		if (this._playlist.length === 0) return;
+		if (this.playlist.length === 0) return;
 
-		if (options && (options.index > -1 && options.index < this.playlist.length) && !options.pauseOthers) {
+		if (
+			options &&
+			options.index > -1 &&
+			options.index < this.playlist.length &&
+			!options.pauseOthers
+		) {
 			// should pause only 1 song
-			const song = this._playlist[options.index];
+			const song = this.playlist[options.index];
 			if (song.howl && song.valid) {
 				song.howl.pause();
 			}
-		} if (options && (options.index > -1 && options.index < this.playlist.length) && options.pauseOthers) {
+		}
+		if (
+			options &&
+			options.index > -1 &&
+			options.index < this.playlist.length &&
+			options.pauseOthers
+		) {
 			// should pause OTHERS only
-			this._playlist.forEach((song: Song, songIndex: number) => {
+			this.playlist.forEach((song: Song, songIndex: number) => {
 				if (song.howl && song.valid && songIndex != options.index) {
 					song.howl.pause();
 				}
 			});
 		} else {
 			// we pause all song in the playlist (several can play together)
-			this._playlist.forEach((song: Song, songIndex: number) => {
+			this.playlist.forEach((song: Song, songIndex: number) => {
 				if (song.howl && song.valid) {
 					song.howl.pause();
 				}
@@ -300,17 +309,17 @@ export class RumblePlayerService {
 	}
 
 	public stop(index?: number) {
-		if (this._playlist.length === 0) return;
+		if (this.playlist.length === 0) return;
 
 		if (index) {
-			const song = this._playlist[index];
+			const song = this.playlist[index];
 			if (song.howl && song.valid) {
 				song.howl.stop();
 				this.dispatchPlayerEvent(playerServiceEventType.stop);
 			}
 		} else {
 			// we stop all songs in the playlist (several can play together)
-			this._playlist.forEach((song: Song, songIndex: number) => {
+			this.playlist.forEach((song: Song, songIndex: number) => {
 				if (song.howl && song.valid) {
 					song.howl.stop();
 					this.dispatchPlayerEvent(playerServiceEventType.stop);
@@ -320,7 +329,7 @@ export class RumblePlayerService {
 	}
 
 	public next() {
-		if (this._playlist.length === 0) {
+		if (this.playlist.length === 0) {
 			console.warn("Can't do next: no file available.");
 			return;
 		}
@@ -330,19 +339,19 @@ export class RumblePlayerService {
 		this.stop();
 
 		// if no other song is valid we stop
-		if (!this._playlist.some((s) => s.valid)) {
+		if (!this.playlist.some((s) => s.valid)) {
 			console.warn("Can't do next: no file valid.");
 			return;
 		}
 
-		if (this.index + 1 >= this._playlist.length) {
+		if (this.index + 1 >= this.playlist.length) {
 			this.index = 0;
 		} else {
 			this.index += 1;
 		}
 
 		// re-use value from before stop
-		if (!this._playlist[this.index].valid) {
+		if (!this.playlist[this.index].valid) {
 			this.next();
 			return;
 		}
@@ -354,7 +363,7 @@ export class RumblePlayerService {
 
 	public prev() {
 		console.log('PREV BUTTON CALLED');
-		if (this._playlist.length === 0) return;
+		if (this.playlist.length === 0) return;
 
 		const song = this.getSong(this.index);
 		if (song.howl && song.valid) {
@@ -373,17 +382,17 @@ export class RumblePlayerService {
 		this.stop();
 
 		// if no other song is valid we stop
-		if (!this._playlist.some((s) => s.valid)) {
+		if (!this.playlist.some((s) => s.valid)) {
 			console.warn("Can't do prev: no file valid.");
 			return;
 		}
 
 		if (this.index - 1 < 0) {
-			this.index = this._playlist.length - 1;
+			this.index = this.playlist.length - 1;
 		} else {
 			this.index -= 1;
 		}
-		if (!this._playlist[this.index].valid) {
+		if (!this.playlist[this.index].valid) {
 			this.prev();
 			return;
 		}
@@ -396,12 +405,13 @@ export class RumblePlayerService {
 
 	public seekPerPercentage(percentage: number, index?: number) {
 		console.log('SEEK PER PERCENTAGE', percentage, index);
-		if (this._playlist.length === 0) return;
+		if (this.playlist.length === 0) return;
 
 		let indexToSeek = this.index;
 		if (index !== undefined && index > -1 && index < this.playlist.length) {
 			indexToSeek = index;
 		}
+		console.log('Final index to seek per percentage:',indexToSeek)
 		const song = this.getSong(indexToSeek);
 		if (song.howl.state() === 'loading') {
 			song.howl.once('load', () => {
@@ -418,13 +428,14 @@ export class RumblePlayerService {
 	public seekPerPosition(position: number, index?: number) {
 		console.log('SEEK PER POSITION', position, index);
 
-		if (this._playlist.length === 0) return;
+		if (this.playlist.length === 0) return;
 
 		let indexToSeek = this.index;
 		if (index !== undefined && index > -1 && index < this.playlist.length) {
 			indexToSeek = index;
 		}
 		const song = this.getSong(indexToSeek);
+		console.log('SEEK PER POSITION, index being used:', {indexToSeek});
 
 		if (song.howl.state() === 'loading') {
 			song.howl.once('load', () => {
@@ -448,7 +459,7 @@ export class RumblePlayerService {
 	}
 
 	public getSongTimeLeft(index?: number) {
-		if (this._playlist.length === 0) return -1;
+		if (this.playlist.length === 0) return -1;
 
 		let indexToSeek = this.index;
 		if (index !== undefined && index > -1 && index < this.playlist.length) {
@@ -467,7 +478,7 @@ export class RumblePlayerService {
 	}
 
 	public getSongTotalTime(index?: number) {
-		if (this._playlist.length === 0) return -1;
+		if (this.playlist.length === 0) return -1;
 
 		let indexToSeek = this.index;
 		if (index !== undefined && index > -1 && index < this.playlist.length) {
