@@ -34,7 +34,7 @@ Using js
 ```html
 <div id="rs-player-id"></div>
 <script>
-	import { HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/rp';
+	import { HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/player';
 
 	let container = document.getElementById('rs-player-id')
 	// create the player custom element
@@ -57,13 +57,13 @@ As a dependency using React:
 in main.tsx or main.js:
 
 ```javascript
-import '@rumble-player/rp';
+import '@rumble-player/player';
 ```
 
 in your component
 
 ```typescript jsx
-import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/rp';
+import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/player';
 
 export default class MyComponent extends React.Component {
 	// HTML Player container
@@ -105,7 +105,7 @@ As a dependency using Angular:
 in main.tsx:
 
 ```javascript
-import '@rumble-player/rp';
+import '@rumble-player/player';
 ```
 
 in app.module :
@@ -138,7 +138,7 @@ in your template
 in your component class
 
 ```typescript
-import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/rp';
+import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/player';
 export class PlayerComponent implements AfterViewInit {
 	public player: RumblePlayerService;
 
