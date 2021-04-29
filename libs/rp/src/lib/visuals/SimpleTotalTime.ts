@@ -26,10 +26,14 @@ export class SimpleTotalTime extends GenericVisual {
 	}
 
 	protected updateVisual() {
-		super.updateVisual();
-		const duration = this.playerService.getSongTotalTime();
-		this.time.innerText = duration>=0?'Total Time : ' + Math.round(duration).toString():'Total Time : N/A';
-		this._shadow.querySelector('style').textContent = this.generateStyle();
+		if (this.time) {
+			const duration = this.playerService.getSongTotalTime();
+			this.time.innerText =
+				duration >= 0
+					? 'Total Time : ' + Math.round(duration).toString()
+					: 'Total Time : N/A';
+			this._shadow.querySelector('style').textContent = this.generateStyle();
+		}
 	}
 	generateStyle() {
 		return `

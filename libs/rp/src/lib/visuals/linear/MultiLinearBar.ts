@@ -34,17 +34,7 @@ export class MultiLinearBar extends GenericVisual {
 	}
 
 	protected updateVisual() {
-
 		// remplir à gauche de la tete de lecture et vider à droite de la tete
-
-
-
-
-
-
-
-
-
 
 		// update sub linear bar based on percentage and index
 		if (this._playerService) {
@@ -62,9 +52,6 @@ export class MultiLinearBar extends GenericVisual {
 			}
 		}
 	}
-
-
-
 
 	initView() {
 		this.cleanShadow();
@@ -214,7 +201,7 @@ export class MultiLinearBar extends GenericVisual {
 			this.updatePreviousOnTrackSeek(0);
 		}
 	}
-	
+
 	updatePreviousOnTrackSeek(index: number) {
 		if (this._playerService) {
 			if (index === 0) {

@@ -10,8 +10,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 	declarations: [AppComponent, PlayerComponent],
 	imports: [
 		BrowserModule,
-    ReactiveFormsModule,
-    FormsModule,
+		ReactiveFormsModule,
+		FormsModule,
 		RouterModule.forRoot([], { initialNavigation: 'enabled' }),
 	],
 	exports: [PlayerComponent],

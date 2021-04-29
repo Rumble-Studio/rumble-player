@@ -23,7 +23,7 @@ export class SimpleStopButton extends GenericVisual {
 		});
 	}
 	protected updateState(state: playerServiceEvent) {
-		super.updateState(state);
+		this.button = this.shadowRoot.querySelector('input');
 		if (state.type === 'play') {
 			this.button.disabled = false;
 		} else if (state.type === 'stop') {

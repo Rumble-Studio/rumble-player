@@ -191,11 +191,15 @@ export class RumblePlayerService {
 				song.onload(song);
 			},
 			onloaderror: (error) => {
-				console.error('error howler loading', error);
+				console.warn(
+					'error howler loading',
+					error,
+					this.playlist[index].howl.duration()
+				);
 				this.playingOff();
 				if (index > -1) {
-					this.playlist[index].valid = false;
-					this.playlist[index].loaded = false;
+					this.playlist[index].valid = true;
+					this.playlist[index].loaded = true;
 				}
 			},
 			onend: () => {
@@ -411,7 +415,7 @@ export class RumblePlayerService {
 		if (index !== undefined && index > -1 && index < this.playlist.length) {
 			indexToSeek = index;
 		}
-		console.log('Final index to seek per percentage:',indexToSeek)
+		console.log('Final index to seek per percentage:', indexToSeek);
 		const song = this.getSong(indexToSeek);
 		if (song.howl.state() === 'loading') {
 			song.howl.once('load', () => {
@@ -435,7 +439,7 @@ export class RumblePlayerService {
 			indexToSeek = index;
 		}
 		const song = this.getSong(indexToSeek);
-		console.log('SEEK PER POSITION, index being used:', {indexToSeek});
+		console.log('SEEK PER POSITION, index being used:', { indexToSeek });
 
 		if (song.howl.state() === 'loading') {
 			song.howl.once('load', () => {

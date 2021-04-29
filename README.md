@@ -27,24 +27,31 @@ In the browser:
 
 Using pure HTML
 ```html
-<rs-player
+<rumble-player
   id="rs-player-id"
-  title="My player"
-  darkMode
-  source="https://link.to.json or mp3"/>
+  />
 ```
-Using js 
+Using js
 
 ```html
-<div id="rs-player-id"></div>
+
+<div id='rs-player-id'></div>
 <script>
-    let sound = new RSPlayer({
-      source: ['sound.webm', 'sound.mp3'],
-      darkMode: true,
-      title: 'My Player',
-      parentId: 'rs-player-id'
-    });
-    sound.play();
+  import { HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/rp';
+
+  let container = document.getElementById('rs-player-id')
+  // create the player custom element
+  let player = new HTMLRumblePlayer()
+  //add it to the container
+  container.appendChild(player)
+  // create the service
+  let service = new RumblePlayerService()
+  // set the service to the player
+  player.setPlayer(service)
+  // load a layout config
+  player.loadConfig('config6')
+  load a playlist
+  service.setPLaylistFromRSSFeedURL('rss url')
 </script>
 ```
 
@@ -55,21 +62,43 @@ in main.tsx or main.js:
 import '@rumble-player/rp'
 ````
 in your component
-```jsx
+```typescript jsx
+import {
+  RumblePlayerService,
+  HTMLRumblePlayer,
+} from '@rumble-player/rp';
+
 export default class MyComponent extends React.Component{
+
+  // HTML Player container
+	private containerRef = React.createRef<HTMLRumblePlayer>();
+  
+	// Player Service
+  private player = new RumblePlayerService();
+  // Player html custom element
+  private playerHTML = new HTMLRumblePlayer();
+
+  componentDidMount() {
+    this.playerHTML = new HTMLRumblePlayer();
+    this.player = new RumblePlayerService();
+    // Set the service to the player
+    this.playerHTML.setPlayer(this.player);
+    // Load layout config number 6
+    this.playerHTML.loadConfig('config6');
+    // Insert the HTML player into DOM
+    (this.containerRef.current as HTMLRumblePlayer).replaceWith(
+      this.playerHTML
+    );
+    // Load playlist from RSS
+    this.player.setPLaylistFromRSSFeedURL('https://feeds.buzzsprout.com/159584.rss')
+
+  }
   render(){
   return(
-        <rs-player config={
-                    {source: ['sound.webm', 'sound.mp3'],
-                     darkMode: true,
-                     title: 'My Player',
-                     }}
-              onLoad={this._onLoadCallback()}
-              onPlay={this._onPlayCallback()}
-              onNext={this._onNextCallback()}
-              onPrev={this._onPrevCallback()}
-  
-          />)
+    <rumble-player
+      ref={this.containerRef as React.RefObject<HTMLRumblePlayer>}
+    />
+  )
 }
 }
 ```
@@ -98,16 +127,78 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'; // add this import
 ```
 in your template
 ```angular2html
-<rs-player
-  id="rs-player-id"
-  [title]="'My player'"
-  [darkMode]="true"
-  (onPlay)="onPlayCallback()"
-  (onNext)="onNextCallback()"
-  (onPrev)="onPrevCallback()"
-  (onLoad)="onLoadCallback()"
-  source="https://link.to.json or mp3"/>
+<div class="playerContainer" #playerContainer>
+  <rumble-player #playerHTML> </rumble-player>
+</div>
+
 ```
+
+in your component class
+````typescript
+import {
+  RumblePlayerService,
+  HTMLRumblePlayer,
+} from '@rumble-player/rp';
+export class PlayerComponent implements AfterViewInit {
+
+  public player: RumblePlayerService;
+
+  @ViewChild('playerHTML')
+  playerHTML: ElementRef<HTMLRumblePlayer> | undefined; // to access the custom element
+
+  public eventsHistory: string[];
+  public RSSLink: string;
+  
+  constructor() {
+
+    this.player = new RumblePlayerService(); // instanciate player service
+    this.RSSLink = 'https://feed.rumblestudio.app/collection/xjIPbCryeIQpV3ut5dXb';
+  }
+
+  ngAfterViewInit() {
+    // it is important to do these operation from or after ngAfterViewInit
+
+    if (this.playerHTML) {
+      // set the the audio service to the custom element
+      this.playerHTML.nativeElement.setPlayer(this.player);
+
+      // load the  predefined layout configuration  config6
+      this.playerHTML.nativeElement.loadConfig('config6');
+
+      // load playlist from RSS FEED
+      this.player.setPLaylistFromRSSFeedURL(this.RSSLink)
+
+      // or load playlist from local object
+      this.player.setPlaylistFromObject(fakePlaylistWithImage);
+    }
+  }	
+	
+}
+````
+
+### Predefined Layout configs
+
+There are 6 predefined layout configs.
+Each layout configuration defines the layout elements to show within the player
+Such elements are called visuals in the context of rumble player.
+Visual are custom HTML Elements that interact with the player service. Such elements can be button controls,
+or image art of a song or podcast episode or even seekbar and timers.
+
+Find below a list of predefined Visuals
+
+### Predefined visuals
+
+Each visual inherits from The GenericVisual class within src/lib/visuals.
+In buttons subfolder there are player control buttons : play/stop/pause/next/prev/forward/prev
+In linear subfolder ther are the linear bar and SimpleMultilinear for Playlists
+Simpleplaylist : Playlist Visual
+SimpleImage : Album art picture, it also loads the picture of the playing episode from podcast playlist
+SImpleTimeTotal : Total time of actual playing song
+SImpleTimeSpent : played time of actual playing song
+SImpleTimeLeft : ETA of actual playing song
+
+You can create as much as Visual you want in order to customize and add new features to the player
+Just dont forget to make it extend Generic Visual and define the it's custom element
 
 ### Known issues 
  Template parse errors:

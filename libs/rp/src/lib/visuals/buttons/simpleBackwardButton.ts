@@ -20,7 +20,7 @@ export class SimpleBackwardButton extends GenericVisual {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', 'backward(' + this.jump + 's)');
-		this.button.disabled = true
+		this.button.disabled = true;
 
 		this.list_of_children = [this.button];
 	}
@@ -33,14 +33,14 @@ export class SimpleBackwardButton extends GenericVisual {
 			this.dispatchEvent(e);
 		});
 	}
-  protected updateState(state: playerServiceEvent) {
-    if (state.type === 'newPlaylist') {
-      if(this.playerService.playlist.length>0){
-        this.button.disabled = false
-      }
-    }
-
-  }
+	protected updateState(state: playerServiceEvent) {
+		this.button = this.shadowRoot.querySelector('input');
+		if (state.type === 'newPlaylist') {
+			if (this.playerService.playlist.length > 0) {
+				this.button.disabled = false;
+			}
+		}
+	}
 }
 
 customElements.define('rs-simple-backward-button', SimpleBackwardButton);

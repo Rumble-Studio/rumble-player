@@ -5,8 +5,9 @@ export class SimpleImage extends GenericVisual {
 	private src: string;
 	set player(player: RumblePlayerService) {
 		this._playerService = player;
-		this.src = player.playlist[player.index]?.image?
-      player.playlist[player.index].image:'';
+		this.src = player.playlist[player.index]?.image
+			? player.playlist[player.index].image
+			: '';
 		this.shadowRoot.querySelector('img').setAttribute('src', this.src);
 	}
 	constructor() {

@@ -2,14 +2,12 @@ import * as React from 'react';
 import {
 	RumblePlayerService,
 	HTMLRumblePlayer,
-	LinearBar,
 	GenericVisual,
-	Config3,
 } from '@rumble-player/rp';
-import { fakePlaylist } from '../config/dummyAudioData.config';
-import { ControlButton, Tasks } from './buttons/controls-button';
 
-interface IProps {}
+interface IProps {
+	//
+}
 
 interface IState {
 	isPlaying?: boolean;
@@ -51,10 +49,7 @@ export default class Player extends React.Component<IProps, IState> {
 	private exampleRef = React.createRef();
 	constructor(props) {
 		super(props);
-		this.playerHTML = new HTMLRumblePlayer();
-		this.player = new RumblePlayerService();
-		this.player.setPlaylistFromUrls(fakePlaylist);
-		this.playerHTML.setPlayer(this.player);
+
 		this.state = {
 			isPlaying: false,
 			index: 0,
@@ -66,14 +61,17 @@ export default class Player extends React.Component<IProps, IState> {
 	private playerHTML = new HTMLRumblePlayer();
 
 	componentDidMount() {
-		console.log('didMount');
-		//this.playerHTML.setFromConfig(Config3);
-		this.playerHTML.loadConfig('config3');
-		const ex = new ExampleCustom();
+		this.playerHTML = new HTMLRumblePlayer();
+		this.player = new RumblePlayerService();
+		this.playerHTML.setPlayer(this.player);
+		this.playerHTML.loadConfig('config6');
 		(this.containerRef.current as HTMLRumblePlayer).replaceWith(
 			this.playerHTML
 		);
-		(this.exampleRef.current as ExampleCustom).replaceWith(ex);
+		this.player.setPLaylistFromRSSFeedURL(
+			'https://feeds.buzzsprout.com/159584.rss'
+		);
+
 		this.interval = setInterval(this.updateStyle, 10);
 	}
 
@@ -106,6 +104,15 @@ export default class Player extends React.Component<IProps, IState> {
 				<button onClick={this.togglePlayer}>
 					click me to toggle play/pause
 				</button>
+				<button
+					onClick={() => {
+						this.player.setPLaylistFromRSSFeedURL(
+							'https://feeds.buzzsprout.com/159584.rss'
+						);
+					}}
+				>
+					click me to load playlist from RSS
+				</button>
 				<hr />
 				<br />
 				<br />
@@ -116,7 +123,6 @@ export default class Player extends React.Component<IProps, IState> {
 					ref={this.containerRef as React.RefObject<HTMLRumblePlayer>}
 				/>
 				<hr />
-				<ex-rs ref={this.exampleRef as React.RefObject<ExampleCustom>} />
 				{player ? (
 					<ol>
 						{player.playlist.map((value, index) => {

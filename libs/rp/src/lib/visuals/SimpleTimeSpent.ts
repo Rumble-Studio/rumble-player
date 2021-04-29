@@ -10,7 +10,6 @@ export class SimpleTimeSpent extends GenericVisual {
 	}
 
 	protected createHTMLElements() {
-		super.createHTMLElements();
 		this.timeLeft = this.timeLeft ? this.timeLeft : 0;
 		const wrapper = document.createElement('div');
 		wrapper.setAttribute('id', 'wrapper');
@@ -26,9 +25,14 @@ export class SimpleTimeSpent extends GenericVisual {
 	}
 
 	protected updateVisual() {
-		const position = this.playerService.position;
-		this.time.innerText = position>=0? 'Time Spent : ' + Math.round(position).toString():'Time Spent : N/A';
-		this._shadow.querySelector('style').textContent = this.generateStyle();
+		if (this.time) {
+			const position = this.playerService.position;
+			this.time.innerText =
+				position >= 0
+					? 'Time Spent : ' + Math.round(position).toString()
+					: 'Time Spent : N/A';
+			this._shadow.querySelector('style').textContent = this.generateStyle();
+		}
 	}
 	generateStyle() {
 		return `

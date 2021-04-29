@@ -115,9 +115,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 				case 'MultiLinearBar':
 					visualChildren.push(new MultiLinearBar());
 					break;
-        case 'SimpleMultiLinearBar':
-          visualChildren.push(new SimpleMultiLinearBar());
-          break;
+				case 'SimpleMultiLinearBar':
+					visualChildren.push(new SimpleMultiLinearBar());
+					break;
 				case 'SimplePlayButton':
 					visualChildren.push(new SimplePlayButton());
 					break;

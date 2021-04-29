@@ -10,7 +10,6 @@ export class SimpleTimeLeft extends GenericVisual {
 	}
 
 	protected createHTMLElements() {
-		super.createHTMLElements();
 		this.timeLeft = this.timeLeft ? this.timeLeft : 0;
 		const wrapper = document.createElement('div');
 		wrapper.setAttribute('id', 'wrapper');
@@ -26,9 +25,14 @@ export class SimpleTimeLeft extends GenericVisual {
 	}
 
 	protected updateVisual() {
-		const timeLeft = this.playerService.getSongTimeLeft();
-		this.time.innerText = timeLeft>=0?'Time Left : ' + Math.round(timeLeft).toString():'Time Left : N/A';
-		this._shadow.querySelector('style').textContent = this.generateStyle();
+		if (this.time) {
+			const timeLeft = this.playerService.getSongTimeLeft();
+			this.time.innerText =
+				timeLeft >= 0
+					? 'Time Left : ' + Math.round(timeLeft).toString()
+					: 'Time Left : N/A';
+			this._shadow.querySelector('style').textContent = this.generateStyle();
+		}
 	}
 	generateStyle() {
 		return `

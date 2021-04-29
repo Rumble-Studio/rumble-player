@@ -138,8 +138,8 @@ export class SimpleMultiLinearBar extends GenericVisual {
 
 				const clickEvent = new CustomEvent('seekPerPercentageAndIndex', {
 					detail: {
-						percentage:percentageOfSongToSeek,
-						index:indexToSeek,
+						percentage: percentageOfSongToSeek,
+						index: indexToSeek,
 						stopOthers: true,
 						keepPlaying: true,
 						updateGlobalIndex: true,

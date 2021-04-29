@@ -15,9 +15,9 @@ export class SimplePlayButton extends GenericVisual {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', 'play');
-    this.button.disabled = true
+		this.button.disabled = true;
 
-    this.list_of_children = [this.button];
+		this.list_of_children = [this.button];
 	}
 
 	protected bindHTMLElements() {
@@ -26,16 +26,16 @@ export class SimplePlayButton extends GenericVisual {
 		});
 	}
 	protected updateState(state: playerServiceEvent) {
-		super.updateState(state);
-    if (state.type === 'newPlaylist') {
-      if(this.playerService.playlist.length>0){
-        this.button.disabled = false
-      }
-    }
+		this.button = this.shadowRoot.querySelector('input');
+		if (state.type === 'newPlaylist') {
+			if (this.playerService.playlist.length > 0) {
+				this.button.disabled = false;
+			}
+		}
 		if (state.type === 'play') {
 			this.button.disabled = true;
 		} else if (state.type === 'pause' || state.type === 'stop') {
-			this.button.disabled = false;
+			this.button.disabled = !(this.playerService.playlist.length > 0);
 		}
 	}
 }
