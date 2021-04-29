@@ -4,7 +4,7 @@ import {
 	GenericVisual,
 	HTMLRumblePlayer,
 	RumblePlayerService,
-} from '@rumble-player/rp';
+} from '@rumble-player/player';
 
 import {
 	fakePlaylist,

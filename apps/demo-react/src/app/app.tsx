@@ -3,7 +3,7 @@ import {
 	RumblePlayerService,
 	HTMLRumblePlayer,
 	GenericVisual,
-} from '@rumble-player/rp';
+} from '@rumble-player/player';
 
 interface IProps {
 	//
