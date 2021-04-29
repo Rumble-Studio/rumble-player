@@ -553,8 +553,7 @@ export class RumblePlayerService {
 						const song = { title, file, image };
 						songList.push(song);
 					});
-				console.log('RSS Decoded', songList.slice(0, 10));
-				this.setPlaylistFromObject(songList.slice(0, 10));
+				this.setPlaylistFromObject(songList);
 			})
 			.catch((err) => {
 				console.error(err);
