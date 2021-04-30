@@ -195,7 +195,7 @@ player.playingEventsCallbacks = [callback1, callback2]
 
 #### Properties
 
-- autoPlayNext **boolean [true]**  
+- `autoPlayNext` **boolean [true]**  
   if true, automatically play next song in playlist when actual song ends and loop entire playlist
 - isPlaying : **private boolean [false]**  
   true if there is a song playing
