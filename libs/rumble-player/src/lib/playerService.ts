@@ -49,16 +49,38 @@ async function urlToFile(
 }
 
 export class RumblePlayerService {
+
 	autoPlayNext = true; // do we play automatically next song
+	private _isPlaying = false;
+	autoPlay = true; // Automatically play on load
+  loop = false; // Loop the playing sound when it ends
 
-	isPlaying = false;
+  get isPlaying(){
+    return this._isPlaying
+  }
+  private _volume = 1;
+  get volume(){
+    return this._volume;
+  }
+  set volume(level: number){
+    if (level<=1 && level >=0){
+      if (this._isPlaying){
+        this._playlist[this.index].howl.volume(level)
+      }
+      this._playlist.forEach((value, index) => {
+        if (index !== this.index && value.howl){
+          value.howl.volume(level)
+        }
+      })
+    }
+  }
 
-	playingOn() {
-		this.isPlaying = true;
+	private playingOn() {
+		this._isPlaying = true;
 		this.dispatchPlayerEvent(playerServiceEventType.play);
 	}
-	playingOff() {
-		this.isPlaying = false;
+	private playingOff() {
+		this._isPlaying = false;
 		this.dispatchPlayerEvent(playerServiceEventType.pause);
 	}
 
@@ -92,19 +114,19 @@ export class RumblePlayerService {
 		return this._duration;
 	}
 	// current position
-	percentage: number;
+	private _percentage: number;
+	get percentage(){
+	  return this._percentage
+  }
 	private _position: number;
 	get position() {
 		return this._position;
-	}
-	set position(value: number) {
-		this._position = value;
 	}
 	constructor() {
 		this._playlist = [];
 		this._index = -1;
 		this._position = 0;
-		this.percentage = 0;
+		this._percentage = 0;
 
 		setInterval(() => {
 			this.updatePositions();
@@ -115,7 +137,7 @@ export class RumblePlayerService {
 		return this.playlist.map((s) => s.id).indexOf(song.id);
 	}
 
-	updatePositions() {
+	private updatePositions() {
 		if (this.playlist.length === 0) return;
 		let duration = 0;
 		this.playlist.forEach((song: Song, songIndex: number) => {
@@ -128,8 +150,8 @@ export class RumblePlayerService {
 		if (this.playlist[this.index].howl) {
 			duration = this.playlist[this.index].howl.duration();
 		}
-		this.position = this.playlist[this.index].position;
-		this.percentage = duration > 0 ? this.position / duration : 0; // TODO compute percentage based on current file being played
+		this._position = this.playlist[this.index].position;
+		this._percentage = duration > 0 ? this.position / duration : 0; // TODO compute percentage based on current file being played
 		this.newPositionCallback(this.position);
 		this.newPercentageCallback(this.percentage);
 	}
@@ -150,10 +172,9 @@ export class RumblePlayerService {
 		return song;
 	}
 
-	createHowlWithBindings(song: Song, index = -1): Howl | null {
+	private createHowlWithBindings(song: Song, index = -1): Howl | null {
 		// Extract the file extension from the URL or base64 data URI.
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		console.log('HOWL CREATING');
 		const str = song.file;
 		let ext: RegExpExecArray = /^data:audio\/([^;,]+);/i.exec(str);
 		if (!ext) {
@@ -176,6 +197,7 @@ export class RumblePlayerService {
 			html5: true,
 			onplayerror: (error) => {
 				console.error('error howler playing', error);
+        this.dispatchPlayerEvent(playerServiceEventType.playerror)
 				this.playingOff();
 				if (index > -1) {
 					this.playlist[index].valid = false;
@@ -183,19 +205,19 @@ export class RumblePlayerService {
 				}
 			},
 			onload: () => {
-				console.log('LOADED');
 				if (index > -1) {
 					this.playlist[index].valid = true;
 					this.playlist[index].loaded = true;
 				}
+				if(index===0 && this.autoPlay) this.play(0)
 				song.onload(song);
 			},
 			onloaderror: (error) => {
 				console.warn(
 					'error howler loading',
-					error,
-					this.playlist[index].howl.duration()
+					error
 				);
+        this.dispatchPlayerEvent(playerServiceEventType.loaderror)
 				this.playingOff();
 				if (index > -1) {
 					this.playlist[index].valid = true;
@@ -203,22 +225,25 @@ export class RumblePlayerService {
 				}
 			},
 			onend: () => {
-				console.log('%cend.', 'color:cyan');
+			  if (this.loop) {
+			    this.seekPerPercentage(0);
+			    this.dispatchPlayerEvent(playerServiceEventType.end)
+			    return;
+        }
 				if (this.autoPlayNext) this.next();
 				else {
 					this.stop();
 				}
-			},
+        this.dispatchPlayerEvent(playerServiceEventType.end)
+      },
 			onpause: () => {
-				console.log('%cpause.', 'color:cyan');
 				this.playingOff();
 			},
 			onplay: () => {
-				console.log('%cplay.', 'color:cyan');
 				this.playingOn();
 			},
 			onseek: () => {
-				console.log('%cseek.', 'color:cyan');
+			  //
 			},
 		});
 		return howl;
@@ -226,7 +251,9 @@ export class RumblePlayerService {
 
 	preloadPlaylist() {
 		this.playlist.forEach(
-			(song, index) => (song.howl = this.createHowlWithBindings(song, index))
+			(song, index) => {
+			  song.howl = this.createHowlWithBindings(song, index)
+			}
 		);
 	}
 
@@ -339,7 +366,7 @@ export class RumblePlayerService {
 		}
 
 		// remember value before stopping
-		const isPlaying = this.isPlaying;
+		const isPlaying = this._isPlaying;
 		this.stop();
 
 		// if no other song is valid we stop
@@ -381,7 +408,7 @@ export class RumblePlayerService {
 		}
 
 		// remember value before stopping
-		const isPlaying = this.isPlaying;
+		const isPlaying = this._isPlaying;
 
 		this.stop();
 
@@ -522,7 +549,7 @@ export class RumblePlayerService {
 			} as Song;
 		});
 	}
-	public generateSongFromUrl(url: string, index: number) {
+	private generateSongFromUrl(url: string, index: number) {
 		return {
 			title: 'Song ' + index,
 			file: url,
@@ -570,13 +597,13 @@ export class RumblePlayerService {
 
 	/* CALLBACKS ON UPDATE */
 	public positionUpdateCallbacks: ((position: number) => void)[] = [];
-	public newPositionCallback(position: number) {
+	private newPositionCallback(position: number) {
 		this.positionUpdateCallbacks.forEach((c) => {
 			c(position);
 		});
 	}
 	public percentageUpdateCallbacks: ((percentage: number) => void)[] = [];
-	public newPercentageCallback(percentage: number) {
+	private newPercentageCallback(percentage: number) {
 		this.percentageUpdateCallbacks.forEach((c) => {
 			c(percentage);
 		});
@@ -584,7 +611,7 @@ export class RumblePlayerService {
 
 	/* CALLBACKS ON STATE CHANGE */
 	public playingEventsCallbacks: ((event: playerServiceEvent) => void)[] = [];
-	public playerStateChangedCallback(event: playerServiceEvent) {
+	private playerStateChangedCallback(event: playerServiceEvent) {
 		this.playingEventsCallbacks.forEach((callback) => {
 			callback(event);
 		});
@@ -597,7 +624,7 @@ export class RumblePlayerService {
 				position: this.position,
 				percentage: this.percentage,
 				index: this.index,
-				playing: this.isPlaying,
+				playing: this._isPlaying,
 			} as playerState,
 		};
 		this.playerStateChangedCallback(event);
@@ -611,7 +638,10 @@ enum playerServiceEventType {
 	'next' = 'next',
 	'prev' = 'prev',
 	'seek' = 'seek',
-	'newPlaylist' = 'newPlaylist',
+	'end' = 'end',
+	'playerror' = 'playerror',
+  'loaderror' = 'loaderror',
+  'newPlaylist' = 'newPlaylist',
 }
 
 export interface playerState {

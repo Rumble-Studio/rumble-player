@@ -1,115 +1,457 @@
+# RumblePlayer by [Rumble Studio](#https://rumble.studio)
+## Player As a Service
 
+Rumble player is an open source audio player for the web, ready to use you can seamlessly integrate into any web project.
 
-# RumblePlayer
+## Existing solutions
 
+There are few audio players out there like :
+- [Green Audio Player](#https://github.com/greghub/green-audio-player)  : simple, but too simple as there is no way to add multiple song and have a playlist
+  each time we want to change a song we have change its DOM attributes. very limited
+- [HTML Audio Player](#https://codepen.io/vanderzak/pen/BayjVep) : has playlist support, but require manual manipulation, don't support album art
+- [Vanilla JS Audio Player](#https://github.com/kotaid/vanilla-js-audio-player)  : better than the two other since it supports playlist , album art and has an add button,
+  but comes with it's own limitation : it does not expose an API for interaction, and THE UI is not customizable
+
+All the players above also share a common problem : Very difficult and error prone if not impossible to integrate them into existing
+project without breaking it. They are all designed for a very specific use case and tech stack
+
+This lack of extensibility motivated us at Rumble Studio to build a more complete solution to address this need.
+A highly customizable audio player, exposing a powerfull for more control and flexibility.
 
 ### Features
-* Single audio file or playlist
-* Accept all audio codecs / formats
 
+-  Seamless integration in  Vanilla JS and React/Angular or any other NodeJS framework
+-  Single audio file or playlist
+-  Accept all audio codecs / formats
+-  Support Album Art Picture
+-  Playlist from podcast formatted RSS Feed
+-  Auto Caching : Song are Loaded and Cached automatically
+-  A Service for Managing player Across all application
+-  Comprehensive API Through the player service
+-  6 Default layout
+-  Comprehensive API Through the player service
 
 # Documentation
 
-### Contents
-* [Quick Start](#quick-start)
-* [Examples](#examples)
-* [Events](#events)
 
-### Quick Start
+###Quick-Start
 
 Several options to get up and running:
 
-* Clone the repo: `git clone https://github.com/Rumble-Studio/rumble-player.git`
-* Install with [npm](https://www.npmjs.com/package/howler): `npm install rumble-player`
-* Install with [Yarn](https://yarnpkg.com/en/package/howler): `yarn add rumble-player`
+-  Clone the repo: `git clone https://github.com/Rumble-Studio/rumble-player.git`
+-  Install with [npm](https://www.npmjs.com/package/howler): `npm install @rumble-player/player`
+-  Install with [Yarn](https://yarnpkg.com/en/package/howler): `yarn add @rumble-player/player`
 
-In the browser:
+## Examples Usage
+###Most basic example
 
-Using pure HTML
-```html
-<rumble-player
-  id="rs-player-id"
-  />
-```
-Using js
+#### Using Vanilla JS
+
 
 ```html
-
-<div id='rs-player-id'></div>
+// load the lib
+<script src="https://unpkg.com/@rumble-player/player" />
 <script>
-  import { HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/rp';
-
-  let container = document.getElementById('rs-player-id')
-  // create the player custom element
-  let player = new HTMLRumblePlayer()
-  //add it to the container
-  container.appendChild(player)
+  
+  import { RumblePlayerService } from '@rumble-player/player';
+	
   // create the service
-  let service = new RumblePlayerService()
-  // set the service to the player
-  player.setPlayer(service)
-  // load a layout config
-  player.loadConfig('config6')
-  load a playlist
-  service.setPLaylistFromRSSFeedURL('rss url')
+  let player = new RumblePlayerService()
+  
+  // load a song
+  player.addSong('song file uri')
+  
+  // start playing
+  player.play()
+  
+</script>
+```
+That is it, you can play your audio tracks, subscribe to playing events
+
+
+#### As a dependency using React:
+
+in main.tsx or main.js:
+
+```javascript
+import '@rumble-player/player';
+```
+
+in your component
+
+```typescript jsx
+import { RumblePlayerService } from '@rumble-player/player';
+import { useEffect } from 'react';
+
+// Using Class Component
+class MyComponent extends React.Component {
+
+  // Player Service
+  private player = new RumblePlayerService();
+
+  componentDidMount() {
+    this.player = new RumblePlayerService();
+    // Load a song
+    this.player.addSong('song file uri');
+    // Load a song
+    this.player.play();
+
+  }
+}
+
+// Using function component
+
+function MyComponent(){
+	const player = new  RumblePlayerService();
+  useEffect(()=>{
+    player = new RumblePlayerService();
+    // Load a song
+    player.addSong('song file uri');
+    // Load a song
+    player.play();
+  })
+}
+```
+
+
+#### As a dependency using Angular:
+
+in main.tsx:
+
+```javascript
+import '@rumble-player/player';
+```
+
+in your component class
+
+```typescript
+import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/player';
+export class PlayerComponent implements AfterViewInit {
+  public player: RumblePlayerService;
+
+  constructor() {
+    this.player = new RumblePlayerService(); // instanciate player service
+  }
+  ngOnInit() {
+    // Load a song
+    this.player.addSong('song file uri');
+    // Load a song
+    this.player.play();
+  }
+}
+```
+
+
+###More features
+
+this applies to both VanillaJS / Angular / React or any other JS Front Framework
+
+##### Load from multiple type of source
+````javascript
+
+// load a playlist from multiple song uri
+player.setPlaylistFromUrls(['song 1','song 2'])
+// load a playlist from RSS FEED
+player.setPLaylistFromRSSFeedURL('rss feed url')
+// load playlist with song urls and image art
+const playlist = [
+  {
+    title: 'Track 1',
+    file: 'file 1 url',
+    image: 'image 1 url'
+  },{
+    title: 'Track 2',
+    file: 'file 2 url',
+    image: 'image 2 url'
+  },
+]
+player.setPlaylistFromObject(playlist)
+````
+
+##### Subscribe to events
+Find the complete list of events and data passed in the API section below.
+
+````javascript
+// functions to be called each time an event occurs
+const callback1 = (event: playerServiceEvent) => {
+	const { percentage, index } = event.state
+	if (event.type === 'play'){
+		// Play event
+  }else if (event.type === 'pause'){
+		// Pause Event
+  }
+}
+const callback2 = (event: playerServiceEvent) => {
+  if (event.type === 'newPlaylist'){
+    // React to play event
+  }else if (event.type === 'next'){
+    // Pause Event
+  }
+}
+player.playingEventsCallbacks = [callback1, callback2]
+````
+
+### Complete API
+
+#### Properties
+
+- autoPlayNext **boolean [true]**  
+  if true, automatically play next song in playlist when actual song ends and loop entire playlist
+- isPlaying : **private boolean [false]**  
+  true if there is a song playing
+- autoPlay : **boolean [true]**  
+  automatically play first song on playlist  load
+- loop : **boolean [false]**  
+  loop playing song
+
+- **positionUpdateCallbacks: ((position: number) => void)[]**  callback to call each time playing progress, with position  in seconds
+- **percentageUpdateCallbacks: ((percentage: number) => void)[]** callback to call each time playing progress, with percentage played
+- **playingEventsCallbacks: ((event: playerServiceEvent) => void)[]** list of callback to call each time an event occurs
+
+complete list of events :
+- play
+- pause
+- stop
+- next
+- prev
+- end
+- newPlaylist
+- loaderror
+- playerror
+
+#### Methods
+
+- **volume([level: number])** : Get/Set volume level with a value between 0 and 1
+- **index([index: number])** : Get/set the index of playing head in playlist
+- **playlist(): <Song>[]** : Get the playlist
+  Get more details on Song in the Interface section
+
+- **percentage(): number**  Get the percentage played of the actual playing song
+- **position(): number**  Get the duration played of the actual playing song
+- getRank(song: Song): number : Get the index in the playlist of the actually playing song
+- **getSong(index: number, [instanciateHowlIfMissing = true]): Song** Get the song at index in the playlist. the instanciateHowlIfMissing parameter forces the loading of the song if not yet
+- **preloadPlaylist()** Forces the player to load every track in the playlist
+- **addSong(songUrl: string)** Add a new song in the playlist
+- **play([index]: number): Promise<number>** play the song at index in the playlist, default plays the first song
+- **pause([options: { index?: number; pauseOthers?: boolean }])** pauses song at index, if pauseOthers will also pause all the song in the playlist. by default it will pause everything
+- **next()** play next song in the playlist , if last song it will loop and play first one
+- **prev()** play prev song in the playlist if actual song has not played more than 2 seconds, otherwise will rewind to the beginning of actual playing song. if last song it will loop backward and play first one
+- **stop([index]: number)** stop the song at index, otherwise will stop the actual playing
+- **seekPerPercentage(percentage: number, [index: number])** seek the song at index in the playlist to percentage, by default will seek the actual playing song
+- **seekPerPosition(position: number, [index: number])** seek the song at index in the playlist to position, by default will seek the actual playing song
+- **getSongTimeLeft([index: number])**  Get The ETA of song at index in the playlist , default will return the ETA of actual playing song
+- **getSongTotalTime([index: number])** Get The total duration of song at index in the playlist , default will return the total duration of actual playing song
+- **setPlaylistFromUrls(urls: string[])** Set new playlist from song urls
+- **setPlaylistFromObject(data: any[])** Set new playlist from song including more details. Each element in data is an object {title: songTitle, image: imageUrl, file: songUrl}
+- **setPLaylistFromRSSFeedURL(url: string)** Set new playlist from podcast formatted RSS FEED
+
+
+
+## Custom element integration
+
+### How to add rumble-player basic components
+We create some componenents for you to illustrate how to use them.
+Every component is from The GenericVisual class within src/lib/visuals.
+A GenerivVisual is simply a custom HTML Element that communicate with the playerService. With such approach no need to repeat yourself setting listners callback and DOM API call to make your
+UI interact with the player. most of element such are controls button or seekbar are premaid here, you can import them simply create yours making them
+inherit GenericVisual and they will be able to directly interact with the player service.
+
+Find below a list of already available Generic Visual
+
+In buttons subfolder there are player control buttons : play/stop/pause/next/prev/forward/prev
+In linear subfolder ther are the linear bar and SimpleMultilinear for Playlists
+- **Simpleplaylist** : Playlist Visual
+- **SimpleImage** : Album art picture, it also loads the picture of the playing episode from podcast playlist
+- **SImpleTimeTotal** : Total time of actual playing song
+- **SImpleTimeSpent** : played time of actual playing song
+- **SImpleTimeLeft** : ETA of actual playing song
+
+To add a play button:
+
+````typescript
+import { SimplePlayButton } from '@rumble-player/player';
+import { RumblePlayerService } from './playerService';
+import { HTMLRumblePlayer } from './playerHTML';
+// The player service
+const player = new RumblePlayerService();
+// the button
+const play = new SimplePlayButton();
+// The player UI Container
+playerHTML = new HTMLRumblePlayer();
+// add the button to the player UI Layout
+playerHTML.setVisualChildren([play])
+
+// Finally set the player service to the Player front end
+playerHTML.setPlayer(player)
+````
+you can add as much as GenericVisual you , by calling the setVisualChildren of playerHTML
+
+### Predefined Layout configs
+
+There are 6 predefined layout configs.
+Each layout configuration defines the layout elements to show within the player
+
+
+To add all components available use a config:
+```typescript
+playerHTML.loadConfig('configName')
+```
+Find below the complete list of available configurations
+config1 :
+- Linear SeekBar
+- Play Button
+- Pause Button
+- Stop Button
+
+config2 :
+- Linear SeekBar
+- Play Button
+- Pause Button
+- Forward Button
+- Rewind Button
+
+
+config3 :
+- Linear SeekBar
+- Play Button
+- Pause Button
+- Next Button
+- Previous Button
+- Forward Button
+- Rewind Button
+
+
+config4 :
+- Linear SeekBar
+- Play Button
+- Pause Button
+- Next Button
+- Previous Button
+- Forward Button
+- Rewind Button
+- Playlist Element
+
+
+
+config5 :
+- Linear SeekBar
+- Play Button
+- Pause Button
+- Next Button
+- Previous Button
+- Forward Button
+- Rewind Button
+- ETA Timer
+- Progress Timer
+- Duration Timer
+- Playlist Element
+- Multi Track Linear Bar
+
+config6 :
+- Playlist Element
+- Multi Track Linear Bar
+- Linear SeekBar
+- Image Art
+- Play Button
+- Pause Button
+- Next Button
+- Previous Button
+- Forward Button
+- Rewind Button
+- ETA Timer
+- Progress Timer
+- Duration Timer
+
+
+you will find the definition of these layout configuration in src/config/config.ts
+
+#### How to use your custom components
+
+
+
+#####Using VanillaJS
+
+```html
+<div id="rs-player-id"></div>
+// load the lib
+<script src="https://unpkg.com/@rumble-player/player" />
+<script>
+	import { HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/player';
+
+	let container = document.getElementById('rs-player-id')
+	// create the player custom element
+	let player = new HTMLRumblePlayer()
+	//add it to the container
+	container.appendChild(player)
+	// create the service
+	let service = new RumblePlayerService()
+	// set the service to the player
+	player.setPlayer(service)
+	// load a layout config
+	player.loadConfig('config6')
+	load a playlist
+	service.setPLaylistFromRSSFeedURL('rss url')
 </script>
 ```
 
-As a dependency using React:
+#####As a dependency using React:
 
 in main.tsx or main.js:
-````javascript
-import '@rumble-player/rp'
-````
+
+```javascript
+import '@rumble-player/player';
+```
+
 in your component
+
 ```typescript jsx
-import {
-  RumblePlayerService,
-  HTMLRumblePlayer,
-} from '@rumble-player/rp';
+import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/player';
 
-export default class MyComponent extends React.Component{
-
-  // HTML Player container
+export default class MyComponent extends React.Component {
+	// HTML Player container
 	private containerRef = React.createRef<HTMLRumblePlayer>();
-  
+
 	// Player Service
-  private player = new RumblePlayerService();
-  // Player html custom element
-  private playerHTML = new HTMLRumblePlayer();
+	private player = new RumblePlayerService();
+	// Player html custom element
+	private playerHTML = new HTMLRumblePlayer();
 
-  componentDidMount() {
-    this.playerHTML = new HTMLRumblePlayer();
-    this.player = new RumblePlayerService();
-    // Set the service to the player
-    this.playerHTML.setPlayer(this.player);
-    // Load layout config number 6
-    this.playerHTML.loadConfig('config6');
-    // Insert the HTML player into DOM
-    (this.containerRef.current as HTMLRumblePlayer).replaceWith(
-      this.playerHTML
-    );
-    // Load playlist from RSS
-    this.player.setPLaylistFromRSSFeedURL('https://feeds.buzzsprout.com/159584.rss')
-
-  }
-  render(){
-  return(
-    <rumble-player
-      ref={this.containerRef as React.RefObject<HTMLRumblePlayer>}
-    />
-  )
-}
+	componentDidMount() {
+		this.playerHTML = new HTMLRumblePlayer();
+		this.player = new RumblePlayerService();
+		// Set the service to the player
+		this.playerHTML.setPlayer(this.player);
+		// Load layout config number 6
+		this.playerHTML.loadConfig('config6');
+		// Insert the HTML player into DOM
+		(this.containerRef.current as HTMLRumblePlayer).replaceWith(
+			this.playerHTML
+		);
+		// Load playlist from RSS
+		this.player.setPLaylistFromRSSFeedURL(
+			'rss feed url'
+		);
+	}
+	render() {
+		return (
+			<rumble-player
+				ref={this.containerRef as React.RefObject<HTMLRumblePlayer>}
+			/>
+		);
+	}
 }
 ```
 
-As a dependency using Angular:
+#####As a dependency using Angular:
 
 in main.tsx:
-````javascript
-import '@rumble-player/rp'
-````
+
+```javascript
+import '@rumble-player/player';
+```
+
 in app.module :
+
 ```javascript
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'; // add this import
 
@@ -125,7 +467,9 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'; // add this import
 })
 
 ```
+
 in your template
+
 ```angular2html
 <div class="playerContainer" #playerContainer>
   <rumble-player #playerHTML> </rumble-player>
@@ -134,179 +478,76 @@ in your template
 ```
 
 in your component class
-````typescript
-import {
-  RumblePlayerService,
-  HTMLRumblePlayer,
-} from '@rumble-player/rp';
+
+```typescript
+import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/player';
 export class PlayerComponent implements AfterViewInit {
+	public player: RumblePlayerService;
 
-  public player: RumblePlayerService;
+	@ViewChild('playerHTML')
+	playerHTML: ElementRef<HTMLRumblePlayer> | undefined; // to access the custom element
 
-  @ViewChild('playerHTML')
-  playerHTML: ElementRef<HTMLRumblePlayer> | undefined; // to access the custom element
+	public eventsHistory: string[];
+	public RSSLink: string;
 
-  public eventsHistory: string[];
-  public RSSLink: string;
-  
-  constructor() {
+	constructor() {
+		this.player = new RumblePlayerService(); // instanciate player service
+		this.RSSLink =
+			'rss feed url';
+	}
 
-    this.player = new RumblePlayerService(); // instanciate player service
-    this.RSSLink = 'https://feed.rumblestudio.app/collection/xjIPbCryeIQpV3ut5dXb';
-  }
+	ngAfterViewInit() {
+		// it is important to do these operation from or after ngAfterViewInit
 
-  ngAfterViewInit() {
-    // it is important to do these operation from or after ngAfterViewInit
+		if (this.playerHTML) {
+			// set the the audio service to the custom element
+			this.playerHTML.nativeElement.setPlayer(this.player);
 
-    if (this.playerHTML) {
-      // set the the audio service to the custom element
-      this.playerHTML.nativeElement.setPlayer(this.player);
+			// load the  predefined layout configuration  config6
+			this.playerHTML.nativeElement.loadConfig('config6');
 
-      // load the  predefined layout configuration  config6
-      this.playerHTML.nativeElement.loadConfig('config6');
+			// load playlist from RSS FEED
+			this.player.setPLaylistFromRSSFeedURL(this.RSSLink);
 
-      // load playlist from RSS FEED
-      this.player.setPLaylistFromRSSFeedURL(this.RSSLink)
-
-      // or load playlist from local object
-      this.player.setPlaylistFromObject(fakePlaylistWithImage);
-    }
-  }	
-	
+			// or load playlist from local object
+			this.player.setPlaylistFromObject(fakePlaylistWithImage);
+		}
+	}
 }
-````
+```
 
-### Predefined Layout configs
 
-There are 6 predefined layout configs.
-Each layout configuration defines the layout elements to show within the player
-Such elements are called visuals in the context of rumble player.
-Visual are custom HTML Elements that interact with the player service. Such elements can be button controls,
-or image art of a song or podcast episode or even seekbar and timers.
 
-Find below a list of predefined Visuals
+
 
 ### Predefined visuals
 
 Each visual inherits from The GenericVisual class within src/lib/visuals.
-In buttons subfolder there are player control buttons : play/stop/pause/next/prev/forward/prev
-In linear subfolder ther are the linear bar and SimpleMultilinear for Playlists
-Simpleplaylist : Playlist Visual
-SimpleImage : Album art picture, it also loads the picture of the playing episode from podcast playlist
-SImpleTimeTotal : Total time of actual playing song
-SImpleTimeSpent : played time of actual playing song
-SImpleTimeLeft : ETA of actual playing song
+
 
 You can create as much as Visual you want in order to customize and add new features to the player
 Just dont forget to make it extend Generic Visual and define the it's custom element
 
-### Known issues 
- Template parse errors:
-    'rumble-player-player' is not a known element:
-    1. If 'rumble-player-player' is an Angular component, then verify that it is part of this module.
-    2. If 'rumble-player-player' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<rumble-player-player></rumble-player-player>
+### Interface
+``` typescript
+interface playerState {
+  position: number;
+  percentage: number;
+  index: number;
+  playing: boolean;
+}
+
+interface playerServiceEvent {
+  type: playerServiceEventType;
+  state: playerState;
+}
+```
+### Known issues
+
+Template parse errors:
+'rumble-player-player' is not a known element:
+
+1. If 'rumble-player-player' is an Angular component, then verify that it is part of this module.
+2. If 'rumble-player-player' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<rumble-player-player></rumble-player-player>
 
 https://stackoverflow.com/questions/39428132/custom-elements-schema-added-to-ngmodule-schemas-still-showing-error
-
-This project was generated using [Nx](https://nx.dev).
-
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
-
-🔎 **Nx is a set of Extensible Dev Tools for Monorepos.**
-
-## Quick Start & Documentation
-
-
-[Nx Documentation](https://nx.dev/angular)
-
-[10-minute video showing all Nx features](https://nx.dev/angular/getting-started/what-is-nx)
-
-[Interactive Tutorial](https://nx.dev/angular/tutorial/01-create-application)
-
-## Adding capabilities to your workspace
-
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
-
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
-
-Below are our core plugins:
-
-- [Angular](https://angular.io)
-  - `ng add @nrwl/angular`
-- [React](https://reactjs.org)
-  - `ng add @nrwl/react`
-- Web (no framework frontends)
-  - `ng add @nrwl/web`
-- [Nest](https://nestjs.com)
-  - `ng add @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `ng add @nrwl/express`
-- [Node](https://nodejs.org)
-  - `ng add @nrwl/node`
-
-There are also many [community plugins](https://nx.dev/nx-community) you could add.
-
-## Generate an application
-
-Run `ng g @nrwl/angular:app my-app` to generate an application.
-
-> You can use any of the plugins above to generate applications as well.
-
-When using Nx, you can create multiple applications and libraries in the same workspace.
-
-## Generate a library
-
-Run `ng g @nrwl/angular:lib my-lib` to generate a library.
-
-> You can also use any of the plugins above to generate libraries as well.
-
-Libraries are shareable across libraries and applications. They can be imported from `@rumble-player/mylib`.
-
-## Development server
-
-Run `ng serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng g component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `ng build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx dep-graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev/angular) to learn more.
-
-
-
-
-
-
-## ☁ Nx Cloud
-
-### Computation Memoization in the Cloud
-
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
