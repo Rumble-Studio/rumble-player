@@ -198,64 +198,64 @@ player.flushListeners();
 
 #### Properties
 
--  autoPlayNext **boolean [true]**  
+-  `autoPlayNext boolean [true]`
    if true, automatically play next song in playlist when actual song ends and loop entire playlist
--  isPlaying : **private boolean [false]**  
+-  `isPlaying : private boolean [false]`
    true if there is a song playing
--  autoPlay : **boolean [true]**  
+-  `autoPlay : boolean [true]` 
    automatically play first song on playlist load
--  loop : **boolean [false]**  
+-  `loop : boolean [false]`
    loop playing song
--  rate : **number 1**  
+-  `rate : number 1`
    Playback speed, value between 0 and 4, 1 being the normal speed
--  volume : **number [1]**  
+-  `volume : number [1]`
    playback volume between 0 and 1.
 
--  **positionUpdateCallbacks: ((position: number) => void)[]** callback to call each time playing progress, with position in seconds
--  **percentageUpdateCallbacks: ((percentage: number) => void)[]** callback to call each time playing progress, with percentage played
+-  **`positionUpdateCallbacks: ((position: number) => void)[]`**callback to call each time playing progress, with position in seconds
+-  **`percentageUpdateCallbacks: ((percentage: number) => void)[]`**callback to call each time playing progress, with percentage played
 
 complete list of events :
 
--  play
--  pause
--  stop
--  next
--  prev
--  end
--  newPlaylist
--  loaderror
--  playerror
+-  `play`
+- ` pause`
+-  `stop`
+-  `next`
+-  `prev`
+-  `end`
+-  `newPlaylist`
+-  `loaderror`
+-  `playerror`
 
 #### Methods
 
--  **volume([level: number])** : Get/Set volume level with a value between 0 and 1
--  **index([index: number])** : Get/set the index of playing head in playlist
--  **playlist(): <Song>[]** : Get the playlist
+-  **`volume([level: number])`**: Get/Set volume level with a value between 0 and 1
+-  **`index([index: number])`**: Get/set the index of playing head in playlist
+-  **`playlist(): <Song>[]`**: Get the playlist
    Get more details on Song in the Interface section
 
--  **percentage(): number** Get the percentage played of the actual playing song
--  **position(): number** Get the duration played of the actual playing song
--  getRank(song: Song): number : Get the index in the playlist of the actually playing song
--  **getSong(index: number, [instanciateHowlIfMissing = true]): Song** Get the song at index in the playlist. the instanciateHowlIfMissing parameter forces the loading of the song if not yet
--  **preloadPlaylist()** Forces the player to load every track in the playlist
--  **addSong(songUrl: string)** Add a new song in the playlist
--  **play([index]: number): Promise<number>** play the song at index in the playlist, default plays the first song
--  **pause([options: { index?: number; pauseOthers?: boolean }])** pauses song at index, if pauseOthers will also pause all the song in the playlist. by default it will pause everything
--  **next()** play next song in the playlist , if last song it will loop and play first one
--  **prev()** play prev song in the playlist if actual song has not played more than 2 seconds, otherwise will rewind to the beginning of actual playing song. if last song it will loop backward and play first one
--  **stop([index]: number)** stop the song at index, otherwise will stop the actual playing
--  **onEvent(name: string, callback :(state: playerServiceEvent) => void)** callback to call each time name event occurs
--  **onceEvent(name: string, callback :(state: playerServiceEvent) => void)** callback to call first time name event occurs
--  **removeEvent(name?: string, callback :(state: playerServiceEvent) => void)** callback to remove from name event listeners
--  **flushListeners(name?:string)** remove all event listeners callback
+-  **`percentage(): number`**Get the percentage played of the actual playing song
+-  **`position(): number`**Get the duration played of the actual playing song
+-  **`getRank(song: Song): number`**Get the index in the playlist of the actually playing song
+-  **`getSong(index: number, [instanciateHowlIfMissing = true]): Song`**Get the song at index in the playlist. the instanciateHowlIfMissing parameter forces the loading of the song if not yet
+-  **`preloadPlaylist()`**Forces the player to load every track in the playlist
+-  **`addSong(songUrl: string)`**Add a new song in the playlist
+-  **`play([index]: number): Promise<number>`**play the song at index in the playlist, default plays the first song
+-  **`pause([options: { index?: number; pauseOthers?: boolean }])`**pauses song at index, if pauseOthers will also pause all the song in the playlist. by default it will pause everything
+-  **`next()`**play next song in the playlist , if last song it will loop and play first one
+-  **`prev()`**play prev song in the playlist if actual song has not played more than 2 seconds, otherwise will rewind to the beginning of actual playing song. if last song it will loop backward and play first one
+-  **`stop([index]: number)`**stop the song at index, otherwise will stop the actual playing
+-  **`onEvent(name: string, callback :(state: playerServiceEvent) => void)`**callback to call each time name event occurs
+-  **`onceEvent(name: string, callback :(state: playerServiceEvent) => void)`**callback to call first time name event occurs
+-  **`removeEvent(name?: string, callback :(state: playerServiceEvent) => void)`**callback to remove from name event listeners
+-  **`flushListeners(name?:string)`**remove all event listeners callback
 
--  **seekPerPercentage(percentage: number, [index: number])** seek the song at index in the playlist to percentage, by default will seek the actual playing song
--  **seekPerPosition(position: number, [index: number])** seek the song at index in the playlist to position, by default will seek the actual playing song
--  **getSongTimeLeft([index: number])** Get The ETA of song at index in the playlist , default will return the ETA of actual playing song
--  **getSongTotalTime([index: number])** Get The total duration of song at index in the playlist , default will return the total duration of actual playing song
--  **setPlaylistFromUrls(urls: string[])** Set new playlist from song urls
--  **setPlaylistFromObject(data: any[])** Set new playlist from song including more details. Each element in data is an object {title: songTitle, image: imageUrl, file: songUrl}
--  **setPLaylistFromRSSFeedURL(url: string)** Set new playlist from podcast formatted RSS FEED
+-  **`seekPerPercentage(percentage: number, [index: number])`**seek the song at index in the playlist to percentage, by default will seek the actual playing song
+-  **`seekPerPosition(position: number, [index: number])`**seek the song at index in the playlist to position, by default will seek the actual playing song
+-  **`getSongTimeLeft([index: number])`**Get The ETA of song at index in the playlist , default will return the ETA of actual playing song
+-  **`getSongTotalTime([index: number])`**Get The total duration of song at index in the playlist , default will return the total duration of actual playing song
+-  **`setPlaylistFromUrls(urls: string[])`**Set new playlist from song urls
+-  **`setPlaylistFromObject(data: any[])`**Set new playlist from song including more details. Each element in data is an object {title: songTitle, image: imageUrl, file: songUrl}
+-  **`setPLaylistFromRSSFeedURL(url: string)`**Set new playlist from podcast formatted RSS FEED
 
 ## Custom element integration
 
@@ -272,11 +272,11 @@ Find below a list of already available Generic Visual
 In buttons subfolder there are player control buttons : play/stop/pause/next/prev/forward/prev
 In linear subfolder ther are the linear bar and SimpleMultilinear for Playlists
 
--  **Simpleplaylist** : Playlist Visual
--  **SimpleImage** : Album art picture, it also loads the picture of the playing episode from podcast playlist
--  **SImpleTimeTotal** : Total time of actual playing song
--  **SImpleTimeSpent** : played time of actual playing song
--  **SImpleTimeLeft** : ETA of actual playing song
+-  **`Simpleplaylist`**: Playlist Visual
+-  **`SimpleImage`**: Album art picture, it also loads the picture of the playing episode from podcast playlist
+-  **`SImpleTimeTotal`**: Total time of actual playing song
+-  **`SImpleTimeSpent`**: played time of actual playing song
+-  **`SImpleTimeLeft`**: ETA of actual playing song
 
 To add a play button:
 
