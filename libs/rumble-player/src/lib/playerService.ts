@@ -291,6 +291,21 @@ export class RumblePlayerService {
 			song.howl = this.createHowlWithBindings(song, index);
 		});
 	}
+	unloadSong(song:Song){
+	  if (song.valid && song.howl){
+	    song.howl.unload()
+      song.loaded = false
+      console.log('unloaded',song.title)
+    }
+  }
+  loadSong(song:Song){
+	  if (song.valid){
+	    song.howl.load()
+      song.loaded = true
+      console.log('loaded',song.title)
+
+    }
+  }
 
 	addSong(url: string) {
 		const index = this.playlist.length;

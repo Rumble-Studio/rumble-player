@@ -6,15 +6,19 @@ import { PlayerComponent } from './player/player.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { SpotifyComponent } from './spotify/spotify.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
 	declarations: [AppComponent, PlayerComponent, SpotifyComponent],
-	imports: [
-		BrowserModule,
-		ReactiveFormsModule,
-		FormsModule,
-		AppRoutingModule,
-	],
+  imports: [
+    BrowserModule,
+    ReactiveFormsModule,
+    FormsModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatIconModule
+  ],
 	exports: [PlayerComponent],
 	providers: [],
 	bootstrap: [AppComponent],
