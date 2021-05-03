@@ -1,5 +1,4 @@
 import { GenericVisual } from '../../GenericVisual';
-import { playerServiceEvent } from '../../playerService';
 
 function cumSum(a) {
 	const result = [a[0]];
@@ -30,11 +29,12 @@ export class SimpleMultiLinearBar extends GenericVisual {
 	protected bindHTMLElements() {
 		//
 	}
-	protected updateState(state: playerServiceEvent) {
-		if (state.type === 'newPlaylist') {
-			this.updateVisual();
-		}
+	protected setListeners() {
+		this.playerService.onEvent('newPlaylist', this.onPlaylist);
 	}
+	onPlaylist = (event) => {
+		this.updateVisual();
+	};
 	protected updateVisual() {
 		const style = this.shadowRoot.querySelector('style');
 		const div = this.shadowRoot.getElementById('mainBar');

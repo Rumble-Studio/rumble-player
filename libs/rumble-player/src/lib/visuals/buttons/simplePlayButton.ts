@@ -38,6 +38,22 @@ export class SimplePlayButton extends GenericVisual {
 			this.button.disabled = !(this.playerService.playlist.length > 0);
 		}
 	}
+
+	protected setListeners() {
+		this.playerService.onEvent('play', this.disable);
+		this.playerService.onEvent('pause', this.enable);
+		this.playerService.onEvent('stop', this.enable);
+		this.playerService.onEvent('newPlaylist', this.enable);
+	}
+	disable = (event) => {
+		this.button = this.shadowRoot.querySelector('input');
+		this.button.disabled = true;
+	};
+	enable = (event) => {
+		console.log('NEW PLAYLIST FROM BUTTON');
+		this.button = this.shadowRoot.querySelector('input');
+		this.button.disabled = !(this.playerService.playlist.length > 0);
+	};
 }
 
 customElements.define('rs-simple-play-button', SimplePlayButton);

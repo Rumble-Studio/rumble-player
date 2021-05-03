@@ -22,14 +22,20 @@ export class SimplePauseButton extends GenericVisual {
 			this.playerService.pause();
 		});
 	}
-	protected updateState(state: playerServiceEvent) {
-		this.button = this.shadowRoot.querySelector('input');
-		if (state.type === 'play') {
-			this.button.disabled = false;
-		} else if (state.type === 'pause' || state.type === 'stop') {
-			this.button.disabled = true;
-		}
+	protected updateState(state: playerServiceEvent) {}
+	protected setListeners() {
+		this.playerService.onEvent('play', this.disable);
+		this.playerService.onEvent('pause', this.enable);
+		this.playerService.onEvent('stop', this.enable);
 	}
+	disable = (event) => {
+		this.button = this.shadowRoot.querySelector('input');
+		this.button.disabled = false;
+	};
+	enable = (event) => {
+		this.button = this.shadowRoot.querySelector('input');
+		this.button.disabled = true;
+	};
 }
 
 customElements.define('rs-simple-pause-button', SimplePauseButton);

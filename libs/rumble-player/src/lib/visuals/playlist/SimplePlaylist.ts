@@ -144,6 +144,12 @@ export class SimplePlaylist extends GenericVisual {
 			this.updateContentVisual();
 		}
 	}
+	protected setListeners() {
+		this.playerService.onEvent('newPlaylist', this.onPlaylist);
+	}
+	onPlaylist = (event) => {
+		this.updateContentVisual();
+	};
 
 	generateStyle() {
 		return `

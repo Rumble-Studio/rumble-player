@@ -22,15 +22,18 @@ export class SimpleStopButton extends GenericVisual {
 			this.playerService.stop();
 		});
 	}
-	protected updateState(state: playerServiceEvent) {
-		this.button = this.shadowRoot.querySelector('input');
-		if (state.type === 'play') {
-			this.button.disabled = false;
-		} else if (state.type === 'stop') {
-			console.log('STATE STOPPED');
-			this.button.disabled = true;
-		}
+	protected setListeners() {
+		this.playerService.onEvent('play', this.disable);
+		this.playerService.onEvent('stop', this.enable);
 	}
+	disable = (event) => {
+		this.button = this.shadowRoot.querySelector('input');
+		this.button.disabled = false;
+	};
+	enable = (event) => {
+		this.button = this.shadowRoot.querySelector('input');
+		this.button.disabled = true;
+	};
 }
 
 customElements.define('rs-simple-stop-button', SimpleStopButton);

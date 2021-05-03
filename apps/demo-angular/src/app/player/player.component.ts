@@ -55,6 +55,8 @@ export class PlayerComponent implements AfterViewInit {
 	playerHTML: ElementRef<HTMLRumblePlayer> | undefined;
 
 	public eventsHistory: string[];
+	rate = 1;
+	volume = 1;
 	public RSSLink: string;
 
 	constructor() {
@@ -111,6 +113,19 @@ export class PlayerComponent implements AfterViewInit {
 		this.RSSLink = event.target.value;
 	}
 	setRSS() {
-		this.player.setPLaylistFromRSSFeedURL(this.RSSLink);
+		this.player.setPLaylistFromRSSFeedURL(
+			'https://feeds.buzzsprout.com/159584.rss'
+		);
+	}
+
+	shuffle() {
+		this.player.shuffle = true;
+	}
+
+	setRate($event: any) {
+		this.rate = $event.target.value;
+	}
+	setVolume($event: any) {
+		this.volume = $event.target.value;
 	}
 }

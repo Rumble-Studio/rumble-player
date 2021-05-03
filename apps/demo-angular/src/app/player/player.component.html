@@ -1,6 +1,20 @@
 <form>
 	<input style="display: inline" type="url" [value]="RSSLink" />
 	<button (click)="setRSS()">SET</button>
+	<input
+		style="display: inline"
+		type="url"
+		[value]="rate"
+		(change)="setRate($event)"
+	/>
+	<button (click)="this.player.rate = this.rate">SET Rate</button>
+	<input
+		style="display: inline"
+		type="url"
+		[value]="volume"
+		(change)="setVolume($event)"
+	/>
+	<button (click)="this.player.volume = this.volume">SET Volume</button>
 	<input type="submit" style="display: none" />
 </form>
 
@@ -10,6 +24,10 @@
 
 <button (click)="togglePlayer()">click me to toggle play/pause</button>
 <button (click)="addSong()">click me to Add song to the playlist</button>
+<button (click)="this.player.shuffle = true">shuffle playlist</button>
+<button (click)="this.player.shuffle = false">unshuffle playlist</button>
+<button (click)="this.player.loop = true">loop</button>
+<button (click)="this.player.loop = false">disable loop</button>
 <br />
 Current state: {{ player.isPlaying ? 'playing' : 'not playing' }} <br />
 Current index: {{ player.index }} <br />

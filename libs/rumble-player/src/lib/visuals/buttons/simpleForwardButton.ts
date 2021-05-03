@@ -33,14 +33,13 @@ export class SimpleForwardButton extends GenericVisual {
 			this.dispatchEvent(e);
 		});
 	}
-	protected updateState(state: playerServiceEvent) {
-		this.button = this.shadowRoot.querySelector('input');
-		if (state.type === 'newPlaylist') {
-			if (this.playerService.playlist.length > 0) {
-				this.button.disabled = false;
-			}
-		}
+	protected setListeners() {
+		this.playerService.onEvent('newPlaylist', this.onPlaylist);
 	}
+	onPlaylist = (event) => {
+		this.button = this.shadowRoot.querySelector('input');
+		this.button.disabled = !(this.playerService.playlist.length > 0);
+	};
 }
 
 customElements.define('rs-simple-forward-button', SimpleForwardButton);

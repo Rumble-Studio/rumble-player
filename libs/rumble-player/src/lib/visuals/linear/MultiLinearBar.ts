@@ -187,20 +187,24 @@ export class MultiLinearBar extends GenericVisual {
 		return div;
 	}
 
-	updateState(state: playerServiceEvent) {
-		if (state.type === 'newPlaylist') {
-			this.initView();
-		}
-		if (state.type === 'next') {
-			this.updatePreviousOnTrackSeek(state.state.index);
-		}
-		if (state.type === 'prev') {
-			this.updatePreviousOnTrackSeek(state.state.index);
-		}
-		if (state.type === 'stop') {
-			this.updatePreviousOnTrackSeek(0);
-		}
+	protected setListeners() {
+		this.playerService.onEvent('newPlaylist', this.onPlaylist);
+		this.playerService.onEvent('next', this.onNext);
+		this.playerService.onEvent('prev', this.onPrev);
+		this.playerService.onEvent('stop', this.onStop);
 	}
+	onPlaylist = (event) => {
+		this.initView();
+	};
+	onNext = (event) => {
+		this.updatePreviousOnTrackSeek(event.state.index);
+	};
+	onPrev = (event) => {
+		this.updatePreviousOnTrackSeek(event.state.index);
+	};
+	onStop = (event) => {
+		this.updatePreviousOnTrackSeek(0);
+	};
 
 	updatePreviousOnTrackSeek(index: number) {
 		if (this._playerService) {

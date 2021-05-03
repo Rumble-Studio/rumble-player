@@ -17,12 +17,16 @@ export class GenericVisual extends HTMLElement {
 	protected _playerService: RumblePlayerService;
 	set playerService(player: RumblePlayerService) {
 		this._playerService = player;
-		this._playerService.playingEventsCallbacks.push(
-			(state: playerServiceEvent) => this.updateState(state)
-		);
+		// this._playerService.playingEventsCallbacks.push(
+		// 	(state: playerServiceEvent) => this.updateState(state)
+		// );
+		this.setListeners();
 	}
 	get playerService() {
 		return this._playerService;
+	}
+	protected setListeners() {
+		//
 	}
 
 	constructor(dontBuildHTMLElements = false) {
