@@ -34,11 +34,11 @@ export class SimpleBackwardButton extends GenericVisual {
 		});
 	}
 	protected setListeners() {
-		this.playerService.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
 	}
 	onPlaylist = (event) => {
 		this.button = this.shadowRoot.querySelector('input');
-		this.button.disabled = !(this.playerService.playlist.length > 0);
+		this.button.disabled = !(this.playerHTML.playlist.length > 0);
 	};
 }
 

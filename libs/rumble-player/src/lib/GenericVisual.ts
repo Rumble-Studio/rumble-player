@@ -1,4 +1,5 @@
 import { playerServiceEvent, RumblePlayerService } from './playerService';
+import { HTMLRumblePlayer } from './playerHTML';
 
 export class GenericVisual extends HTMLElement {
 	public percentage = 0;
@@ -13,14 +14,19 @@ export class GenericVisual extends HTMLElement {
 	}
 
 	protected _shadow: ShadowRoot;
+	protected _playerHTML: HTMLRumblePlayer;
+	set playerHTML(player: HTMLRumblePlayer) {
+		this._playerHTML = player;
+		this.updateVisual();
+		this.setListeners();
+	}
+	get playerHTML() {
+		return this._playerHTML;
+	}
 
 	protected _playerService: RumblePlayerService;
 	set playerService(player: RumblePlayerService) {
 		this._playerService = player;
-		// this._playerService.playingEventsCallbacks.push(
-		// 	(state: playerServiceEvent) => this.updateState(state)
-		// );
-		this.setListeners();
 	}
 	get playerService() {
 		return this._playerService;
@@ -31,7 +37,6 @@ export class GenericVisual extends HTMLElement {
 
 	constructor(dontBuildHTMLElements = false) {
 		super();
-
 		this._shadow = this.attachShadow({ mode: 'open' });
 		if (!dontBuildHTMLElements) {
 			this.createHTMLElements();
@@ -49,7 +54,6 @@ export class GenericVisual extends HTMLElement {
 		// 	'color:crimson',
 		// 	this.kind
 		// );
-		this.updateVisual();
 	}
 
 	attributeChangedCallback() {

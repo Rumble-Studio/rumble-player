@@ -40,13 +40,17 @@ export class SimplePlaylist extends GenericVisual {
 		const infoMessage = document.createElement('p');
 		infoMessage.style.fontWeight = 'bold';
 		infoMessage.style.fontSize = 'large';
-		infoMessage.innerHTML =
-			this.playerService.playlist.length === 0 ? 'Playlist empty' : '';
-		this.div.appendChild(infoMessage);
-		this.playerService.playlist.forEach((value, index, array) => {
-			const line = this.generateLine(value, index, array.length);
-			ul.appendChild(line);
-		});
+		if (this.playerHTML) {
+			infoMessage.innerHTML =
+				this.playerHTML.playlist.length === 0 ? 'Playlist empty' : '';
+			this.div.appendChild(infoMessage);
+			this.playerHTML.playlist.forEach((value, index, array) => {
+				const line = this.generateLine(value, index, array.length);
+				ul.appendChild(line);
+			});
+		} else {
+			infoMessage.innerHTML = 'Playlist empty';
+		}
 		this.div.appendChild(ul);
 		this.list_of_children[1] = this.div;
 		super.setInnerHTML();
@@ -85,7 +89,7 @@ export class SimplePlaylist extends GenericVisual {
 			(song.valid == undefined
 				? ' (false) '
 				: ' (' + String(song.valid) + ')');
-		if (index === this._playerService.index) {
+		if (index === this.playerHTML.index) {
 			p.style.fontWeight = 'bold';
 			p.innerHTML = song.title + ' (SELECTED)';
 		}
@@ -96,10 +100,6 @@ export class SimplePlaylist extends GenericVisual {
 		playButton.setAttribute('value', 'play');
 		playButton.addEventListener('click', () => {
 			if (song.valid) {
-				//this._playerService.pause();
-				//this._playerService.play(index).then((r) => {
-				//
-				//});
 				const event = new CustomEvent('play', {
 					detail: {
 						index,
@@ -118,13 +118,18 @@ export class SimplePlaylist extends GenericVisual {
 		pauseButton.setAttribute('value', 'pause');
 		pauseButton.addEventListener('click', () => {
 			if (song.valid) {
-				this._playerService.pause();
+				this.dispatchEvent(new CustomEvent('pause'));
 			}
 		});
 		song.onload = (song: Song) => {
 			const text = li.querySelector('p');
 
 			text.innerHTML = song.title + '(' + song.valid + ')';
+			if (index === this.playerHTML.index) {
+				text.style.fontWeight = 'bold';
+				text.innerHTML =
+					song.title + ' (SELECTED)' + '(' + song.valid + ')';
+			}
 		};
 
 		li.appendChild(noImage);
@@ -133,6 +138,24 @@ export class SimplePlaylist extends GenericVisual {
 		li.appendChild(pauseButton);
 		return li;
 	}
+	updateLine = (event?: playerServiceEvent) => {
+		if (this.playerHTML.playlist.length <= 1) {
+			return;
+		}
+		this.playerHTML.playlist.forEach((song, index, array) => {
+			const text = this.shadowRoot
+				.querySelectorAll('li')
+				.item(index)
+				.querySelector('p');
+
+			text.innerHTML = song.title + '(' + song.valid + ')';
+			if (index === this.playerHTML.index) {
+				text.style.fontWeight = 'bold';
+				text.innerHTML =
+					song.title + ' (SELECTED)' + '(' + song.valid + ')';
+			}
+		});
+	};
 
 	protected updateState(state: playerServiceEvent) {
 		if (state.type === 'newPlaylist') {
@@ -145,7 +168,8 @@ export class SimplePlaylist extends GenericVisual {
 		}
 	}
 	protected setListeners() {
-		this.playerService.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.onEvent('newIndex', this.updateLine);
 	}
 	onPlaylist = (event) => {
 		this.updateContentVisual();
@@ -188,93 +212,3 @@ class SongLine extends HTMLElement {
 }
 
 customElements.define('rs-simple-playlist', SimplePlaylist);
-
-// generateLine(song: Song, index: number, total: number): HTMLDivElement | HTMLLIElement {
-//   // Each line of the playlist
-//   const div = document.createElement('div');
-//   div.style.display = 'flex';
-//   div.style.flexDirection = 'row';
-//   div.style.alignItems = 'center';
-//   div.style.justifyContent = 'space-between';
-//   div.style.border = '1px solid blue';
-//   div.style.width = '90%';
-//   div.style.height = '100px';
-//
-//   // Each line of the playlist V2
-//   const li = document.createElement('li');
-//   li.draggable = true
-//   li.ondragover = (ev) => ev.preventDefault();
-//   li.ondragstart = (e) => {
-//     const startC = e.clientY;
-//     const startP = e.clientY;
-//     const shiftY =
-//       e.clientY - li.parentElement.getBoundingClientRect().top;
-//     li.ondragend = (ev) => {
-//       const newTop =
-//         ev.clientY - li.parentElement.getBoundingClientRect().top;
-//       const minTop = Math.max(1, newTop);
-//       const maxTop = Math.min(minTop, total * li.scrollHeight);
-//       const finalIndex = Math.floor(maxTop / li.scrollHeight);
-//       console.log(ev.clientY - startC, maxTop, finalIndex);
-//     };
-//   };
-//
-//   // Dragging feature
-//   div.draggable = true;
-//
-//   div.ondragover = (ev) => ev.preventDefault();
-//   div.ondragstart = (e) => {
-//     const startC = e.clientY;
-//     const startP = e.clientY;
-//     const shiftY =
-//       e.clientY - div.parentElement.getBoundingClientRect().top;
-//     div.ondragend = (ev) => {
-//       const newTop =
-//         ev.clientY - div.parentElement.getBoundingClientRect().top;
-//       const minTop = Math.max(1, newTop);
-//       const maxTop = Math.min(minTop, total * div.scrollHeight);
-//       const finalIndex = Math.floor(maxTop / div.scrollHeight);
-//       console.log(ev.clientY - startC, maxTop, finalIndex);
-//     };
-//   };
-//
-//   const image = document.createElement('img');
-//   image.setAttribute('src', song.image);
-//   image.style.maxHeight = '50px';
-//   const p = document.createElement('p');
-//   p.innerText =
-//     song.title +
-//     (song.valid == undefined
-//       ? ' (false) '
-//       : ' (' + String(song.valid) + ')');
-//   if (index === this._playerService.index) {
-//     p.style.fontWeight = 'bold';
-//     p.innerHTML = song.title + ' (SELECTED)';
-//   }
-//
-//   song.onload = (song: Song) => {
-//     const text = div.querySelector('p');
-//
-//     text.innerHTML = song.title + '(' + song.valid + ')';
-//   };
-//   li.appendChild(p);
-//   const playButton = document.createElement('input');
-//   playButton.setAttribute('type', 'button');
-//   playButton.setAttribute('value', 'play');
-//   playButton.addEventListener('click', () => {
-//     this._playerService.play(index).then((r) => {
-//       //
-//     });
-//   });
-//
-//   const pauseButton = document.createElement('input');
-//   pauseButton.setAttribute('type', 'button');
-//   pauseButton.setAttribute('value', 'pause');
-//   pauseButton.addEventListener('click', () => {
-//     this._playerService.pause(index);
-//   });
-//   li.appendChild(image);
-//   li.appendChild(playButton);
-//   li.appendChild(pauseButton);
-//   return li;
-// }

@@ -1,15 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'rumble-player-spotify',
-  templateUrl: './spotify.component.html',
-  styleUrls: ['./spotify.component.scss']
+	selector: 'rumble-player-spotify',
+	templateUrl: './spotify.component.html',
+	styleUrls: ['./spotify.component.scss'],
 })
 export class SpotifyComponent implements OnInit {
+	constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+	ngOnInit(): void {}
 }

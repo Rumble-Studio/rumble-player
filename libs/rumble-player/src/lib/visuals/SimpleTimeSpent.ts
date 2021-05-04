@@ -26,7 +26,7 @@ export class SimpleTimeSpent extends GenericVisual {
 
 	protected updateVisual() {
 		if (this.time) {
-			const position = this.playerService.position;
+			const position = this.playerHTML.position;
 			this.time.innerText =
 				position >= 0
 					? 'Time Spent : ' + Math.round(position).toString()

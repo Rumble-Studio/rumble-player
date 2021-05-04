@@ -1,6 +1,5 @@
 <button>
-  <a routerLink='spotify' >Page 2</a>
-
+	<a routerLink="spotify">Page 2</a>
 </button>
 <form>
 	<input style="display: inline" type="url" [value]="RSSLink" />
@@ -19,6 +18,9 @@
 		(change)="setVolume($event)"
 	/>
 	<button (click)="this.player.volume = this.volume">SET Volume</button>
+	<button (click)="this.player.unloadAll = !this.player.unloadAll">
+		Unload all
+	</button>
 	<input type="submit" style="display: none" />
 </form>
 
@@ -42,7 +44,13 @@ Current position: {{ player.position | number: '1.1-1' }} <br />
 
 <ol>
 	<li *ngFor="let song of player.playlist; let index = index">
-		<ul>
+		<ul
+			[ngStyle]="
+				song.loaded
+					? { 'background-color': 'green' }
+					: { 'background-color': 'red' }
+			"
+		>
 			<li>
 				<a [href]="song.file">File</a> &nbsp;<strong
 					*ngIf="player.index == index"

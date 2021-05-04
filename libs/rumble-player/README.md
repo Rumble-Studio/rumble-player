@@ -202,7 +202,7 @@ player.flushListeners();
    if true, automatically play next song in playlist when actual song ends and loop entire playlist
 -  `isPlaying : private boolean [false]`
    true if there is a song playing
--  `autoPlay : boolean [true]` 
+-  `autoPlay : boolean [true]`
    automatically play first song on playlist load
 -  `loop : boolean [false]`
    loop playing song
@@ -217,7 +217,7 @@ player.flushListeners();
 complete list of events :
 
 -  `play`
-- ` pause`
+-  ` pause`
 -  `stop`
 -  `next`
 -  `prev`

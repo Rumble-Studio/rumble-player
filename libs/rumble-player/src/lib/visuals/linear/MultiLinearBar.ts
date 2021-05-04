@@ -188,10 +188,10 @@ export class MultiLinearBar extends GenericVisual {
 	}
 
 	protected setListeners() {
-		this.playerService.onEvent('newPlaylist', this.onPlaylist);
-		this.playerService.onEvent('next', this.onNext);
-		this.playerService.onEvent('prev', this.onPrev);
-		this.playerService.onEvent('stop', this.onStop);
+		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.onEvent('next', this.onNext);
+		this.playerHTML.onEvent('prev', this.onPrev);
+		this.playerHTML.onEvent('stop', this.onStop);
 	}
 	onPlaylist = (event) => {
 		this.initView();

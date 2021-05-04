@@ -26,7 +26,7 @@ export class SimpleTimeLeft extends GenericVisual {
 
 	protected updateVisual() {
 		if (this.time) {
-			const timeLeft = this.playerService.getSongTimeLeft();
+			const timeLeft = this.playerHTML.getSongTimeLeft();
 			this.time.innerText =
 				timeLeft >= 0
 					? 'Time Left : ' + Math.round(timeLeft).toString()

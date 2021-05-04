@@ -1,4 +1,4 @@
-import { RumblePlayerService } from './playerService';
+import { playerServiceEvent, RumblePlayerService } from './playerService';
 import { GenericVisual } from './GenericVisual';
 import {
 	config1,
@@ -36,6 +36,29 @@ export class HTMLRumblePlayer extends HTMLElement {
 	// private layoutContainer = document.createElement('div')
 
 	playerService: RumblePlayerService | null;
+	get playlist() {
+		return this.playerService.playlist;
+	}
+	get index() {
+		return this.playerService.index;
+	}
+	get position() {
+		return this.playerService.position;
+	}
+	getSongTimeLeft(index?: number) {
+		if (index != undefined) {
+			return this.playerService.getSongTimeLeft(index);
+		} else {
+			return this.playerService.getSongTimeLeft(index);
+		}
+	}
+	getSongTotalTime(index?: number) {
+		if (index != undefined) {
+			return this.playerService.getSongTotalTime(index);
+		} else {
+			return this.playerService.getSongTotalTime(index);
+		}
+	}
 
 	processEventPlayRef: (event?: CustomEvent) => void;
 	processEventPauseRef: (options) => void;
@@ -56,7 +79,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 		}
 
 		this.processEventPlayRef = (event?: CustomEvent) => {
-			event ? this.play(event) : this.play();
+			event.detail ? this.play(event) : this.play();
 		};
 		this.processEventPauseRef = (options) => this.pause(options);
 		this.processEventStopRef = () => this.stop();
@@ -192,13 +215,13 @@ export class HTMLRumblePlayer extends HTMLElement {
 	}
 
 	public play(event?: CustomEvent) {
-		if (event) {
+		if (event && event.detail) {
 			const {
 				index,
 				stopOthers,
 				updateGlobalIndex,
 				startSongAgain,
-			} = event.detail;
+			} = event?.detail;
 			if (updateGlobalIndex) {
 				this.playerService.index = index;
 			}
@@ -213,7 +236,6 @@ export class HTMLRumblePlayer extends HTMLElement {
 			this.playerService.play(index);
 			return;
 		}
-		console.log('PLAY', this.playerService);
 		if (!this.playerService) return;
 		this.playerService.play();
 	}
@@ -334,8 +356,27 @@ export class HTMLRumblePlayer extends HTMLElement {
 		//this._shadow.querySelector('style').textContent =
 	}
 
+	onEvent(name: string, callback: (event: playerServiceEvent) => void) {
+		this.playerService.onEvent(name, callback);
+	}
+	onceEvent(name: string, callback: (event: playerServiceEvent) => void) {
+		this.playerService.onceEvent(name, callback);
+	}
+
+	removeEvent(name: string, callback: (event: playerServiceEvent) => void) {
+		this.playerService.removeEvent(name, callback);
+	}
+	flushListeners(name?: string) {
+		if (name) {
+			this.playerService.flushListeners(name);
+		} else {
+			this.playerService.flushListeners();
+		}
+	}
+
 	startListeningToVisualChildren() {
 		this.visualChildren.forEach((vc) => {
+			vc.playerHTML = this;
 			vc.addEventListener('pause', this.processEventPauseRef);
 			vc.addEventListener('play', this.processEventPlayRef);
 			vc.addEventListener('stop', this.processEventStopRef);

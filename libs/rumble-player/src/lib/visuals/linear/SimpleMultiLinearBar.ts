@@ -30,7 +30,7 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		//
 	}
 	protected setListeners() {
-		this.playerService.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
 	}
 	onPlaylist = (event) => {
 		this.updateVisual();
@@ -40,7 +40,7 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		const div = this.shadowRoot.getElementById('mainBar');
 
 		const virtualDurationsArray = [] as number[];
-		this.playerService.playlist.map((value) => {
+		this.playerHTML.playlist.map((value) => {
 			if (value.valid) {
 				virtualDurationsArray.push(
 					value.howl.duration() ? value.howl.duration() : -1
@@ -73,9 +73,9 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		console.log({ cumulativeDurations });
 
 		const indexBeingPlayed =
-			this.playerService.index >= 0 ? this.playerService.index : 0;
+			this.playerHTML.index >= 0 ? this.playerHTML.index : 0;
 		const currentPosition =
-			this.playerService.position >= 0 ? this.playerService.position : 0;
+			this.playerHTML.position >= 0 ? this.playerHTML.position : 0;
 
 		// TODO: les valeurs sont incorrects
 		const virtualPosition =

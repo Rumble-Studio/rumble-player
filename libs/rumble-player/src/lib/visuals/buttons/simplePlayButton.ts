@@ -22,37 +22,23 @@ export class SimplePlayButton extends GenericVisual {
 
 	protected bindHTMLElements() {
 		this.button.addEventListener('click', () => {
-			this.playerService.play(this.index);
+			this.dispatchEvent(new CustomEvent('play'));
 		});
-	}
-	protected updateState(state: playerServiceEvent) {
-		this.button = this.shadowRoot.querySelector('input');
-		if (state.type === 'newPlaylist') {
-			if (this.playerService.playlist.length > 0) {
-				this.button.disabled = false;
-			}
-		}
-		if (state.type === 'play') {
-			this.button.disabled = true;
-		} else if (state.type === 'pause' || state.type === 'stop') {
-			this.button.disabled = !(this.playerService.playlist.length > 0);
-		}
 	}
 
 	protected setListeners() {
-		this.playerService.onEvent('play', this.disable);
-		this.playerService.onEvent('pause', this.enable);
-		this.playerService.onEvent('stop', this.enable);
-		this.playerService.onEvent('newPlaylist', this.enable);
+		this.playerHTML.onEvent('play', this.disable);
+		this.playerHTML.onEvent('pause', this.enable);
+		this.playerHTML.onEvent('stop', this.enable);
+		this.playerHTML.onEvent('newPlaylist', this.enable);
 	}
 	disable = (event) => {
 		this.button = this.shadowRoot.querySelector('input');
 		this.button.disabled = true;
 	};
 	enable = (event) => {
-		console.log('NEW PLAYLIST FROM BUTTON');
 		this.button = this.shadowRoot.querySelector('input');
-		this.button.disabled = !(this.playerService.playlist.length > 0);
+		this.button.disabled = !(this.playerHTML.playlist.length > 0);
 	};
 }
 

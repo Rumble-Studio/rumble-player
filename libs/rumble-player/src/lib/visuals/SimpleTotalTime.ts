@@ -27,7 +27,7 @@ export class SimpleTotalTime extends GenericVisual {
 
 	protected updateVisual() {
 		if (this.time) {
-			const duration = this.playerService.getSongTotalTime();
+			const duration = this.playerHTML.getSongTotalTime();
 			this.time.innerText =
 				duration >= 0
 					? 'Total Time : ' + Math.round(duration).toString()

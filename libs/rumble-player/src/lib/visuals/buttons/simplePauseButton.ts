@@ -19,14 +19,14 @@ export class SimplePauseButton extends GenericVisual {
 
 	protected bindHTMLElements() {
 		this.button.addEventListener('click', () => {
-			this.playerService.pause();
+			this.dispatchEvent(new CustomEvent('pause'));
 		});
 	}
-	protected updateState(state: playerServiceEvent) {}
+
 	protected setListeners() {
-		this.playerService.onEvent('play', this.disable);
-		this.playerService.onEvent('pause', this.enable);
-		this.playerService.onEvent('stop', this.enable);
+		this.playerHTML.onEvent('play', this.disable);
+		this.playerHTML.onEvent('pause', this.enable);
+		this.playerHTML.onEvent('stop', this.enable);
 	}
 	disable = (event) => {
 		this.button = this.shadowRoot.querySelector('input');

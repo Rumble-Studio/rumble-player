@@ -19,12 +19,12 @@ export class SimpleStopButton extends GenericVisual {
 
 	protected bindHTMLElements() {
 		this.button.addEventListener('click', () => {
-			this.playerService.stop();
+			this.dispatchEvent(new CustomEvent('stop'));
 		});
 	}
 	protected setListeners() {
-		this.playerService.onEvent('play', this.disable);
-		this.playerService.onEvent('stop', this.enable);
+		this.playerHTML.onEvent('play', this.disable);
+		this.playerHTML.onEvent('stop', this.enable);
 	}
 	disable = (event) => {
 		this.button = this.shadowRoot.querySelector('input');

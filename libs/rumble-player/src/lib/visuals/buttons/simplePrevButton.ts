@@ -20,12 +20,12 @@ export class SimplePrevButton extends GenericVisual {
 
 	protected bindHTMLElements() {
 		this.button.addEventListener('click', () => {
-			this.playerService.prev();
+			this.dispatchEvent(new CustomEvent('prev'));
 		});
 	}
 
 	protected setListeners() {
-		this.playerService.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
 	}
 	onPlaylist = (event) => {
 		this.button = this.shadowRoot.querySelector('input');

@@ -11,14 +11,14 @@ import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
 	declarations: [AppComponent, PlayerComponent, SpotifyComponent],
-  imports: [
-    BrowserModule,
-    ReactiveFormsModule,
-    FormsModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatIconModule
-  ],
+	imports: [
+		BrowserModule,
+		ReactiveFormsModule,
+		FormsModule,
+		AppRoutingModule,
+		BrowserAnimationsModule,
+		MatIconModule,
+	],
 	exports: [PlayerComponent],
 	providers: [],
 	bootstrap: [AppComponent],

@@ -40,7 +40,7 @@ export class SimpleImage extends GenericVisual {
 	}
 	protected updateState(state: playerServiceEvent) {
 		if (state.type === 'play') {
-			this.src = this.playerService.playlist[this.playerService.index].image;
+			this.src = this.playerHTML.playlist[this.playerHTML.index].image;
 			this.shadowRoot.querySelector('img').setAttribute('src', this.src);
 		}
 	}

@@ -59,6 +59,7 @@ export class RumblePlayerService {
 	loop = false;
 	// Wether or not to shuffle the playlist
 	_shuffle = false;
+
 	set shuffle(value: boolean) {
 		console.log('SET Shuffle to ', value);
 		this._shuffle = value;
@@ -72,6 +73,22 @@ export class RumblePlayerService {
 	get shuffle() {
 		return this._shuffle;
 	}
+
+	// Wether or not to shuffle the playlist
+	_unloadAll = false;
+	get unloadAll() {
+		return this._unloadAll;
+	}
+	set unloadAll(value: boolean) {
+		if (value === this._unloadAll) return;
+		this._unloadAll = value;
+		if (value) {
+			this.unload();
+		} else {
+			this.preloadPlaylist();
+		}
+	}
+
 	// The rate of playback. 0.5 to 4.0, with 1.0 being normal speed.
 	private _rate = 1;
 	get rate(): number {
@@ -125,6 +142,7 @@ export class RumblePlayerService {
 	set index(value: number) {
 		if (value != this._index) {
 			this._index = value;
+			this.emit(playerServiceEventType.newIndex);
 		}
 	}
 
@@ -179,7 +197,7 @@ export class RumblePlayerService {
 		if (this.playlist.length === 0) return;
 		let duration = 0;
 		this.playlist.forEach((song: Song, songIndex: number) => {
-			if (song.howl && song.valid) {
+			if (song.howl && song.valid && song.loaded) {
 				song.position = song.howl.seek() as number;
 			} else {
 				song.position = -1;
@@ -244,6 +262,7 @@ export class RumblePlayerService {
 			},
 			onload: () => {
 				if (index > -1) {
+					console.log('load', song.title);
 					this.playlist[index].valid = true;
 					this.playlist[index].loaded = true;
 				}
@@ -287,25 +306,28 @@ export class RumblePlayerService {
 	}
 
 	preloadPlaylist() {
+		if (this.unloadAll) {
+			this.unload();
+			return;
+		}
 		this.playlist.forEach((song, index) => {
 			song.howl = this.createHowlWithBindings(song, index);
 		});
 	}
-	unloadSong(song:Song){
-	  if (song.valid && song.howl){
-	    song.howl.unload()
-      song.loaded = false
-      console.log('unloaded',song.title)
-    }
-  }
-  loadSong(song:Song){
-	  if (song.valid){
-	    song.howl.load()
-      song.loaded = true
-      console.log('loaded',song.title)
-
-    }
-  }
+	unloadSong(song: Song) {
+		if (song.valid && song.howl) {
+			song.howl.unload();
+			song.loaded = false;
+			console.log('unloaded', song.title);
+		}
+	}
+	loadSong(song: Song) {
+		if (song.valid && song.howl) {
+			song.howl.load();
+			song.loaded = true;
+			console.log('loaded', song.title);
+		}
+	}
 
 	addSong(url: string) {
 		const index = this.playlist.length;
@@ -439,6 +461,24 @@ export class RumblePlayerService {
 		if (isPlaying) {
 			this.play();
 		}
+		const length = this.playlist.length;
+		if (this.unloadAll && length >= 5) {
+			let indexToLoad: number;
+			let indexToUnLoad: number;
+			if (this.index === 0) {
+				indexToUnLoad = length - 2;
+				indexToLoad = 1;
+			} else if (this.index === 1) {
+				indexToUnLoad = length - 1;
+				indexToLoad = this.index + 1;
+			} else {
+				indexToLoad = this.index === length - 1 ? 0 : this.index + 1;
+				indexToUnLoad = this.index - 2;
+			}
+			console.log(indexToLoad, indexToUnLoad);
+			this.loadSong(this.playlist[indexToLoad]);
+			this.unloadSong(this.playlist[indexToUnLoad]);
+		}
 		this.emit(playerServiceEventType.next);
 	}
 
@@ -480,6 +520,23 @@ export class RumblePlayerService {
 
 		if (isPlaying) {
 			this.play();
+		}
+		const length = this.playlist.length;
+		if (this.unloadAll && length >= 5) {
+			let indexToLoad: number;
+			let indexToUnLoad: number;
+			if (this.index === 0) {
+				indexToLoad = length - 1;
+				indexToUnLoad = 2;
+			} else if (this.index === length - 1) {
+				indexToUnLoad = 1;
+				indexToLoad = length - 2;
+			} else {
+				indexToLoad = this.index - 1;
+				indexToUnLoad = this.index === length - 2 ? 0 : this.index + 2;
+			}
+			this.loadSong(this.playlist[indexToLoad]);
+			this.unloadSong(this.playlist[indexToUnLoad]);
 		}
 		this.emit(playerServiceEventType.prev);
 	}
@@ -780,6 +837,15 @@ export class RumblePlayerService {
 				});
 				this._onceNewPlaylistListener = [];
 				break;
+			case playerServiceEventType.newIndex:
+				this._onNewIndexListener.forEach((callback) => {
+					callback(event);
+				});
+				this._onceNewIndexListener.forEach((callback) => {
+					callback(event);
+				});
+				this._onceNewIndexListener = [];
+				break;
 		}
 	}
 
@@ -815,6 +881,9 @@ export class RumblePlayerService {
 	private _onceNewPlaylistListener: ((
 		event: playerServiceEvent
 	) => void)[] = [];
+
+	private _onNewIndexListener: ((event: playerServiceEvent) => void)[] = [];
+	private _onceNewIndexListener: ((event: playerServiceEvent) => void)[] = [];
 
 	//
 	public onEvent(name: string, callback: (event: playerServiceEvent) => void) {
@@ -875,6 +944,11 @@ export class RumblePlayerService {
 					!this._onNewPlaylistListener.find((value) => value === callback)
 				) {
 					this._onNewPlaylistListener.push(callback);
+				}
+				break;
+			case playerServiceEventType.newIndex:
+				if (!this._onNewIndexListener.find((value) => value === callback)) {
+					this._onNewIndexListener.push(callback);
 				}
 				break;
 		}
@@ -942,6 +1016,13 @@ export class RumblePlayerService {
 					)
 				) {
 					this._onceNewPlaylistListener.push(callback);
+				}
+				break;
+			case playerServiceEventType.newIndex:
+				if (
+					!this._onceNewIndexListener.find((value) => value === callback)
+				) {
+					this._onceNewIndexListener.push(callback);
 				}
 				break;
 		}
@@ -1034,6 +1115,14 @@ export class RumblePlayerService {
 					(value) => callback !== value
 				);
 				break;
+			case playerServiceEventType.newIndex:
+				this._onNewIndexListener = this._onNewIndexListener.filter(
+					(value) => callback !== value
+				);
+				this._onceNewIndexListener = this._onceNewIndexListener.filter(
+					(value) => callback !== value
+				);
+				break;
 		}
 	}
 
@@ -1083,6 +1172,10 @@ export class RumblePlayerService {
 					this._onNewPlaylistListener = [];
 					this._onceNewPlaylistListener = [];
 					break;
+				case playerServiceEventType.newIndex:
+					this._onNewIndexListener = [];
+					this._onceNewIndexListener = [];
+					break;
 			}
 		} else {
 			this._onPlayListener = [];
@@ -1114,6 +1207,9 @@ export class RumblePlayerService {
 
 			this._onNewPlaylistListener = [];
 			this._onceNewPlaylistListener = [];
+
+			this._onNewIndexListener = [];
+			this._onceNewIndexListener = [];
 		}
 	}
 
@@ -1130,6 +1226,23 @@ export class RumblePlayerService {
 		this.playerStateChangedCallback(event);
 		this.eventDispatchCallback(event);
 	}
+
+	private unload() {
+		if (this.playlist.length >= 4) {
+			const length = this.playlist.length;
+			const before = this.index === 0 ? length - 1 : this.index - 1;
+			const after = this.index === length - 1 ? 0 : this.index + 1;
+			for (let i = 0; i < length; i++) {
+				if (i != this.index && i != before && i != after) {
+					this.unloadSong(this.playlist[i]);
+				} else {
+					if (!(this.playlist[i].valid === false)) {
+						this.createHowlWithBindings(this.playlist[i]);
+					}
+				}
+			}
+		}
+	}
 }
 
 enum playerServiceEventType {
@@ -1140,6 +1253,7 @@ enum playerServiceEventType {
 	'prev' = 'prev',
 	'seek' = 'seek',
 	'end' = 'end',
+	'newIndex' = 'newIndex',
 	'playerror' = 'playerror',
 	'loaderror' = 'loaderror',
 	'newPlaylist' = 'newPlaylist',
