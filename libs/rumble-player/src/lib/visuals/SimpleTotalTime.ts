@@ -21,11 +21,11 @@ export class SimpleTotalTime extends GenericVisual {
 		this.list_of_children = [style, wrapper];
 	}
 
-	protected bindHTMLElements() {
-		super.bindHTMLElements();
+	protected setEmitters() {
+		super.setEmitters();
 	}
 
-	protected updateVisual() {
+	protected updateVisual = () => {
 		if (this.time) {
 			const duration = this.playerHTML.getSongTotalTime();
 			this.time.innerText =
@@ -34,6 +34,9 @@ export class SimpleTotalTime extends GenericVisual {
 					: 'Total Time : N/A';
 			this._shadow.querySelector('style').textContent = this.generateStyle();
 		}
+	};
+	protected setListeners() {
+		this.playerHTML.addEventListener('positionUpdate', this.updateVisual);
 	}
 	generateStyle() {
 		return `

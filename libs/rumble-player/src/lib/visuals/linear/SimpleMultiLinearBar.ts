@@ -26,16 +26,19 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		this.list_of_children = [style, div];
 	}
 
-	protected bindHTMLElements() {
+	protected setEmitters() {
 		//
 	}
 	protected setListeners() {
-		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('positionUpdate', () => {
+			this.updateVisual();
+		});
 	}
 	onPlaylist = (event) => {
 		this.updateVisual();
 	};
-	protected updateVisual() {
+	protected updateVisual = () => {
 		const style = this.shadowRoot.querySelector('style');
 		const div = this.shadowRoot.getElementById('mainBar');
 
@@ -49,7 +52,6 @@ export class SimpleMultiLinearBar extends GenericVisual {
 				virtualDurationsArray.push(-2);
 			}
 		});
-		console.log({ virtualDurationsArray });
 		const minSize = 10;
 		const maxRatio = 3000;
 		const currentMaxSize = virtualDurationsArray.some((d) => d > 0)
@@ -67,10 +69,8 @@ export class SimpleMultiLinearBar extends GenericVisual {
 			totalVirtualDuration += number;
 		}
 		durationsToUse = durationsToUse.map((d) => d / totalVirtualDuration);
-		console.log({ durationsToUse, totalVirtualDuration });
 
 		const cumulativeDurations = cumSum(durationsToUse);
-		console.log({ cumulativeDurations });
 
 		const indexBeingPlayed =
 			this.playerHTML.index >= 0 ? this.playerHTML.index : 0;
@@ -83,7 +83,6 @@ export class SimpleMultiLinearBar extends GenericVisual {
 				durationsToUse[indexBeingPlayed] +
 			(indexBeingPlayed > 0 ? cumulativeDurations[indexBeingPlayed - 1] : 0);
 
-		console.log({ virtualPosition });
 		let tempStyle = this.generateHostStyle();
 		if (div) {
 			div.innerHTML = '';
@@ -127,8 +126,6 @@ export class SimpleMultiLinearBar extends GenericVisual {
 					(d) => d > computedDuration
 				);
 
-				console.log('Clicked on multi linear bar ', { indexToSeek });
-
 				const songComputedDuration =
 					computedDuration -
 					(indexToSeek > 0 ? cumulativeDurations[indexToSeek - 1] : 0);
@@ -146,13 +143,15 @@ export class SimpleMultiLinearBar extends GenericVisual {
 						finishOthers: false,
 					},
 				});
-				this.dispatchEvent(clickEvent);
+				this.playerHTML.processEventSeekPerPercentageAndIndexRef(
+					clickEvent
+				);
 			};
 			this.list_of_children = [style, div];
 		} else {
-			console.log('STYLE IS NOT AVAILABLE');
+			//
 		}
-	}
+	};
 
 	generateHostStyle() {
 		return `

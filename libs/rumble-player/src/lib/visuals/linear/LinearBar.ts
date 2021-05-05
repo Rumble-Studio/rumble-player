@@ -1,5 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
-import { RumblePlayerService } from '../../playerService';
+import { playerServiceEvent, RumblePlayerService } from '../../playerService';
 
 export class LinearBar extends GenericVisual {
 	protected _kind = 'LinearBar';
@@ -8,9 +8,6 @@ export class LinearBar extends GenericVisual {
 	progressDiv: HTMLDivElement = document.createElement('div');
 	percentage: number;
 
-	set playerService(player: RumblePlayerService) {
-		super.playerService = player;
-	}
 	constructor() {
 		super();
 	}
@@ -25,22 +22,30 @@ export class LinearBar extends GenericVisual {
 		this.list_of_children = [style, this.div];
 	}
 
-	protected bindHTMLElements() {
+	protected setEmitters() {
 		this.addEventListener('click', (event) => {
 			const bcr = this.getBoundingClientRect();
 			const percentage = (event.clientX - bcr.left) / bcr.width;
 			const clickEvent = new CustomEvent('seekPerPercentage', {
 				detail: { percentage },
 			});
-			this.dispatchEvent(clickEvent);
+			this.playerHTML.processEventSeekPerPercentage(clickEvent);
 		});
 	}
 
-	updateVisual() {
+	protected setListeners() {
+		this.playerHTML.addEventListener('positionUpdate', this.updateVisual);
+		this.playerHTML.addEventListener('seek', this.updateVisual);
+	}
+
+	updateVisual = (payload) => {
+		if (payload) {
+			this.percentage = payload.detail.percentage;
+		}
 		this._shadow.querySelector('style').textContent = this.generateStyle(
 			this.percentage
 		);
-	}
+	};
 
 	generateStyle(percentage: number) {
 		return `

@@ -208,8 +208,9 @@ export class RumblePlayerService {
 		}
 		this._position = this.playlist[this.index].position;
 		this._percentage = duration > 0 ? this.position / duration : 0; // TODO compute percentage based on current file being played
-		this.newPositionCallback(this.position);
-		this.newPercentageCallback(this.percentage);
+		//this.newPositionCallback(this.position);
+		//this.newPercentageCallback(this.percentage);
+		this.emit(playerServiceEventType.positionUpdate);
 	}
 
 	getSong(index: number, instanciateHowlIfMissing = true) {
@@ -262,7 +263,6 @@ export class RumblePlayerService {
 			},
 			onload: () => {
 				if (index > -1) {
-					console.log('load', song.title);
 					this.playlist[index].valid = true;
 					this.playlist[index].loaded = true;
 				}
@@ -358,9 +358,12 @@ export class RumblePlayerService {
 
 		// Check howl instance to play
 		const song = this.getSong(indexToPlay);
+		console.log(song);
+
 		if (song.howl && !song.valid) {
 			return;
 		}
+		console.log(song);
 
 		// Check if howl is already playing
 		if (song.valid) {
@@ -724,493 +727,19 @@ export class RumblePlayerService {
 	}
 
 	/* CALLBACKS ON UPDATE */
-	public positionUpdateCallbacks: ((position: number) => void)[] = [];
-	private newPositionCallback(position: number) {
-		this.positionUpdateCallbacks.forEach((c) => {
-			c(position);
-		});
-	}
-	public percentageUpdateCallbacks: ((percentage: number) => void)[] = [];
-	private newPercentageCallback(percentage: number) {
-		this.percentageUpdateCallbacks.forEach((c) => {
-			c(percentage);
-		});
-	}
 
+	addNewOnCallback(callback: (event: playerServiceEvent) => void) {
+		if (this.playingEventsCallbacks.some((value) => value === callback)) {
+			return;
+		}
+		this.playingEventsCallbacks.push(callback);
+	}
 	/* CALLBACKS ON STATE CHANGE */
-	public playingEventsCallbacks: ((event: playerServiceEvent) => void)[] = [];
+	private playingEventsCallbacks: ((event: playerServiceEvent) => void)[] = [];
 	private playerStateChangedCallback(event: playerServiceEvent) {
 		this.playingEventsCallbacks.forEach((callback) => {
 			callback(event);
 		});
-	}
-
-	private eventDispatchCallback(event: playerServiceEvent) {
-		switch (event.type) {
-			case playerServiceEventType.play:
-				this._onPlayListener.forEach((callback) => {
-					callback(event);
-				});
-				this._oncePlayListener.forEach((callback) => {
-					callback(event);
-				});
-				this._oncePlayListener = [];
-				break;
-			case playerServiceEventType.pause:
-				this._onPauseListener.forEach((callback) => {
-					callback(event);
-				});
-				this._oncePauseListener.forEach((callback) => {
-					callback(event);
-				});
-				this._oncePauseListener = [];
-				break;
-			case playerServiceEventType.stop:
-				this._onStopListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceStopListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceStopListener = [];
-				break;
-			case playerServiceEventType.next:
-				this._onNextListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceNextListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceNextListener = [];
-				break;
-			case playerServiceEventType.prev:
-				this._onPrevListener.forEach((callback) => {
-					callback(event);
-				});
-				this._oncePrevListener.forEach((callback) => {
-					callback(event);
-				});
-				this._oncePrevListener = [];
-				break;
-			case playerServiceEventType.seek:
-				this._onSeekListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceSeekListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceSeekListener = [];
-				break;
-			case playerServiceEventType.end:
-				this._onEndListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceEndListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceEndListener = [];
-				break;
-			case playerServiceEventType.playerror:
-				this._onPlayerrorListener.forEach((callback) => {
-					callback(event);
-				});
-				this._oncePlayerrorListener.forEach((callback) => {
-					callback(event);
-				});
-				this._oncePlayerrorListener = [];
-				break;
-			case playerServiceEventType.loaderror:
-				this._onLoaderrorListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceLoaderrorListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceLoaderrorListener = [];
-				break;
-			case playerServiceEventType.newPlaylist:
-				this._onNewPlaylistListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceNewPlaylistListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceNewPlaylistListener = [];
-				break;
-			case playerServiceEventType.newIndex:
-				this._onNewIndexListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceNewIndexListener.forEach((callback) => {
-					callback(event);
-				});
-				this._onceNewIndexListener = [];
-				break;
-		}
-	}
-
-	// Listeners
-	private _onPlayListener: ((event: playerServiceEvent) => void)[] = [];
-	private _oncePlayListener: ((event: playerServiceEvent) => void)[] = [];
-
-	private _onPauseListener: ((event: playerServiceEvent) => void)[] = [];
-	private _oncePauseListener: ((event: playerServiceEvent) => void)[] = [];
-
-	private _onStopListener: ((event: playerServiceEvent) => void)[] = [];
-	private _onceStopListener: ((event: playerServiceEvent) => void)[] = [];
-
-	private _onNextListener: ((event: playerServiceEvent) => void)[] = [];
-	private _onceNextListener: ((event: playerServiceEvent) => void)[] = [];
-
-	private _onPrevListener: ((event: playerServiceEvent) => void)[] = [];
-	private _oncePrevListener: ((event: playerServiceEvent) => void)[] = [];
-
-	private _onEndListener: ((event: playerServiceEvent) => void)[] = [];
-	private _onceEndListener: ((event: playerServiceEvent) => void)[] = [];
-
-	private _onSeekListener: ((event: playerServiceEvent) => void)[] = [];
-	private _onceSeekListener: ((event: playerServiceEvent) => void)[] = [];
-
-	private _onPlayerrorListener: ((event: playerServiceEvent) => void)[] = [];
-	private _oncePlayerrorListener: ((event: playerServiceEvent) => void)[] = [];
-
-	private _onLoaderrorListener: ((event: playerServiceEvent) => void)[] = [];
-	private _onceLoaderrorListener: ((event: playerServiceEvent) => void)[] = [];
-
-	private _onNewPlaylistListener: ((event: playerServiceEvent) => void)[] = [];
-	private _onceNewPlaylistListener: ((
-		event: playerServiceEvent
-	) => void)[] = [];
-
-	private _onNewIndexListener: ((event: playerServiceEvent) => void)[] = [];
-	private _onceNewIndexListener: ((event: playerServiceEvent) => void)[] = [];
-
-	//
-	public onEvent(name: string, callback: (event: playerServiceEvent) => void) {
-		// Call the callback each time name event occurs
-
-		switch (name) {
-			case playerServiceEventType.play:
-				if (!this._onPlayListener.find((value) => value === callback)) {
-					this._onPlayListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.pause:
-				if (!this._onPauseListener.find((value) => value === callback)) {
-					this._onPauseListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.stop:
-				if (!this._onStopListener.find((value) => value === callback)) {
-					this._onStopListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.next:
-				if (!this._onNextListener.find((value) => value === callback)) {
-					this._onNextListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.prev:
-				if (!this._onPrevListener.find((value) => value === callback)) {
-					this._onPrevListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.seek:
-				if (!this._onSeekListener.find((value) => value === callback)) {
-					this._onSeekListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.end:
-				if (!this._onEndListener.find((value) => value === callback)) {
-					this._onEndListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.playerror:
-				if (
-					!this._onPlayerrorListener.find((value) => value === callback)
-				) {
-					this._onPlayerrorListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.loaderror:
-				if (
-					!this._onLoaderrorListener.find((value) => value === callback)
-				) {
-					this._onLoaderrorListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.newPlaylist:
-				if (
-					!this._onNewPlaylistListener.find((value) => value === callback)
-				) {
-					this._onNewPlaylistListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.newIndex:
-				if (!this._onNewIndexListener.find((value) => value === callback)) {
-					this._onNewIndexListener.push(callback);
-				}
-				break;
-		}
-	}
-
-	public onceEvent(
-		name: string,
-		callback: (event: playerServiceEvent) => void
-	) {
-		// Call the callback the first time name event occurs
-		switch (name) {
-			case playerServiceEventType.play:
-				if (!this._oncePlayListener.find((value) => value === callback)) {
-					this._oncePlayListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.pause:
-				if (!this._oncePauseListener.find((value) => value === callback)) {
-					this._oncePauseListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.stop:
-				if (!this._onceStopListener.find((value) => value === callback)) {
-					this._onceStopListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.next:
-				if (!this._onceNextListener.find((value) => value === callback)) {
-					this._onceNextListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.prev:
-				if (!this._oncePrevListener.find((value) => value === callback)) {
-					this._oncePrevListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.seek:
-				if (!this._onceSeekListener.find((value) => value === callback)) {
-					this._onceSeekListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.end:
-				if (!this._onceEndListener.find((value) => value === callback)) {
-					this._onceEndListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.playerror:
-				if (
-					!this._oncePlayerrorListener.find((value) => value === callback)
-				) {
-					this._oncePlayerrorListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.loaderror:
-				if (
-					!this._onceLoaderrorListener.find((value) => value === callback)
-				) {
-					this._onceLoaderrorListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.newPlaylist:
-				if (
-					!this._onceNewPlaylistListener.find(
-						(value) => value === callback
-					)
-				) {
-					this._onceNewPlaylistListener.push(callback);
-				}
-				break;
-			case playerServiceEventType.newIndex:
-				if (
-					!this._onceNewIndexListener.find((value) => value === callback)
-				) {
-					this._onceNewIndexListener.push(callback);
-				}
-				break;
-		}
-	}
-
-	public removeEvent(
-		name: string,
-		callback: (event: playerServiceEvent) => void
-	) {
-		/* Remove the callback from the event name listeners
-		 */
-		switch (name) {
-			case playerServiceEventType.play:
-				this._onPlayListener = this._onPlayListener.filter(
-					(value) => callback !== value
-				);
-				this._oncePlayListener = this._oncePlayListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.pause:
-				this._onPauseListener = this._onPauseListener.filter(
-					(value) => callback !== value
-				);
-				this._oncePauseListener = this._oncePauseListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.stop:
-				this._onStopListener = this._onPauseListener.filter(
-					(value) => callback !== value
-				);
-				this._onceStopListener = this._oncePauseListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.next:
-				this._onNextListener = this._onNextListener.filter(
-					(value) => callback !== value
-				);
-				this._onceNextListener = this._onceNextListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.prev:
-				this._onPrevListener = this._onPrevListener.filter(
-					(value) => callback !== value
-				);
-				this._oncePrevListener = this._oncePrevListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.seek:
-				this._onSeekListener = this._onSeekListener.filter(
-					(value) => callback !== value
-				);
-				this._onceSeekListener = this._onceSeekListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.end:
-				this._onEndListener = this._onEndListener.filter(
-					(value) => callback !== value
-				);
-				this._onceEndListener = this._onceEndListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.playerror:
-				this._onPlayerrorListener = this._onPlayerrorListener.filter(
-					(value) => callback !== value
-				);
-				this._oncePlayerrorListener = this._oncePlayerrorListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.loaderror:
-				this._onLoaderrorListener = this._onLoaderrorListener.filter(
-					(value) => callback !== value
-				);
-				this._onceLoaderrorListener = this._onceLoaderrorListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.newPlaylist:
-				this._onNewPlaylistListener = this._onNewPlaylistListener.filter(
-					(value) => callback !== value
-				);
-				this._onceNewPlaylistListener = this._onceNewPlaylistListener.filter(
-					(value) => callback !== value
-				);
-				break;
-			case playerServiceEventType.newIndex:
-				this._onNewIndexListener = this._onNewIndexListener.filter(
-					(value) => callback !== value
-				);
-				this._onceNewIndexListener = this._onceNewIndexListener.filter(
-					(value) => callback !== value
-				);
-				break;
-		}
-	}
-
-	public flushListeners(name?: string) {
-		/* If name specified, it will flush all the listeners on the event type
-	  otherwise it will flush all events listeners
-	  */
-		if (name) {
-			switch (name) {
-				case playerServiceEventType.play:
-					this._onPlayListener = [];
-					this._oncePlayListener = [];
-					break;
-				case playerServiceEventType.pause:
-					this._onPauseListener = [];
-					this._oncePauseListener = [];
-					break;
-				case playerServiceEventType.stop:
-					this._onStopListener = [];
-					this._onceStopListener = [];
-					break;
-				case playerServiceEventType.next:
-					this._onNextListener = [];
-					this._onceNextListener = [];
-					break;
-				case playerServiceEventType.prev:
-					this._onPrevListener = [];
-					this._oncePrevListener = [];
-					break;
-				case playerServiceEventType.seek:
-					this._onSeekListener = [];
-					this._onceSeekListener = [];
-					break;
-				case playerServiceEventType.end:
-					this._onEndListener = [];
-					this._onceEndListener = [];
-					break;
-				case playerServiceEventType.playerror:
-					this._onPlayerrorListener = [];
-					this._oncePlayerrorListener = [];
-					break;
-				case playerServiceEventType.loaderror:
-					this._onLoaderrorListener = [];
-					this._onceLoaderrorListener = [];
-					break;
-				case playerServiceEventType.newPlaylist:
-					this._onNewPlaylistListener = [];
-					this._onceNewPlaylistListener = [];
-					break;
-				case playerServiceEventType.newIndex:
-					this._onNewIndexListener = [];
-					this._onceNewIndexListener = [];
-					break;
-			}
-		} else {
-			this._onPlayListener = [];
-			this._oncePlayListener = [];
-
-			this._onPauseListener = [];
-			this._oncePauseListener = [];
-
-			this._onStopListener = [];
-			this._onceStopListener = [];
-
-			this._onNextListener = [];
-			this._onceNextListener = [];
-
-			this._onPrevListener = [];
-			this._oncePrevListener = [];
-
-			this._onSeekListener = [];
-			this._onceSeekListener = [];
-
-			this._onEndListener = [];
-			this._onceEndListener = [];
-
-			this._onPlayerrorListener = [];
-			this._oncePlayerrorListener = [];
-
-			this._onLoaderrorListener = [];
-			this._onceLoaderrorListener = [];
-
-			this._onNewPlaylistListener = [];
-			this._onceNewPlaylistListener = [];
-
-			this._onNewIndexListener = [];
-			this._onceNewIndexListener = [];
-		}
 	}
 
 	private emit(type: playerServiceEventType) {
@@ -1224,7 +753,6 @@ export class RumblePlayerService {
 			} as playerState,
 		};
 		this.playerStateChangedCallback(event);
-		this.eventDispatchCallback(event);
 	}
 
 	private unload() {
@@ -1253,6 +781,7 @@ enum playerServiceEventType {
 	'prev' = 'prev',
 	'seek' = 'seek',
 	'end' = 'end',
+	'positionUpdate' = 'positionUpdate',
 	'newIndex' = 'newIndex',
 	'playerror' = 'playerror',
 	'loaderror' = 'loaderror',

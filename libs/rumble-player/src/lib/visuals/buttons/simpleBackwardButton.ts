@@ -13,7 +13,7 @@ export class SimpleBackwardButton extends GenericVisual {
 		this.jump = jump;
 		this.createHTMLElements();
 		this.setInnerHTML();
-		this.bindHTMLElements();
+		this.setEmitters();
 	}
 
 	protected createHTMLElements() {
@@ -25,16 +25,16 @@ export class SimpleBackwardButton extends GenericVisual {
 		this.list_of_children = [this.button];
 	}
 
-	protected bindHTMLElements() {
+	protected setEmitters() {
 		this.button.addEventListener('click', () => {
 			const e = new CustomEvent('seekPerPosition', {
 				detail: { jump: -this.jump },
 			});
-			this.dispatchEvent(e);
+			this.playerHTML.processEventSeekPerPositionRef(e);
 		});
 	}
 	protected setListeners() {
-		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
 	}
 	onPlaylist = (event) => {
 		this.button = this.shadowRoot.querySelector('input');

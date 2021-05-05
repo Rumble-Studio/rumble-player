@@ -1,5 +1,6 @@
 import { GenericVisual } from '../../GenericVisual';
 import { playerServiceEvent, RumblePlayerService } from '../../playerService';
+import { HTMLRumblePlayer } from '../../playerHTML';
 
 export class MultiLinearBar extends GenericVisual {
 	protected _kind = 'MultiLinearBar';
@@ -11,8 +12,8 @@ export class MultiLinearBar extends GenericVisual {
 	totalDuration = 0;
 	styles: string[] = [];
 
-	set playerService(player: RumblePlayerService) {
-		super.playerService = player;
+	set playerHTML(player: HTMLRumblePlayer) {
+		super.playerHTML = player;
 		this.initView();
 	}
 
@@ -29,16 +30,16 @@ export class MultiLinearBar extends GenericVisual {
 		this.list_of_children = [style];
 	}
 
-	protected bindHTMLElements() {
+	protected setEmitters() {
 		//
 	}
 
-	protected updateVisual() {
+	protected updateVisual(payload?) {
 		// remplir à gauche de la tete de lecture et vider à droite de la tete
-
+		console.log('checkpoint');
 		// update sub linear bar based on percentage and index
-		if (this._playerService) {
-			const { index, percentage } = this._playerService;
+		if (this.playerHTML) {
+			const { index, percentage } = this.playerHTML;
 			const bar = this._shadow.children.item(index + 1);
 			const progressBar = bar.shadowRoot?.querySelector('style');
 			if (progressBar) {
@@ -58,7 +59,7 @@ export class MultiLinearBar extends GenericVisual {
 		let mainStyle = this.generateStyle();
 		const style = document.createElement('style');
 		this.shadowRoot.appendChild(style);
-		const array = this._playerService.playlist;
+		const array = this.playerHTML.playlist;
 		for (let index = 0; index < array.length; index++) {
 			const value = array[index];
 			const div = this.generateSingleBar(index, 50);
@@ -75,13 +76,12 @@ export class MultiLinearBar extends GenericVisual {
 		}
 		this._shadow.querySelector('style').textContent = mainStyle;
 		this.list_of_children = [style];
-		this._playerService.preloadPlaylist();
 		this.drawOnPreload();
 	}
 
 	drawOnPreload() {
 		const style = document.createElement('style');
-		const array = this._playerService.playlist;
+		const array = this.playerHTML.playlist;
 		//let accumulatedWidth=0
 		for (let index = 0; index < array.length; index++) {
 			const song = array[index];
@@ -188,10 +188,13 @@ export class MultiLinearBar extends GenericVisual {
 	}
 
 	protected setListeners() {
-		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
-		this.playerHTML.onEvent('next', this.onNext);
-		this.playerHTML.onEvent('prev', this.onPrev);
-		this.playerHTML.onEvent('stop', this.onStop);
+		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('next', this.onNext);
+		this.playerHTML.addEventListener('prev', this.onPrev);
+		this.playerHTML.addEventListener('stop', this.onStop);
+		this.playerHTML.addEventListener('positionUpdate', () => {
+			this.updateVisual();
+		});
 	}
 	onPlaylist = (event) => {
 		this.initView();
@@ -207,7 +210,7 @@ export class MultiLinearBar extends GenericVisual {
 	};
 
 	updatePreviousOnTrackSeek(index: number) {
-		if (this._playerService) {
+		if (this.playerHTML) {
 			if (index === 0) {
 				const bar = this._shadow.children.item(1);
 				const progressBar = bar.shadowRoot.querySelector('style');
@@ -230,7 +233,7 @@ export class MultiLinearBar extends GenericVisual {
           height:14px
         }`;
 			}
-			for (let i = index + 1; i < this._playerService.playlist.length; i++) {
+			for (let i = index + 1; i < this.playerHTML.playlist.length; i++) {
 				const bar = this._shadow.children.item(i + 1);
 				const progressBar = bar.shadowRoot.querySelector('style');
 				progressBar.textContent = `

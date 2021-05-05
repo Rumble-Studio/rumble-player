@@ -23,12 +23,11 @@ export class SimplePlaylist extends GenericVisual {
 		this.div = document.createElement('div');
 		const style = document.createElement('style');
 		this.div.setAttribute('id', 'container');
-
 		this.list_of_children = [style, this.div];
 	}
 
-	protected bindHTMLElements() {
-		super.bindHTMLElements();
+	protected setEmitters() {
+		super.setEmitters();
 	}
 
 	updateContentVisual() {
@@ -109,7 +108,7 @@ export class SimplePlaylist extends GenericVisual {
 						startSongAgain: false,
 					},
 				});
-				this.dispatchEvent(event);
+				this.playerHTML.processEventPlayRef(event);
 			}
 		});
 
@@ -118,7 +117,7 @@ export class SimplePlaylist extends GenericVisual {
 		pauseButton.setAttribute('value', 'pause');
 		pauseButton.addEventListener('click', () => {
 			if (song.valid) {
-				this.dispatchEvent(new CustomEvent('pause'));
+				this.playerHTML.processEventPauseRef(new CustomEvent('pause'));
 			}
 		});
 		song.onload = (song: Song) => {
@@ -139,7 +138,10 @@ export class SimplePlaylist extends GenericVisual {
 		return li;
 	}
 	updateLine = (event?: playerServiceEvent) => {
-		if (this.playerHTML.playlist.length <= 1) {
+		if (
+			this.playerHTML.playlist.length <= 1 ||
+			this.playerHTML.index === -1
+		) {
 			return;
 		}
 		this.playerHTML.playlist.forEach((song, index, array) => {
@@ -157,19 +159,11 @@ export class SimplePlaylist extends GenericVisual {
 		});
 	};
 
-	protected updateState(state: playerServiceEvent) {
-		if (state.type === 'newPlaylist') {
-			this.updateContentVisual();
-			console.log('NEW PLAYLIST');
-		}
-		if (state.type === 'play') {
-			console.log('PLAYED');
-			this.updateContentVisual();
-		}
-	}
 	protected setListeners() {
-		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
-		this.playerHTML.onEvent('newIndex', this.updateLine);
+		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('newIndex', () => {
+			this.updateLine();
+		});
 	}
 	onPlaylist = (event) => {
 		this.updateContentVisual();

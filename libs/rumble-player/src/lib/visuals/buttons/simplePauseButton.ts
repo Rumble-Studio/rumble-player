@@ -17,16 +17,16 @@ export class SimplePauseButton extends GenericVisual {
 		this.list_of_children = [this.button];
 	}
 
-	protected bindHTMLElements() {
+	protected setEmitters() {
 		this.button.addEventListener('click', () => {
-			this.dispatchEvent(new CustomEvent('pause'));
+			this.playerHTML.processEventPauseRef();
 		});
 	}
 
 	protected setListeners() {
-		this.playerHTML.onEvent('play', this.disable);
-		this.playerHTML.onEvent('pause', this.enable);
-		this.playerHTML.onEvent('stop', this.enable);
+		this.playerHTML.addEventListener('play', this.disable);
+		this.playerHTML.addEventListener('pause', this.enable);
+		this.playerHTML.addEventListener('stop', this.enable);
 	}
 	disable = (event) => {
 		this.button = this.shadowRoot.querySelector('input');

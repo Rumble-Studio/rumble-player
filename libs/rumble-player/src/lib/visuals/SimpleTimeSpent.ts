@@ -20,11 +20,15 @@ export class SimpleTimeSpent extends GenericVisual {
 		this.list_of_children = [style, wrapper];
 	}
 
-	protected bindHTMLElements() {
-		super.bindHTMLElements();
+	protected setEmitters() {
+		super.setEmitters();
 	}
 
-	protected updateVisual() {
+	protected setListeners() {
+		this.playerHTML.addEventListener('positionUpdate', this.updateVisual);
+	}
+
+	protected updateVisual = () => {
 		if (this.time) {
 			const position = this.playerHTML.position;
 			this.time.innerText =
@@ -33,7 +37,7 @@ export class SimpleTimeSpent extends GenericVisual {
 					: 'Time Spent : N/A';
 			this._shadow.querySelector('style').textContent = this.generateStyle();
 		}
-	}
+	};
 	generateStyle() {
 		return `
 		#wrapper{

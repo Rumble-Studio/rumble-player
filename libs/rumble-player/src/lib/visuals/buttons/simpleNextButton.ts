@@ -18,13 +18,13 @@ export class SimpleNextButton extends GenericVisual {
 		this.list_of_children = [this.button];
 	}
 
-	protected bindHTMLElements() {
+	protected setEmitters() {
 		this.button.addEventListener('click', () => {
-			this.dispatchEvent(new CustomEvent('next'));
+			this.playerHTML.processEventNextRef();
 		});
 	}
 	protected setListeners() {
-		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
 	}
 	onPlaylist = (event) => {
 		this.button = this.shadowRoot.querySelector('input');

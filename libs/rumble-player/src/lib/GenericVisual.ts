@@ -17,20 +17,13 @@ export class GenericVisual extends HTMLElement {
 	protected _playerHTML: HTMLRumblePlayer;
 	set playerHTML(player: HTMLRumblePlayer) {
 		this._playerHTML = player;
-		this.updateVisual();
 		this.setListeners();
+		this.updateVisual();
 	}
 	get playerHTML() {
 		return this._playerHTML;
 	}
 
-	protected _playerService: RumblePlayerService;
-	set playerService(player: RumblePlayerService) {
-		this._playerService = player;
-	}
-	get playerService() {
-		return this._playerService;
-	}
 	protected setListeners() {
 		//
 	}
@@ -41,7 +34,7 @@ export class GenericVisual extends HTMLElement {
 		if (!dontBuildHTMLElements) {
 			this.createHTMLElements();
 			this.setInnerHTML();
-			this.bindHTMLElements();
+			this.setEmitters();
 		}
 		// console.log('GENERIC VISUAL CONSTRUCTOR CALLED');
 	}
@@ -49,23 +42,11 @@ export class GenericVisual extends HTMLElement {
 	// HTML hooks
 
 	connectedCallback() {
-		// console.log(
-		// 	'%c[GenericVisual](connectedCallback)',
-		// 	'color:crimson',
-		// 	this.kind
-		// );
+		//
 	}
 
 	attributeChangedCallback() {
-		// console.log(
-		// 	'%c[GenericVisual](attributeChangedCallback)',
-		// 	'color:crimson',
-		// 	this.kind
-		// );
 		this.updateVisual();
-	}
-	protected updateState(state: playerServiceEvent) {
-		//console.log('STATE CHANGED', state, this.kind);
 	}
 
 	// Generic visual construction
@@ -80,7 +61,7 @@ export class GenericVisual extends HTMLElement {
 	/**
 	 * create the event listeners on the HTML child nodes
 	 */
-	protected bindHTMLElements() {
+	protected setEmitters() {
 		// console.log('[GenericVisual](bindHTMLElements)', 'nothing to bind');
 	}
 
@@ -95,32 +76,12 @@ export class GenericVisual extends HTMLElement {
 
 	// logic
 
-	public updatePerPercentage(newPercentage: number) {
-		if (newPercentage != this.percentage) {
-			this.percentage = newPercentage;
-			this.updateVisual();
-		}
-	}
-	public updatePerPosition(newPosition: number) {
-		if (newPosition != this.position) {
-			this.position = newPosition;
-			this.updateVisual();
-		}
-	}
-
 	/**
 	 * Called after new percentage, position, etc...
 	 */
-	protected updateVisual() {
+	protected updateVisual(payload?) {
 		// console.log('[GenericVisual](updateVisual)', 'nothing to update');
 	}
-
-	// /**
-	//  * Called by HTML hooks
-	//  */
-	// protected updateStyle() {
-	// 	console.log('[GenericVisual](updateStyle)', 'nothing to update');
-	// }
 }
 
 customElements.define('rs-generic-bar', GenericVisual);

@@ -1,4 +1,8 @@
-import { playerServiceEvent, RumblePlayerService } from './playerService';
+import {
+	playerServiceEvent,
+	playerState,
+	RumblePlayerService,
+} from './playerService';
 import { GenericVisual } from './GenericVisual';
 import {
 	config1,
@@ -33,7 +37,6 @@ export interface playerConfig {
 export class HTMLRumblePlayer extends HTMLElement {
 	private visualChildren: GenericVisual[] = [];
 	private _shadow: ShadowRoot;
-	// private layoutContainer = document.createElement('div')
 
 	playerService: RumblePlayerService | null;
 	get playlist() {
@@ -44,6 +47,9 @@ export class HTMLRumblePlayer extends HTMLElement {
 	}
 	get position() {
 		return this.playerService.position;
+	}
+	get percentage() {
+		return this.playerService.percentage;
 	}
 	getSongTimeLeft(index?: number) {
 		if (index != undefined) {
@@ -61,7 +67,7 @@ export class HTMLRumblePlayer extends HTMLElement {
 	}
 
 	processEventPlayRef: (event?: CustomEvent) => void;
-	processEventPauseRef: (options) => void;
+	processEventPauseRef: (options?) => void;
 	processEventStopRef: () => void;
 	processEventNextRef: () => void;
 	processEventPrevRef: () => void;
@@ -191,27 +197,14 @@ export class HTMLRumblePlayer extends HTMLElement {
 
 	public setPlayer(playerService: RumblePlayerService) {
 		this.playerService = playerService;
-		this.playerService.percentageUpdateCallbacks.push(
-			(newPercentage: number) => this.updatePerPercentage(newPercentage)
-		);
 
-		this.playerService.positionUpdateCallbacks.push((newPercentage: number) =>
-			this.updatePerPosition(newPercentage)
-		);
-
-		// this.playerService.newPercentageCallback = (newPercentage: number) =>
-		// 	this.updatePerPercentage(newPercentage);
-		// this.playerService.newPositionCallback = (newPosition: number) =>
-		// 	this.updatePerPosition(newPosition);
-		// this.logKinds();
+		this.playerService.addNewOnCallback(this.eventsDispatcher);
 	}
 
 	setVisualChildren(newVisualChildren: GenericVisual[]) {
-		this.stopListeningToVisualChildren();
-		this.removeChildren();
+		newVisualChildren.forEach((value) => (value.playerHTML = this));
 		this.visualChildren = newVisualChildren;
 		this.addChildren();
-		this.startListeningToVisualChildren();
 	}
 
 	public play(event?: CustomEvent) {
@@ -318,106 +311,24 @@ export class HTMLRumblePlayer extends HTMLElement {
 		this.playerService.seekPerPosition(position);
 	}
 
-	public updatePerPercentage(newPercentage: number) {
-		this.visualChildren.forEach((vc) =>
-			vc.updatePerPercentage(newPercentage)
-		);
-	}
-
-	public updatePerPosition(newPosition: number) {
-		this.visualChildren.forEach((vc) => vc.updatePerPosition(newPosition));
-	}
+	private eventsDispatcher = (payload: playerServiceEvent) => {
+		const e = new CustomEvent(payload.type, { detail: payload.state });
+		this.dispatchEvent(e);
+	};
 
 	connectedCallback() {
 		this.addChildren();
 	}
 
-	removeChildren() {
-		this.visualChildren.forEach((vc) => {
-			this._shadow.removeChild(vc);
-		});
-	}
-
-	// setHeight(height: string) {
-	// 	this.layoutContainer.style.height = height;
-	// }
-
 	addChildren() {
-		// this.layoutContainer.style.position = 'relative';
-		// this.appendChild(this.layoutContainer);
-		// this.visualChildren.forEach((vc) => this.layoutContainer.appendChild(vc));
 		this.visualChildren.forEach((vc) => {
-			vc.playerService = this.playerService;
 			this._shadow.appendChild(vc);
 		});
 		const style = document.createElement('style');
 		style.textContent = this.generateStyle();
 		this._shadow.appendChild(style);
-		//this._shadow.querySelector('style').textContent =
 	}
 
-	onEvent(name: string, callback: (event: playerServiceEvent) => void) {
-		this.playerService.onEvent(name, callback);
-	}
-	onceEvent(name: string, callback: (event: playerServiceEvent) => void) {
-		this.playerService.onceEvent(name, callback);
-	}
-
-	removeEvent(name: string, callback: (event: playerServiceEvent) => void) {
-		this.playerService.removeEvent(name, callback);
-	}
-	flushListeners(name?: string) {
-		if (name) {
-			this.playerService.flushListeners(name);
-		} else {
-			this.playerService.flushListeners();
-		}
-	}
-
-	startListeningToVisualChildren() {
-		this.visualChildren.forEach((vc) => {
-			vc.playerHTML = this;
-			vc.addEventListener('pause', this.processEventPauseRef);
-			vc.addEventListener('play', this.processEventPlayRef);
-			vc.addEventListener('stop', this.processEventStopRef);
-			vc.addEventListener('next', this.processEventNextRef);
-			vc.addEventListener('prev', this.processEventPrevRef);
-			vc.addEventListener(
-				'seekPerPercentage',
-				this.processEventSeekPerPercentageRef
-			);
-			vc.addEventListener(
-				'seekPerPosition',
-				this.processEventSeekPerPositionRef
-			);
-			vc.addEventListener(
-				'seekPerPercentageAndIndex',
-				this.processEventSeekPerPercentageAndIndexRef
-			);
-		});
-	}
-
-	stopListeningToVisualChildren() {
-		this.visualChildren.forEach((vc) => {
-			vc.removeEventListener('pause', this.processEventPauseRef);
-			vc.removeEventListener('play', this.processEventPlayRef);
-			vc.removeEventListener('stop', this.processEventStopRef);
-			vc.removeEventListener('next', this.processEventNextRef);
-			vc.removeEventListener('prev', this.processEventPrevRef);
-			vc.removeEventListener(
-				'seekPerPercentage',
-				this.processEventSeekPerPercentageRef
-			);
-			vc.removeEventListener(
-				'seekPerPosition',
-				this.processEventSeekPerPositionRef
-			);
-			vc.removeEventListener(
-				'seekPerPercentageAndIndex',
-				this.processEventSeekPerPercentageAndIndexRef
-			);
-		});
-	}
 	generateStyle() {
 		return `
 		:host{

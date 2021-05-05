@@ -16,7 +16,7 @@ export class SimpleCustomButton extends GenericVisual {
 		this.list_of_children = [this.button];
 	}
 
-	protected bindHTMLElements() {
+	protected setEmitters() {
 		this.button.addEventListener('click', () => {
 			const e = new Event(this.eventToEmit);
 			this.dispatchEvent(e);

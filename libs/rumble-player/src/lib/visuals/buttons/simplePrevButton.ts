@@ -18,18 +18,18 @@ export class SimplePrevButton extends GenericVisual {
 		this.list_of_children = [this.button];
 	}
 
-	protected bindHTMLElements() {
+	protected setEmitters() {
 		this.button.addEventListener('click', () => {
-			this.dispatchEvent(new CustomEvent('prev'));
+			this.playerHTML.processEventPrevRef();
 		});
 	}
 
 	protected setListeners() {
-		this.playerHTML.onEvent('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
 	}
 	onPlaylist = (event) => {
 		this.button = this.shadowRoot.querySelector('input');
-		this.button.disabled = !(this.playerService.playlist.length > 0);
+		this.button.disabled = !(this.playerHTML.playlist.length > 0);
 	};
 }
 
