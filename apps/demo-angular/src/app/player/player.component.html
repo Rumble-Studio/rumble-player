@@ -10,40 +10,59 @@
 		[value]="rate"
 		(change)="setRate($event)"
 	/>
-	<button (click)="this.player.rate = this.rate">SET Rate</button>
+	<button (click)="playerService.rate = this.rate">SET Rate</button>
 	<input
 		style="display: inline"
 		type="url"
 		[value]="volume"
 		(change)="setVolume($event)"
 	/>
-	<button (click)="this.player.volume = this.volume">SET Volume</button>
-	<button (click)="this.player.unloadAll = !this.player.unloadAll">
+	<button (click)="playerService.volume = this.volume">SET Volume</button>
+	<button (click)="playerService.unloadAll = !playerService.unloadAll">
 		Unload all
 	</button>
 	<input type="submit" style="display: none" />
 </form>
 
+<br>
+<br>
+<br>
+<br>
+<h2>Using rumble-player tag</h2>
 <div class="playerContainer" #playerContainer>
 	<rumble-player #playerHTML> </rumble-player>
 </div>
-<rs-demo-play-button></rs-demo-play-button>
+<br>
+<h2>Using custom container (rumble element)</h2>
+<div #myCustomContainerDefault></div>
+<br>
+<h2>Using custom container (classic HTML)</h2>
+<div #myCustomContainerCustom></div>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+<!-- <rs-demo-play-button></rs-demo-play-button> -->
+
 <button (click)="togglePlayer()">click me to toggle play/pause</button>
 <button (click)="addSong()">click me to Add song to the playlist</button>
-<button (click)="this.player.shuffle = true">shuffle playlist</button>
-<button (click)="this.player.shuffle = false">unshuffle playlist</button>
-<button (click)="this.player.loop = true">loop</button>
-<button (click)="this.player.loop = false">disable loop</button>
+<button (click)="playerService.shuffle = true">shuffle playlist</button>
+<button (click)="playerService.shuffle = false">unshuffle playlist</button>
+<button (click)="playerService.loop = true">loop</button>
+<button (click)="playerService.loop = false">disable loop</button>
 <br />
-Current state: {{ player.isPlaying ? 'playing' : 'not playing' }} <br />
-Current index: {{ player.index }} <br />
-Current position: {{ player.position | number: '1.1-1' }} <br />
+Current state: {{ playerService.isPlaying ? 'playing' : 'not playing' }} <br />
+Current index: {{ playerService.index }} <br />
+Current position: {{ playerService.position | number: '1.1-1' }} <br />
 <hr />
 
 <h2>Playlist:</h2>
 
 <ol>
-	<li *ngFor="let song of player.playlist; let index = index">
+	<li *ngFor="let song of playerService.playlist; let index = index">
 		<ul
 			[ngStyle]="
 				song.loaded
@@ -53,7 +72,7 @@ Current position: {{ player.position | number: '1.1-1' }} <br />
 		>
 			<li>
 				<a [href]="song.file">File</a> &nbsp;<strong
-					*ngIf="player.index == index"
+					*ngIf="playerService.index == index"
 					>[selected]</strong
 				>
 			</li>

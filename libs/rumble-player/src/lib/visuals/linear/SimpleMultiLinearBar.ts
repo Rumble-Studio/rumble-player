@@ -23,21 +23,21 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		style.textContent = '';
 		const div = document.createElement('div');
 		div.setAttribute('id', 'mainBar');
-		this.list_of_children = [style, div];
+		// this.list_of_children = [style, div];
 	}
 
 	protected setEmitters() {
 		//
 	}
 	protected setListeners() {
-		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
-		this.playerHTML.addEventListener('positionUpdate', () => {
-			this.updateVisual();
-		});
+		this.playerHTML.addEventListener('newPlaylist', () =>
+			this.updateVisual()
+		);
+		this.playerHTML.addEventListener('positionUpdate', () =>
+			this.updateVisual()
+		);
 	}
-	onPlaylist = (event) => {
-		this.updateVisual();
-	};
+
 	protected updateVisual = () => {
 		const style = this.shadowRoot.querySelector('style');
 		const div = this.shadowRoot.getElementById('mainBar');

@@ -1,7 +1,7 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
 
-export const UPDATE_DELAY = 500;
+export const UPDATE_DELAY = 1000;
 
 export interface Song {
 	id: string; // unique id to identify the song even when we add new song to the playlist
@@ -48,18 +48,32 @@ async function urlToFile(
 	return new File([buf], filename, { type: mimeType });
 }
 
-export class RumblePlayerService {
+export class PlayerService {
 	// automatically play next song
 	autoPlayNext = true;
-	// get wether a song is being played or not
+
+	// get if selected song is being played
 	private _isPlaying = false;
+	get isPlaying() {
+		return this._isPlaying;
+	}
+	set isPlaying(newPlayingState: boolean) {
+		if (this._isPlaying == newPlayingState) return;
+		this._isPlaying = newPlayingState;
+		if (this._isPlaying) {
+			this.emit(playerServiceEventType.play);
+		}
+		if (!this._isPlaying) {
+			this.emit(playerServiceEventType.pause);
+		}
+	}
+
 	// Automatically play on load
 	autoPlay = false;
 	// Loop the playing sound when it ends
 	loop = false;
 	// Wether or not to shuffle the playlist
 	_shuffle = false;
-
 	set shuffle(value: boolean) {
 		console.log('SET Shuffle to ', value);
 		this._shuffle = value;
@@ -105,9 +119,7 @@ export class RumblePlayerService {
 		}
 	}
 
-	get isPlaying() {
-		return this._isPlaying;
-	}
+	// VOLUME
 	private _volume = 1;
 	get volume() {
 		return this._volume;
@@ -125,25 +137,15 @@ export class RumblePlayerService {
 		}
 	}
 
-	private playingOn() {
-		this._isPlaying = true;
-		this.emit(playerServiceEventType.play);
-	}
-	private playingOff() {
-		this._isPlaying = false;
-		this.emit(playerServiceEventType.pause);
-	}
-
 	// index in playlist
 	private _index: number;
 	get index() {
 		return this._index;
 	}
 	set index(value: number) {
-		if (value != this._index) {
-			this._index = value;
-			this.emit(playerServiceEventType.newIndex);
-		}
+		if (value == this._index) return;
+		this._index = value;
+		this.emit(playerServiceEventType.newIndex);
 	}
 
 	// playlist
@@ -169,15 +171,37 @@ export class RumblePlayerService {
 	get duration() {
 		return this._duration;
 	}
-	// current position
+	set duration(newDuration: number) {
+		if (this._duration == newDuration) return;
+		this._duration = newDuration;
+	}
+
+	// CURRENT PERCENTAGE
 	private _percentage: number;
 	get percentage() {
 		return this._percentage;
 	}
+	set percentage(newPercentage: number) {
+		if (this._percentage == newPercentage) return;
+		this._percentage = newPercentage;
+	}
+
+	// CURRENT POSITION
 	private _position: number;
 	get position() {
 		return this._position;
 	}
+	set position(newPosition: number) {
+		if (this._position == newPosition) return;
+		this._position = newPosition;
+		let duration = 0;
+		if (this.playlist[this.index].howl) {
+			duration = this.playlist[this.index].howl.duration();
+		}
+		this._percentage = duration > 0 ? this.position / duration : 0;
+		this.emit(playerServiceEventType.newPosition);
+	}
+
 	constructor() {
 		this._playlist = [];
 		this._index = -1;
@@ -195,22 +219,14 @@ export class RumblePlayerService {
 
 	private updatePositions() {
 		if (this.playlist.length === 0) return;
-		let duration = 0;
-		this.playlist.forEach((song: Song, songIndex: number) => {
+		this.playlist.forEach((song: Song) => {
 			if (song.howl && song.valid && song.loaded) {
 				song.position = song.howl.seek() as number;
 			} else {
 				song.position = -1;
 			}
 		});
-		if (this.playlist[this.index].howl) {
-			duration = this.playlist[this.index].howl.duration();
-		}
-		this._position = this.playlist[this.index].position;
-		this._percentage = duration > 0 ? this.position / duration : 0; // TODO compute percentage based on current file being played
-		//this.newPositionCallback(this.position);
-		//this.newPercentageCallback(this.percentage);
-		this.emit(playerServiceEventType.positionUpdate);
+		this.position = this.playlist[this.index].position;
 	}
 
 	getSong(index: number, instanciateHowlIfMissing = true) {
@@ -229,7 +245,7 @@ export class RumblePlayerService {
 		return song;
 	}
 
-	private createHowlWithBindings(song: Song, index = -1): Howl | null {
+	private createHowlWithBindings(song: Song, index: number): Howl | null {
 		// Extract the file extension from the URL or base64 data URI.
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const str = song.file;
@@ -243,10 +259,8 @@ export class RumblePlayerService {
 			console.warn(
 				'This file does not have an extension and will be ignored by the player'
 			);
-			if (index > -1) {
-				this.playlist[index].valid = false;
-				this.playlist[index].loaded = false;
-			}
+			this.playlist[index].valid = false;
+			this.playlist[index].loaded = false;
 			return null;
 		}
 		const howl = new Howl({
@@ -254,49 +268,51 @@ export class RumblePlayerService {
 			html5: true,
 			onplayerror: (error) => {
 				console.error('error howler playing', error);
-				this.emit(playerServiceEventType.playerror);
-				this.playingOff();
-				if (index > -1) {
-					this.playlist[index].valid = false;
-					this.playlist[index].loaded = false;
+				this.emit(playerServiceEventType.playError);
+
+				if (index == this.index) {
+					this.isPlaying = false;
 				}
+
+				this.playlist[index].valid = false;
+				this.playlist[index].loaded = false;
 			},
 			onload: () => {
-				if (index > -1) {
-					this.playlist[index].valid = true;
-					this.playlist[index].loaded = true;
-				}
+				this.playlist[index].valid = true;
+				this.playlist[index].loaded = true;
+
 				if (index === 0 && this.autoPlay) this.play(0);
-				song.onload(song);
+
+				if (song.onload) song.onload(song);
 			},
 			onloaderror: (error) => {
 				console.warn('error howler loading', error);
-				this.emit(playerServiceEventType.loaderror);
-				this.playingOff();
-				if (index > -1) {
-					this.playlist[index].valid = true;
-					this.playlist[index].loaded = true;
-				}
+				this.emit(playerServiceEventType.loadError);
+				this.playlist[index].valid = true;
+				this.playlist[index].loaded = true;
 			},
 			onend: () => {
 				if (this.loop) {
 					this.seekPerPercentage(0);
-					this.emit(playerServiceEventType.end);
+					this.emit(playerServiceEventType.endOfSong);
 					this.play();
-					console.log('OCCURED will loop');
 					return;
 				}
 				if (this.autoPlayNext) this.next();
 				else {
 					this.stop();
 				}
-				this.emit(playerServiceEventType.end);
+				this.emit(playerServiceEventType.endOfSong);
 			},
 			onpause: () => {
-				this.playingOff();
+				if (index == this.index) {
+					this.isPlaying = false;
+				}
 			},
 			onplay: () => {
-				this.playingOn();
+				if (index == this.index) {
+					this.isPlaying = true;
+				}
 			},
 			onseek: () => {
 				//
@@ -328,7 +344,6 @@ export class RumblePlayerService {
 			console.log('loaded', song.title);
 		}
 	}
-
 	addSong(url: string) {
 		const index = this.playlist.length;
 		const song = this.generateSongFromUrl(url, index);
@@ -374,6 +389,11 @@ export class RumblePlayerService {
 				return Promise.resolve(indexToPlay);
 			}
 		}
+	}
+	public playWithOptions(options) {
+		// TODO
+		console.warn('(playWithOptions) NOT IMPLEMENTED', { options });
+		this.play();
 	}
 
 	public pause(options?: { index?: number; pauseOthers?: boolean }) {
@@ -425,7 +445,7 @@ export class RumblePlayerService {
 			}
 		} else {
 			// we stop all songs in the playlist (several can play together)
-			this.playlist.forEach((song: Song, songIndex: number) => {
+			this.playlist.forEach((song: Song) => {
 				if (song.howl && song.valid) {
 					song.howl.stop();
 					this.emit(playerServiceEventType.stop);
@@ -730,8 +750,11 @@ export class RumblePlayerService {
 
 	addNewOnCallback(callback: (event: playerServiceEvent) => void) {
 		if (this.playingEventsCallbacks.some((value) => value === callback)) {
+			console.warn('Callback already present: ignored');
 			return;
 		}
+		console.log('Callback added');
+
 		this.playingEventsCallbacks.push(callback);
 	}
 	/* CALLBACKS ON STATE CHANGE */
@@ -765,7 +788,7 @@ export class RumblePlayerService {
 					this.unloadSong(this.playlist[i]);
 				} else {
 					if (!(this.playlist[i].valid === false)) {
-						this.createHowlWithBindings(this.playlist[i]);
+						this.createHowlWithBindings(this.playlist[i], i);
 					}
 				}
 			}
@@ -780,11 +803,11 @@ enum playerServiceEventType {
 	'next' = 'next',
 	'prev' = 'prev',
 	'seek' = 'seek',
-	'end' = 'end',
-	'positionUpdate' = 'positionUpdate',
+	'endOfSong' = 'endOfSong', // end of a specific song is reached
+	'newPosition' = 'newPosition',
 	'newIndex' = 'newIndex',
-	'playerror' = 'playerror',
-	'loaderror' = 'loaderror',
+	'playError' = 'playError',
+	'loadError' = 'loadError',
 	'newPlaylist' = 'newPlaylist',
 }
 

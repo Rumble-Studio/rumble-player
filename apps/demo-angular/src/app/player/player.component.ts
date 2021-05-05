@@ -1,47 +1,11 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import {
-	GenericVisual,
-	HTMLRumblePlayer,
-	RumblePlayerService,
+	RumbleConfigs,
+	PlayerHTML,
+	PlayerService,
 } from '@rumble-player/player';
 
-import {
-	fakePlaylist,
-	fakePlaylistWithImage,
-} from '../../config/dummyAudioData.config';
-
-class MyDemoButton extends GenericVisual {
-	protected _kind = 'SimplePlayButton';
-	button: HTMLInputElement | undefined;
-	state = false;
-
-	constructor() {
-		super();
-	}
-
-	protected createHTMLElements() {
-		this.button = document.createElement('input');
-		this.button.setAttribute('type', 'button');
-		this.button.setAttribute('value', 'toggle');
-		this.button.style.backgroundColor = 'red';
-		this.list_of_children = [this.button];
-	}
-
-	bindHTMLElements() {
-		this.addEventListener('click', () => {
-			this.state = !this.state;
-			if (this.state) {
-				const e = new Event('play');
-				this.dispatchEvent(e);
-			} else {
-				const e = new Event('pause');
-				this.dispatchEvent(e);
-			}
-		});
-	}
-}
-customElements.define('rs-demo-play-button', MyDemoButton);
+import { fakePlaylist } from '../../config/dummyAudioData.config';
 
 @Component({
 	selector: 'rumble-player-player',
@@ -49,10 +13,16 @@ customElements.define('rs-demo-play-button', MyDemoButton);
 	styleUrls: ['./player.component.scss'],
 })
 export class PlayerComponent implements AfterViewInit {
-	public player: RumblePlayerService;
+	public playerService: PlayerService;
 
 	@ViewChild('playerHTML')
-	playerHTML: ElementRef<HTMLRumblePlayer> | undefined;
+	playerHTML: ElementRef<PlayerHTML> | undefined;
+
+	@ViewChild('myCustomContainerDefault')
+	myCustomContainerDefault: ElementRef<HTMLElement> | undefined;
+
+	@ViewChild('myCustomContainerCustom')
+	myCustomContainerCustom: ElementRef<HTMLElement> | undefined;
 
 	public eventsHistory: string[];
 	rate = 1;
@@ -61,48 +31,63 @@ export class PlayerComponent implements AfterViewInit {
 
 	constructor() {
 		this.eventsHistory = [];
-		this.player = new RumblePlayerService();
+		this.playerService = new PlayerService();
 		this.RSSLink =
 			'https://feed.rumblestudio.app/collection/xjIPbCryeIQpV3ut5dXb';
-		//this.player.setPlaylistFromObject(fakePlaylistWithImage);
+		//this.playerService.setPlaylistFromObject(fakePlaylistWithImage);
 	}
 
 	togglePlayer() {
-		if (this.player.isPlaying) {
-			this.player.pause();
+		if (this.playerService.isPlaying) {
+			this.playerService.pause();
 		} else {
-			this.player.play();
+			this.playerService.play();
 		}
 	}
 
 	ngAfterViewInit() {
 		if (this.playerHTML) {
-			this.playerHTML.nativeElement.setPlayer(this.player);
-			this.playerHTML.nativeElement.loadConfig('config6');
-			// this.player.setPLaylistFromRSSFeedURL('https://feeds.buzzsprout.com/159584.rss').then(r => {
+			console.log('PLAYERHTML:', { playerHTML: this.playerHTML });
+			this.playerHTML.nativeElement.setPlayerService(this.playerService);
+
+			const myButton = document.createElement('input');
+
+			myButton.setAttribute('type', 'button');
+			myButton.setAttribute('value', '(angular added) submit');
+			myButton.classList.add('myClassOfButton');
+			this.playerHTML.nativeElement.addEventListener('play', () => {
+				myButton.setAttribute('disabled', 'true');
+			});
+			this.playerHTML.nativeElement.addEventListener('pause', () => {
+				myButton.removeAttribute('disabled');
+			});
+			myButton.addEventListener('click', () => {
+				if (this.playerHTML) this.playerHTML.nativeElement.play({});
+			});
+
+			this.playerHTML.nativeElement.appendChild(myButton);
+
+			// this.playerHTML.nativeElement.loadConfig('config6');
+			// this.playerService.setPLaylistFromRSSFeedURL('https://feeds.buzzsprout.com/159584.rss').then(r => {
 			//   console.log(r)
 			// })
 		} else {
 			console.warn('PlayerHTML Linear is not available');
 		}
-	}
 
-	// layoutGenerator() {
-	// 	const data = (layout as any).default;
-	// 	const visualChildren = [] as GenericVisual[];
-	// 	for (const layoutKey in data) {
-	// 		console.log(layoutKey);
-	// 		const button = new ControlButton(
-	// 			data[layoutKey].title,
-	// 			data[layoutKey].action
-	// 		);
-	// 		for (const key in data[layoutKey].style) {
-	// 			button.style[key] = data[layoutKey].style[key];
-	// 		}
-	// 		visualChildren.push(button);
-	// 	}
-	// 	return visualChildren;
-	// }
+		if (this.myCustomContainerDefault) {
+			RumbleConfigs.defaultConfig(
+				this.playerService,
+				this.myCustomContainerDefault.nativeElement
+			);
+		}
+		if (this.myCustomContainerCustom) {
+			RumbleConfigs.customConfig(
+				this.playerService,
+				this.myCustomContainerCustom.nativeElement
+			);
+		}
+	}
 
 	addSong() {
 		if (this.playerHTML?.nativeElement.playerService)
@@ -112,14 +97,15 @@ export class PlayerComponent implements AfterViewInit {
 	changeRSS(event: any) {
 		this.RSSLink = event.target.value;
 	}
+
 	setRSS() {
-		this.player.setPLaylistFromRSSFeedURL(
+		this.playerService.setPLaylistFromRSSFeedURL(
 			'https://feeds.buzzsprout.com/159584.rss'
 		);
 	}
 
 	shuffle() {
-		this.player.shuffle = true;
+		this.playerService.shuffle = true;
 	}
 
 	setRate($event: any) {

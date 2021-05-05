@@ -1,90 +1,48 @@
-export const config1 = {
-	visualChildren: [
-		'LinearBar',
-		'SimplePlayButton',
-		'SimplePauseButton',
-		'SimpleStopButton',
-	],
-};
+import { PlayerHTML } from '../lib/PlayerHTML';
+import { PlayerService } from '../lib/PlayerService';
+import { SimplePlayButton } from '../lib/visuals/buttons/simplePlayButton';
 
-export const config2 = {
-	visualChildren: [
-		'LinearBar',
-		'SimplePlayButton',
-		'SimplePauseButton',
-		'SimpleForwardButton',
-		'SimpleBackwardButton',
-	],
-};
+export function defaultConfig(
+	playerService: PlayerService,
+	container: HTMLElement
+) {
+	const playerHTML = new PlayerHTML(playerService);
+	playerHTML.setPlayerService(playerService);
 
-export const config3 = {
-	visualChildren: [
-		'LinearBar',
-		'SimplePlayButton',
-		'SimplePauseButton',
-		'SimpleStopButton',
-		'SimpleNextButton',
-		'SimplePrevButton',
-		'SimpleForwardButton',
-		'SimpleBackwardButton',
-	],
-};
+	const simplePlayButton: SimplePlayButton = new SimplePlayButton();
+	simplePlayButton.setPlayerHTML(playerHTML);
 
-export const config4 = {
-	visualChildren: [
-		'LinearBar',
-		'SimplePlayButton',
-		'SimplePauseButton',
-		'SimpleStopButton',
-		'SimpleNextButton',
-		'SimplePrevButton',
-		'SimpleForwardButton',
-		'SimpleBackwardButton',
-		'SimplePlaylist',
-	],
-};
+	const simplePauseButton...
 
-export const config5 = {
-	visualChildren: [
-		'LinearBar',
-		'SimplePlayButton',
-		'SimplePauseButton',
-		'SimpleStopButton',
-		'SimpleNextButton',
-		'SimplePrevButton',
-		'SimpleForwardButton',
-		'SimpleBackwardButton',
-		'SimpleTimeLeft',
-		'SimpleTimeSpent',
-		'SimpleTotalTime',
-		'SimplePlaylist',
-		'MultiLinearBar',
-	],
-};
+	... to finish
 
-export const config6 = {
-	visualChildren: [
-		'SimplePlaylist',
-		'SimpleMultiLinearBar',
-		'LinearBar',
-		'SimpleImage',
-		'SimplePlayButton',
-		'SimplePauseButton',
-		'SimpleStopButton',
-		'SimpleNextButton',
-		'SimplePrevButton',
-		'SimpleForwardButton',
-		'SimpleBackwardButton',
-		'SimpleTimeLeft',
-		'SimpleTotalTime',
-		'SimpleTimeSpent',
-	],
-};
+	container.appendChild(playerHTML);
+	container.appendChild(simplePlayButton);
+}
 
-export const configPlayPause = {
-	visualChildren: [
-		'SimplePlayButton',
-		'SimplePauseButton',
-		'SimpleStopButton',
-	],
-};
+export function customConfig(
+	playerService: PlayerService,
+	container: HTMLElement
+) {
+	const playerHTML = new PlayerHTML(playerService);
+	playerHTML.setPlayerService(playerService);
+
+	// EQUIVALENT DU SIMPLE PLAY BUTTON FROM SCRATCH
+	const myButton = document.createElement('input');
+
+	myButton.setAttribute('type', 'button');
+	myButton.setAttribute('value', '(custom btn) submit');
+	myButton.classList.add('myClassOfButton');
+	playerHTML.addEventListener('play', () => {
+		myButton.setAttribute('disabled', 'true');
+	});
+	playerHTML.addEventListener('pause', () => {
+		myButton.removeAttribute('disabled');
+	});
+	myButton.addEventListener('click', () => {
+		playerHTML.play({});
+	});
+
+	container.appendChild(playerHTML);
+	container.appendChild(myButton);
+}
