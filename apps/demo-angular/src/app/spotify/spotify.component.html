@@ -1,13 +1,55 @@
 <div class="main-panel">
-	<div class="drawer">
-		<div class="top-bar logo">
-			<mat-icon class="logo-icon">music_video</mat-icon>
-			<h4 style="margin: 5px">Spotify</h4>
-		</div>
-		<div></div>
-	</div>
-	<div class="content">
-		<div class="top-bar"></div>
-		<div class="content-body"></div>
-	</div>
+  <div class='drawer'>
+    <div class='drawer-logo'>
+      <mat-icon class="logo-icon">music_video</mat-icon>
+      <h4 style="margin: 5px">iSpotify</h4>
+    </div>
+    <div class='drawer-body'>
+      <div class='drawer-menu'>
+        <div class='drawer-menu-item'>
+          <mat-icon class='menu-icon' >home</mat-icon>
+          <h3 style='color: inherit;flex: 3'>Home</h3>
+        </div>
+        <div class='drawer-menu-item'>
+          <mat-icon class='menu-icon' >add_box</mat-icon>
+          <h3 style='color: inherit;flex: 3'>Load Playlist</h3>
+        </div>
+      </div>
+    </div>
+    <div class='drawer-footer'>
+    </div>
+  </div>
+  <div class='body-content'>
+    <div class='rs-header'></div>
+    <div class='rs-body'></div>
+    <div class='rs-footer'>
+      <div class='rs-footer-controls'>
+        <div class='rs-footer-controls-line-1' #controlsContainer>
+          <mat-icon class='control-icon'>shuffle</mat-icon>
+          <mat-icon class='control-icon'>fast_rewind</mat-icon>
+          <mat-icon class='control-icon '>skip_previous</mat-icon>
+          <mat-icon class='control-icon bigger'>play_circle_outline</mat-icon>
+          <mat-icon class='control-icon'>skip_next</mat-icon>
+          <mat-icon class='control-icon'>fast_forward</mat-icon>
+          <mat-icon class='control-icon'>loop</mat-icon>
+        </div>
+        <div class='rs-footer-controls-line-2'>
+          <div>
+            0:0
+          </div>
+          <div style='background-color: white;height: 10px;width: 50%;margin-inline: 5px'></div>
+          <div>
+            0.0
+          </div>
+        </div>
+
+      </div>
+      <div class='rs-footer-volume'>
+        <mat-icon class='volume-icon'>volume_up</mat-icon>
+        <mat-slider color='warn' min='1' value='70' max='100' aria-label="unit(s)"></mat-slider>
+      </div>
+    </div>
+  </div>
 </div>
+
+
