@@ -12,17 +12,22 @@ function cumSum(a) {
 
 export class SimpleMultiLinearBar extends GenericVisual {
 	protected _kind = 'SimpleMultiLinearBar';
+  private _shadow: ShadowRoot;
 	constructor() {
 		super();
 		this.createHTMLElements();
 	}
 
 	protected createHTMLElements() {
-		//this.list_of_children = [this.button];
+    this._shadow = this.attachShadow({ mode: 'open' });
+
+    //this.list_of_children = [this.button];
 		const style = document.createElement('style');
 		style.textContent = '';
 		const div = document.createElement('div');
 		div.setAttribute('id', 'mainBar');
+		this.shadowRoot.appendChild(style)
+		this.shadowRoot.appendChild(div)
 		// this.list_of_children = [style, div];
 	}
 
@@ -33,12 +38,12 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		this.playerHTML.addEventListener('newPlaylist', () =>
 			this.updateVisual()
 		);
-		this.playerHTML.addEventListener('positionUpdate', () =>
+		this.playerHTML.addEventListener('newPosition', () =>
 			this.updateVisual()
 		);
 	}
 
-	protected updateVisual = () => {
+	protected updateVisual(){
 		const style = this.shadowRoot.querySelector('style');
 		const div = this.shadowRoot.getElementById('mainBar');
 
@@ -117,41 +122,45 @@ export class SimpleMultiLinearBar extends GenericVisual {
 		}
 		if (style) {
 			style.textContent = tempStyle;
-			div.onclick = (event) => {
-				const bcr = div.getBoundingClientRect();
-				const clickedPercentage = (event.clientX - bcr.left) / bcr.width;
-				const computedDuration = clickedPercentage;
-
-				const indexToSeek = cumulativeDurations.findIndex(
-					(d) => d > computedDuration
-				);
-
-				const songComputedDuration =
-					computedDuration -
-					(indexToSeek > 0 ? cumulativeDurations[indexToSeek - 1] : 0);
-
-				const percentageOfSongToSeek =
-					songComputedDuration / durationsToUse[indexToSeek];
-
-				const clickEvent = new CustomEvent('seekPerPercentageAndIndex', {
-					detail: {
-						percentage: percentageOfSongToSeek,
-						index: indexToSeek,
-						stopOthers: true,
-						keepPlaying: true,
-						updateGlobalIndex: true,
-						finishOthers: false,
-					},
-				});
-				this.playerHTML.processEventSeekPerPercentageAndIndexRef(
-					clickEvent
-				);
-			};
-			this.list_of_children = [style, div];
-		} else {
+			const data = {cumulativeDurations,durationsToUse}
+			div.onclick = (event) => this.onDivClick(event,div,data)
+			this.shadowRoot.appendChild(style)
+			this.shadowRoot.appendChild(div)
+		  } else {
 			//
 		}
-	};
+	}
+	onDivClick(event,div,data){
+	  const {cumulativeDurations, durationsToUse} = data
+    const bcr = div.getBoundingClientRect();
+    const clickedPercentage = (event.clientX - bcr.left) / bcr.width;
+    const computedDuration = clickedPercentage;
+
+    const indexToSeek = cumulativeDurations.findIndex(
+      (d) => d > computedDuration
+    );
+
+    const songComputedDuration =
+      computedDuration -
+      (indexToSeek > 0 ? cumulativeDurations[indexToSeek - 1] : 0);
+
+    const percentageOfSongToSeek =
+      songComputedDuration / durationsToUse[indexToSeek];
+
+    const clickEvent = new CustomEvent('seekPerPercentageAndIndex', {
+      detail: {
+        percentage: percentageOfSongToSeek,
+        index: indexToSeek,
+        stopOthers: true,
+        keepPlaying: true,
+        updateGlobalIndex: true,
+        finishOthers: false,
+      },
+    });
+    this.playerHTML.seekPerPercentageAndIndex(
+      clickEvent
+    );
+  }
 
 	generateHostStyle() {
 		return `

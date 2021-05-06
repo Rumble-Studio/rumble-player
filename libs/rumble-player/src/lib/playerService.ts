@@ -379,8 +379,9 @@ export class PlayerService {
 			return;
 		}
 		console.log(song);
+    this.isPlaying=true
 
-		// Check if howl is already playing
+    // Check if howl is already playing
 		if (song.valid) {
 			if (song.howl.playing()) {
 				return Promise.resolve(indexToPlay);
@@ -441,6 +442,7 @@ export class PlayerService {
 			const song = this.playlist[index];
 			if (song.howl && song.valid) {
 				song.howl.stop();
+				this.isPlaying=false
 				this.emit(playerServiceEventType.stop);
 			}
 		} else {
@@ -448,7 +450,8 @@ export class PlayerService {
 			this.playlist.forEach((song: Song) => {
 				if (song.howl && song.valid) {
 					song.howl.stop();
-					this.emit(playerServiceEventType.stop);
+          this.isPlaying=false
+          this.emit(playerServiceEventType.stop);
 				}
 			});
 		}
@@ -460,28 +463,31 @@ export class PlayerService {
 			return;
 		}
 
-		// remember value before stopping
+    // remember value before stopping
 		const isPlaying = this._isPlaying;
 		this.stop();
-
 		// if no other song is valid we stop
 		if (!this.playlist.some((s) => s.valid)) {
 			console.warn("Can't do next: no file valid.");
 			return;
 		}
 
-		if (this.index + 1 >= this.playlist.length) {
+
+    if (this.index + 1 >= this.playlist.length) {
 			this.index = 0;
 		} else {
 			this.index += 1;
 		}
 
-		// re-use value from before stop
+
+    // re-use value from before stop
 		if (!this.playlist[this.index].valid) {
 			this.next();
 			return;
 		}
-		if (isPlaying) {
+    if (isPlaying) {
+		  console.log('will play')
+      this.emit(playerServiceEventType.play)
 			this.play();
 		}
 		const length = this.playlist.length;
@@ -498,7 +504,6 @@ export class PlayerService {
 				indexToLoad = this.index === length - 1 ? 0 : this.index + 1;
 				indexToUnLoad = this.index - 2;
 			}
-			console.log(indexToLoad, indexToUnLoad);
 			this.loadSong(this.playlist[indexToLoad]);
 			this.unloadSong(this.playlist[indexToUnLoad]);
 		}

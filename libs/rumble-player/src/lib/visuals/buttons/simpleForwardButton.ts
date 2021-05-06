@@ -6,13 +6,10 @@ export class SimpleForwardButton extends GenericVisual {
 	button: HTMLInputElement;
 	private jump: number;
 
-	protected dontBuildHTMLElements = true;
-
 	constructor(jump = 15) {
-		super(true); // true to delay HTML logic and let jump be set
+		super(); // true to delay HTML logic and let jump be set
 		this.jump = jump;
 		this.createHTMLElements();
-		this.setInnerHTML();
 		this.setEmitters();
 	}
 
@@ -21,8 +18,7 @@ export class SimpleForwardButton extends GenericVisual {
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', 'forward(' + this.jump + 's)');
 		this.button.disabled = true;
-
-		this.list_of_children = [this.button];
+    this.appendChild(this.button)
 	}
 
 	protected setEmitters() {
@@ -30,16 +26,15 @@ export class SimpleForwardButton extends GenericVisual {
 			const e = new CustomEvent('seekPerPosition', {
 				detail: { jump: this.jump },
 			});
-			this.playerHTML.processEventSeekPerPosition(e);
+			this.playerHTML.seekForJump(e);
 		});
 	}
 	protected setListeners() {
-		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('newPlaylist', ()=>this.onPlaylist());
 	}
-	onPlaylist = (event) => {
-		this.button = this.shadowRoot.querySelector('input');
+	onPlaylist (){
 		this.button.disabled = !(this.playerHTML.playlist.length > 0);
-	};
+	}
 }
 
 customElements.define('rs-simple-forward-button', SimpleForwardButton);

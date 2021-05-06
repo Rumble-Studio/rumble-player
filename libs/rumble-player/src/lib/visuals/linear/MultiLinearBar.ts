@@ -1,6 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
-import { playerServiceEvent, RumblePlayerService } from '../../playerService';
-import { HTMLRumblePlayer } from '../../playerHTML';
+import { PlayerHTML } from '@rumble-player/player';
 
 export class MultiLinearBar extends GenericVisual {
 	protected _kind = 'MultiLinearBar';
@@ -11,23 +10,27 @@ export class MultiLinearBar extends GenericVisual {
 	minDuration = Infinity;
 	totalDuration = 0;
 	styles: string[] = [];
+  private _shadow: ShadowRoot;
 
-	set playerHTML(player: HTMLRumblePlayer) {
+	set playerHTML(player: PlayerHTML) {
 		super.playerHTML = player;
 		this.initView();
 	}
 
 	constructor() {
 		super();
+		this.createHTMLElements()
 	}
 
 	protected createHTMLElements() {
-		const style = document.createElement('style');
+    this._shadow = this.attachShadow({ mode: 'open' });
+
+    const style = document.createElement('style');
 		this.style.position = 'relative';
 		this.style.backgroundColor = 'yellow';
 		this.style.marginTop = '5px';
 		this.style.marginBottom = '5px';
-		this.list_of_children = [style];
+		this.shadowRoot.appendChild(style)
 	}
 
 	protected setEmitters() {
@@ -75,7 +78,7 @@ export class MultiLinearBar extends GenericVisual {
 			mainStyle = mainStyle + tempStyle;
 		}
 		this._shadow.querySelector('style').textContent = mainStyle;
-		this.list_of_children = [style];
+		this.shadowRoot.appendChild(style)
 		this.drawOnPreload();
 	}
 
@@ -138,12 +141,13 @@ export class MultiLinearBar extends GenericVisual {
 							this._shadow.querySelector(
 								'style'
 							).textContent = mainStyle;
-							this.list_of_children = [style];
-						}
+              this.shadowRoot.appendChild(style)
+
+            }
 					}
 					this._shadow.querySelector('style').textContent = mainStyle;
-					this.list_of_children = [style];
-				} else {
+          this.shadowRoot.appendChild(style)
+        } else {
 					console.log('LOADED NOT LOADED', loadedSong);
 				}
 			};

@@ -1,5 +1,4 @@
 import { GenericVisual } from '../../GenericVisual';
-import { playerServiceEvent } from '../../playerService';
 
 export class SimpleNextButton extends GenericVisual {
 	protected _kind = 'SimpleNextButton';
@@ -7,29 +6,26 @@ export class SimpleNextButton extends GenericVisual {
 
 	constructor() {
 		super();
+    this.button = document.createElement('input');
+    this.button.setAttribute('type', 'button');
+    this.button.setAttribute('value', 'next');
+    this.button.disabled = true;
+    this.appendChild(this.button)
 	}
 
-	protected createHTMLElements() {
-		this.button = document.createElement('input');
-		this.button.setAttribute('type', 'button');
-		this.button.setAttribute('value', 'next');
-		this.button.disabled = true;
-
-		this.list_of_children = [this.button];
-	}
 
 	protected setEmitters() {
 		this.button.addEventListener('click', () => {
-			this.playerHTML.processEventNextRef();
+		  console.log('On next')
+		  this.playerHTML.next()
 		});
 	}
 	protected setListeners() {
-		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('newPlaylist', ()=>this.onPlaylist());
 	}
-	onPlaylist = (event) => {
-		this.button = this.shadowRoot.querySelector('input');
+	onPlaylist (){
 		this.button.disabled = !(this.playerHTML.playlist.length > 0);
-	};
+	}
 }
 
 customElements.define('rs-simple-next-button', SimpleNextButton);

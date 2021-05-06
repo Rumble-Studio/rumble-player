@@ -98,9 +98,10 @@ export class PlayerComponent implements AfterViewInit {
 		this.RSSLink = event.target.value;
 	}
 
-	setRSS() {
+	setRSS($event) {
+	  this.RSSLink = $event.target.value
 		this.playerService.setPLaylistFromRSSFeedURL(
-			'https://feeds.buzzsprout.com/159584.rss'
+			this.RSSLink
 		);
 	}
 

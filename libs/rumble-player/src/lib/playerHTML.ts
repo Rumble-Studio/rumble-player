@@ -60,7 +60,8 @@ export class PlayerHTML extends HTMLElement {
 		this.playerService.stop();
 	}
 	public next() {
-		if (!this.playerService) return;
+	  console.log('[playerHTML](NEXT)NEXT FROM PLAYER HTML')
+	  if (!this.playerService) return;
 		this.playerService.next();
 	}
 	public prev() {
@@ -79,6 +80,45 @@ export class PlayerHTML extends HTMLElement {
 		if (!this.playerService) return;
 		this.playerService.seekPerPosition(position);
 	}
+  public seekForJump(event: CustomEvent) {
+    const { jump } = event.detail;
+    const position = this.playerService.position;
+    const newPosition = jump + position;
+    this.seekPerPosition(newPosition);
+  }
+
+  seekPerPercentageAndIndex(clickEvent: any) {
+    const {
+      index,
+      percentage,
+      stopOthers,
+      keepPlaying,
+      updateGlobalIndex,
+      finishOthers,
+    } = clickEvent.detail;
+
+    const wasPlaying = this.playerService.isPlaying;
+
+    if (stopOthers) this.playerService.stop();
+
+    if (finishOthers && index > 0) {
+      this.playerService.stop();
+      this.playerService.index = 0;
+      while (this.playerService.index < index) {
+        this.playerService.seekPerPercentage(99);
+        this.playerService.play();
+        this.playerService.pause();
+        this.playerService.next();
+      }
+    }
+
+    if (index !== this.playerService.index && updateGlobalIndex) {
+      this.playerService.index = index;
+    }
+
+    this.seekPerPercentage(percentage, index);
+    if (keepPlaying && wasPlaying) this.playerService.play(index);
+  }
 }
 
 customElements.define('rumble-player', PlayerHTML);

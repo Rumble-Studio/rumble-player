@@ -1,5 +1,4 @@
 import { GenericVisual } from '../../GenericVisual';
-import { playerServiceEvent } from '../../playerService';
 
 export class SimpleBackwardButton extends GenericVisual {
 	protected _kind = 'SimpleBackwardButton';
@@ -9,10 +8,9 @@ export class SimpleBackwardButton extends GenericVisual {
 	protected dontBuildHTMLElements = true;
 
 	constructor(jump = 15) {
-		super(true); // true to delay HTML logic and let jump be set
+	  super()
 		this.jump = jump;
 		this.createHTMLElements();
-		this.setInnerHTML();
 		this.setEmitters();
 	}
 
@@ -21,8 +19,8 @@ export class SimpleBackwardButton extends GenericVisual {
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', 'backward(' + this.jump + 's)');
 		this.button.disabled = true;
+		this.appendChild(this.button)
 
-		this.list_of_children = [this.button];
 	}
 
 	protected setEmitters() {
@@ -30,16 +28,15 @@ export class SimpleBackwardButton extends GenericVisual {
 			const e = new CustomEvent('seekPerPosition', {
 				detail: { jump: -this.jump },
 			});
-			this.playerHTML.processEventSeekPerPositionRef(e);
+			this.playerHTML.seekForJump(e);
 		});
 	}
 	protected setListeners() {
-		this.playerHTML.addEventListener('newPlaylist', this.onPlaylist);
+		this.playerHTML.addEventListener('newPlaylist', ()=>this.onPlaylist());
 	}
-	onPlaylist = (event) => {
-		this.button = this.shadowRoot.querySelector('input');
+	onPlaylist (){
 		this.button.disabled = !(this.playerHTML.playlist.length > 0);
-	};
+	}
 }
 
 customElements.define('rs-simple-backward-button', SimpleBackwardButton);

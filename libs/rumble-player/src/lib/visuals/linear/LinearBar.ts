@@ -1,46 +1,52 @@
 import { GenericVisual } from '../../GenericVisual';
-import { playerServiceEvent, RumblePlayerService } from '../../playerService';
 
 export class LinearBar extends GenericVisual {
 	protected _kind = 'LinearBar';
-
+  private _shadow: ShadowRoot;
 	div: HTMLDivElement = document.createElement('div');
 	progressDiv: HTMLDivElement = document.createElement('div');
 	percentage: number;
 
 	constructor() {
 		super();
+		this.createHTMLElements()
 	}
 
 	protected createHTMLElements() {
-		const style = document.createElement('style');
+	  console.log('CREATE')
+    this._shadow = this.attachShadow({ mode: 'open' });
+    const style = document.createElement('style');
 		this.div = document.createElement('div');
 		this.div.setAttribute('id', 'bar');
 		this.progressDiv = document.createElement('div');
 		this.progressDiv.setAttribute('id', 'progressBar');
 		this.div.appendChild(this.progressDiv);
-		this.list_of_children = [style, this.div];
+		this._shadow.appendChild(style)
+    this._shadow.appendChild(this.div)
 	}
 
 	protected setEmitters() {
-		this.addEventListener('click', (event) => {
+    console.log('EMITTER')
+
+    this.addEventListener('click', (event) => {
 			const bcr = this.getBoundingClientRect();
 			const percentage = (event.clientX - bcr.left) / bcr.width;
-			const clickEvent = new CustomEvent('seekPerPercentage', {
-				detail: { percentage },
-			});
-			this.playerHTML.processEventSeekPerPercentage(clickEvent);
+
+			this.playerHTML.seekPerPercentage(percentage);
 		});
 	}
 
 	protected setListeners() {
-		this.playerHTML.addEventListener('positionUpdate', this.updateVisual);
-		this.playerHTML.addEventListener('seek', this.updateVisual);
+		this.playerHTML.addEventListener('newPosition', (payload)=>this.updateVisual(payload));
+		this.playerHTML.addEventListener('seek', (payload)=>this.updateVisual());
 	}
 
-	updateVisual = (payload) => {
-		if (payload) {
-			this.percentage = payload.detail.percentage;
+	updateVisual = (payload?) => {
+    console.log('UPDATE')
+
+    if (payload) {
+		  console.log(payload)
+			this.percentage = this.playerHTML.percentage;
 		}
 		this._shadow.querySelector('style').textContent = this.generateStyle(
 			this.percentage

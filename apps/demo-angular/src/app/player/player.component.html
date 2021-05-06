@@ -3,7 +3,7 @@
 </button>
 <form>
 	<input style="display: inline" type="url" [value]="RSSLink" />
-	<button (click)="setRSS()">SET</button>
+	<button (click)="setRSS($event)">SET</button>
 	<input
 		style="display: inline"
 		type="url"
@@ -30,11 +30,15 @@
 <br>
 <h2>Using rumble-player tag</h2>
 <div class="playerContainer" #playerContainer>
-	<rumble-player #playerHTML> </rumble-player>
+	<rumble-player #playerHTML>
+
+  </rumble-player>
 </div>
 <br>
 <h2>Using custom container (rumble element)</h2>
-<div #myCustomContainerDefault></div>
+<div #myCustomContainerDefault>
+
+</div>
 <br>
 <h2>Using custom container (classic HTML)</h2>
 <div #myCustomContainerCustom></div>

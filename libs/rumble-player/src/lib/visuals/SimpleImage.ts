@@ -1,27 +1,36 @@
 import { GenericVisual } from '../GenericVisual';
-import { playerServiceEvent, RumblePlayerService } from '../playerService';
 
 export class SimpleImage extends GenericVisual {
 	private src: string;
-	constructor() {
+  private _shadow: ShadowRoot;
+  constructor() {
 		super();
+		this.createHTMLElements()
 	}
 
 	protected createHTMLElements() {
-		super.createHTMLElements();
+    this._shadow = this.attachShadow({ mode: 'open' });
 		const wrapper = document.createElement('div');
 		wrapper.style.height = '200px';
 		wrapper.style.width = '200px';
 		const image = document.createElement('img');
 		image.style.maxHeight = '200px';
+		const noImage = document.createElement('p')
+    noImage.setAttribute('id','noImage')
+    noImage.style.fontWeight = 'bold'
 		if (this.src && this.src.length > 0) {
 			image.setAttribute('src', this.src);
 		}
+		else{
+		  noImage.innerHTML = '[NO IMAGE]'
+    }
+		wrapper.appendChild(noImage)
 		wrapper.appendChild(image);
 		const style = document.createElement('style');
 		const title = document.createElement('p');
 		title.innerHTML = 'image of selected song : ';
-		this.list_of_children = [style, title, wrapper];
+		this.shadowRoot.appendChild(style)
+		this.shadowRoot.appendChild(wrapper)
 	}
 
 	protected setEmitters() {
@@ -33,13 +42,19 @@ export class SimpleImage extends GenericVisual {
 	}
 
 	protected setListeners() {
-		this.playerHTML.addEventListener('play', this.updateImage);
+		this.playerHTML.addEventListener('play', ()=>this.updateImage());
 	}
 
-	updateImage = () => {
+	updateImage() {
 		this.src = this.playerHTML.playlist[this.playerHTML.index].image;
-		this.shadowRoot.querySelector('img').setAttribute('src', this.src);
-	};
+    if (this.src && this.src.length > 0) {
+      this.shadowRoot.querySelector('#noImage').innerHTML=''
+      this.shadowRoot.querySelector('img').setAttribute('src', this.src);
+    }
+    else {
+      this.shadowRoot.querySelector('#noImage').innerHTML = '[NO IMAGE]'
+    }
+	}
 }
 
 customElements.define('rs-simple-image', SimpleImage);

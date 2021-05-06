@@ -25,21 +25,17 @@ export class SimplePlayButton extends GenericVisual {
 
 	protected setListeners() {
 		console.log('SET LISTENERS');
-		this.playerHTML.addEventListener('newPlaylist', () => this.enable());
+		this.playerHTML.addEventListener('newPlaylist', () => this.enable(1));
 		this.playerHTML.addEventListener('play', () => this.disable());
-		this.playerHTML.addEventListener('pause', () => this.enable());
-		this.playerHTML.addEventListener('stop', () => this.enable());
+		this.playerHTML.addEventListener('pause', () => this.enable(2));
+		this.playerHTML.addEventListener('stop', () => this.enable(3));
 	}
 
 	disable() {
-		this.button.setAttribute('disabled', 'true');
+		this.button.disabled = true
 	}
-	enable() {
-		if (this.playerHTML.playlist.length == 0) {
-			this.disable();
-			return;
-		}
-		this.button.removeAttribute('disabled');
+	enable(v) {
+    this.button.disabled = !(this.playerHTML.playlist.length > 0);
 	}
 }
 
