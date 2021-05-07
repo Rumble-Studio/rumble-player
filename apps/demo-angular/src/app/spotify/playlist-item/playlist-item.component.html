@@ -1,6 +1,7 @@
 <div *ngIf='!header'  class='track' #container>
   <mat-icon (click)='onPlay()'>play_circle_outline</mat-icon>
   <div class='track-details'>
+    <h3>{{index+1}}</h3>
     <h3 style='overflow: hidden'>{{song.title}}</h3>
     <h3 style='text-align: center'>{{song.author}}</h3>
     <h3>{{song.playlistName}}</h3>
@@ -10,8 +11,9 @@
 <div *ngIf='header' class='track'>
   <mat-icon style='color: transparent'>play_circle_outline</mat-icon>
   <div class='track-details'>
+    <h3>#</h3>
     <h3>Title</h3>
-    <h3>Artist</h3>
+    <h3 style='text-align: center'>Artist</h3>
     <h3>Album</h3>
     <h3>Duration</h3>
   </div>

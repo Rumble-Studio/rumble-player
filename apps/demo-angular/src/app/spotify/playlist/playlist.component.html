@@ -3,7 +3,8 @@
     <img class='art' src='{{this.image?this.image:this.defaultImage}}' (click)='isHome=true'/>
     <div class='album-details' *ngIf='bridge.playerService.playlist.length>0'>
       <h1>{{bridge.playerService.playlist[bridge.playerService.index].playlistName}}</h1>
-      <h2>{{bridge.playerService.playlist[bridge.playerService.index].author}}</h2>
+      <h2>{{bridge.playerService.playlist[bridge.playerService.index].author +
+      ' #' + (bridge.playerService.index+1)}}</h2>
     </div>
   </div>
   <div class='playlist-body' *ngIf='this.bridge.playerService.playlist.length>0'>

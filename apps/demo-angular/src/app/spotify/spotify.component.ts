@@ -59,7 +59,6 @@ export class SpotifyComponent implements OnInit, AfterViewInit {
       })
 
       this.bridge.playerHTML.addEventListener('play',(payload:CustomEvent)=>{
-
         if(this.bridge.playerService.playlist[this.bridge.playerService.index].image){
           const icon = this.image.nativeElement
           this.imageURL = this.bridge.playerService.playlist[this.bridge.playerService.index].image
@@ -129,11 +128,14 @@ export class SpotifyComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       console.log(result)
-      if (result === 'load') {
+      if (result === 'default') {
         this.bridge.playerService.setPlaylistFromUrls([this.feedUrl,this.feedUrl,this.feedUrl])
       }
-      else {
+      else if (result ==='rss'){
         this.bridge.playerService.setPLaylistFromRSSFeedURL(this.carlRSS)
+      }
+      else {
+        this.bridge.playerService.setPLaylistFromRSSFeedURL(result)
       }
     });
   }

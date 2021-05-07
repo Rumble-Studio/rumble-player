@@ -234,14 +234,14 @@ export class PlayerService {
 	}
 
 	getSong(index: number, instanciateHowlIfMissing = true) {
-		const song = this.playlist[index];
+		let song = this.playlist[index];
 		if (!song.valid) {
 			// song invalid is return as it is without loading any more howl
 			return song;
 		}
 
 		if (!song.howl && instanciateHowlIfMissing) {
-			song.howl = this.createHowlWithBindings(song, index);
+			song = this.createHowlWithBindings(song, index);
 			if (!song.howl) {
 				song.valid = false;
 			}
@@ -249,7 +249,7 @@ export class PlayerService {
 		return song;
 	}
 
-	private createHowlWithBindings(song: Song, index: number): Howl | null {
+	private createHowlWithBindings(song: Song, index: number): Song | null {
 		// Extract the file extension from the URL or base64 data URI.
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const str = song.file;
@@ -278,12 +278,12 @@ export class PlayerService {
 					this.isPlaying = false;
 				}
 
-				this.playlist[index].valid = false;
-				this.playlist[index].loaded = false;
+				song.valid = false;
+				song.loaded = false;
 			},
 			onload: () => {
-				this.playlist[index].valid = true;
-				this.playlist[index].loaded = true;
+				song.valid = true;
+				song.loaded = true;
 
 				if (index === 0 && this.autoPlay) this.play(0);
 
@@ -292,8 +292,8 @@ export class PlayerService {
 			onloaderror: (error) => {
 				console.warn('error howler loading', error);
 				this.emit(playerServiceEventType.loadError);
-				this.playlist[index].valid = true;
-				this.playlist[index].loaded = true;
+				song.valid = true;
+				song.loaded = true;
 			},
 			onend: () => {
 				if (this.loop) {
@@ -322,7 +322,8 @@ export class PlayerService {
 				//
 			},
 		});
-		return howl;
+		song.howl = howl;
+		return song
 	}
 
 	preloadPlaylist() {
@@ -331,7 +332,7 @@ export class PlayerService {
 			return;
 		}
 		this.playlist.forEach((song, index) => {
-			song.howl = this.createHowlWithBindings(song, index);
+			song = this.createHowlWithBindings(song, index);
 		});
 	}
 	unloadSong(song: Song) {
@@ -355,7 +356,7 @@ export class PlayerService {
 		newPlaylist.push(song);
 
 		this.playlist = newPlaylist;
-		this.playlist[index].howl = this.createHowlWithBindings(song, index);
+		this.playlist[index] = this.createHowlWithBindings(song, index);
 	}
 
 	// should return as a promise the current index asked to be played
@@ -689,6 +690,7 @@ export class PlayerService {
         albumArt: object.albumArt
 			} as Song;
 		});
+		console.log('PLAYLIST READY', this.playlist.length)
 	}
 	private generateSongFromUrl(url: string, index: number) {
 		return {
@@ -709,7 +711,8 @@ export class PlayerService {
 				const channel = dom.documentElement.getElementsByTagName('channel').item(0)
 				const playlistName = channel.querySelector('title').textContent
 				const author = channel.getElementsByTagName('itunes:author').item(0).textContent
-				const albumArt = channel.querySelector('image').querySelector('url').textContent
+				//const albumArt = channel.querySelector('image').querySelector('url').textContent
+				let albumArt = this.extractImage(channel)
 				dom.documentElement
 					.querySelectorAll('item')
 					.forEach((value, key) => {
@@ -717,10 +720,13 @@ export class PlayerService {
 						const file = value
 							.querySelector('enclosure')
 							.getAttribute('url');
-						const image = value
-							.getElementsByTagName('itunes:image')
-							.item(0)
-							.getAttribute('href');
+						// const image = value
+						// 	.getElementsByTagName('itunes:image')
+						// 	.item(0)
+						// 	.getAttribute('href');
+            let image = this.extractImage(value)
+            if (image === null && albumArt) image=albumArt
+            if (albumArt===null && image) albumArt = image
 
 						const song = { title, file, image, playlistName, author, albumArt };
 						songList.push(song);
@@ -731,6 +737,38 @@ export class PlayerService {
 				console.error(err);
 			});
 	}
+
+	private extractImage(elt: Element){
+	  try {
+      const simpleImage = elt.querySelector('image')
+
+      if (simpleImage ){
+        const url = simpleImage.querySelector('url')
+        if (url) {
+          return url.textContent
+        }
+
+      }
+    }
+    catch (e) {
+      console.warn(e)
+    }
+    try{
+      const itunesImage = elt.getElementsByTagName('itunes:image')
+      if (itunesImage){
+        const img = itunesImage.item(0)
+        if (img){
+          const url = img.getAttribute('href')
+          return url
+        }
+      }
+
+    }
+    catch (e) {
+      console.warn(e)
+    }
+    return null
+  }
 
 	async download(index?: number) {
 		const indexToDowload = index || this.index;
