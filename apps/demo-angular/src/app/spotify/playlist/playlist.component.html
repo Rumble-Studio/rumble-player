@@ -1,0 +1,32 @@
+<div class='playlist-container' *ngIf='!isHome' >
+  <div class='playlist-header' #header>
+    <img class='art' src='{{this.image?this.image:this.defaultImage}}' (click)='isHome=true'/>
+    <div class='album-details' *ngIf='bridge.playerService.playlist.length>0'>
+      <h1>{{bridge.playerService.playlist[bridge.playerService.index].playlistName}}</h1>
+      <h2>{{bridge.playerService.playlist[bridge.playerService.index].author}}</h2>
+    </div>
+  </div>
+  <div class='playlist-body' *ngIf='this.bridge.playerService.playlist.length>0'>
+    <rumble-player-playlist-item [header]='true'>
+
+    </rumble-player-playlist-item>
+    <div *ngFor='let song of this.bridge.playerService.playlist; let i = index'>
+      <rumble-player-playlist-item *ngIf='song.valid' [index]='i' [song]='song'>
+
+      </rumble-player-playlist-item>
+    </div>
+
+
+  </div>
+</div>
+
+<div class='playlist-container-1' *ngIf='isHome' (click)='isHome=false'>
+  <div style='position: relative' #header>
+    <img class='art-1' src='{{this.image?this.image:this.defaultImage}}'/>
+    <div class='album-details-2' *ngIf='bridge.playerService.playlist.length===0'>
+
+    </div>
+
+  </div>
+
+</div>
