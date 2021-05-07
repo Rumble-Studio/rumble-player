@@ -10,43 +10,54 @@
           <mat-icon class='menu-icon' >home</mat-icon>
           <h3 style='color: inherit;flex: 3'>Home</h3>
         </div>
-        <div class='drawer-menu-item'>
+        <div class='drawer-menu-item' (click)="openDialog()">
           <mat-icon class='menu-icon' >add_box</mat-icon>
           <h3 style='color: inherit;flex: 3'>Load Playlist</h3>
         </div>
       </div>
+      <img class='art' src='{{defaultImage}}' #image/>
     </div>
-    <div class='drawer-footer'>
+
+    <div class='drawer-footer' *ngIf='bridge.playerService.playlist.length>0'>
+      <h3 >{{bridge.playerService.playlist[bridge.playerService.index].title.slice(0,20)}}</h3>
+      <h4>{{bridge.playerService.playlist[bridge.playerService.index].author}}</h4>
     </div>
   </div>
   <div class='body-content'>
     <div class='rs-header'></div>
-    <div class='rs-body'></div>
+    <div class='rs-body'>
+      <rumble-player-playlist></rumble-player-playlist>
+    </div>
     <div class='rs-footer'>
       <div class='rs-footer-controls'>
         <div class='rs-footer-controls-line-1' #controlsContainer>
-          <mat-icon class='control-icon'>shuffle</mat-icon>
-          <mat-icon class='control-icon'>fast_rewind</mat-icon>
-          <mat-icon class='control-icon '>skip_previous</mat-icon>
-          <mat-icon class='control-icon bigger'>play_circle_outline</mat-icon>
-          <mat-icon class='control-icon'>skip_next</mat-icon>
-          <mat-icon class='control-icon'>fast_forward</mat-icon>
-          <mat-icon class='control-icon'>loop</mat-icon>
+          <rumble-player-control  task='shuffle' icon='shuffle'></rumble-player-control>
+          <rumble-player-control (click)='onRewind()' icon='fast_rewind'></rumble-player-control>
+          <rumble-player-control (click)='onPrev()' icon='skip_previous'></rumble-player-control>
+          <rumble-player-control (click)='onPlay()' task='play' additionalClass='bigger' icon='play_circle_outline'></rumble-player-control>
+          <rumble-player-control (click)='onNext()' icon='skip_next'></rumble-player-control>
+          <rumble-player-control (click)='onForward()' icon='fast_forward'></rumble-player-control>
+          <rumble-player-control  task='loop' icon='loop'></rumble-player-control>
+
         </div>
         <div class='rs-footer-controls-line-2'>
           <div>
-            0:0
+            {{secondsToFormat(this.bridge.playerService.position)}}
           </div>
-          <div style='background-color: white;height: 10px;width: 50%;margin-inline: 5px'></div>
-          <div>
-            0.0
+          <div  style='background-color: white;height: 10px;width: 100%;margin-inline: 5px; cursor: pointer'>
+            <div #linearBar class='progressBar' style='background-color: red;opacity: 0.8;height: 10px'>
+
+            </div>
+          </div>
+          <div *ngIf='bridge.playerService.playlist.length>0 && bridge.playerService.playlist[bridge.playerService.index].valid'>
+            {{secondsToFormat(bridge.playerService.playlist[bridge.playerService.index].howl.duration())}}
           </div>
         </div>
 
       </div>
       <div class='rs-footer-volume'>
         <mat-icon class='volume-icon'>volume_up</mat-icon>
-        <mat-slider color='warn' min='1' value='70' max='100' aria-label="unit(s)"></mat-slider>
+        <mat-slider color='warn' min='0' value='100' max='100' (change)='onVolume($event)' aria-label="unit(s)"></mat-slider>
       </div>
     </div>
   </div>

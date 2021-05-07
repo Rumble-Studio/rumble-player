@@ -66,11 +66,20 @@
   width: fit-content;
 }
 .drawer-footer{
-  background-color: green;
+  background-color: transparent;
+  display: flex;
+  padding-top: 20px;
+  padding-left: 20px;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: white;
 }
+
 .body-content{
   display: grid;
   grid-template-rows: 80px auto 120px;
+  overflow: scroll;
+
 }
 .rs-header{
   background-color: black;
@@ -79,6 +88,8 @@
 .rs-body{
   background-color: black;
   opacity: 0.9;
+  overflow: scroll;
+
 }
 .rs-footer{
   background-color: transparent;
@@ -163,6 +174,11 @@ mat-slider{
   color: #e6ebf1;
 }
 
+.art{
+  max-width: 350px;
+  position: absolute;
+  bottom: 120px;
+}
 
 
 

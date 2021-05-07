@@ -1,7 +1,7 @@
 import { Howl } from 'howler';
 import { v4 as uuidv4 } from 'uuid';
 
-export const UPDATE_DELAY = 1000;
+export const UPDATE_DELAY = 100;
 
 export interface Song {
 	id: string; // unique id to identify the song even when we add new song to the playlist
@@ -12,6 +12,9 @@ export interface Song {
 	loaded: boolean;
 	valid: boolean;
 	image?: string | null;
+  author?: string;
+  albumArt?: string;
+	playlistName?: string;
 	position?: number | null; // current seeking of position of the howl
 	onload?: (song: Song) => void;
 }
@@ -75,10 +78,10 @@ export class PlayerService {
 	// Wether or not to shuffle the playlist
 	_shuffle = false;
 	set shuffle(value: boolean) {
-		console.log('SET Shuffle to ', value);
+	  if(!this.playlist || this.playlist.length===0) return
 		this._shuffle = value;
 		if (!value) {
-			this._shuffledPlaylist = this._playlist;
+			this._shuffledPlaylist = Object.assign([],this._playlist)
 		} else {
 			this.shufflePlaylist();
 		}
@@ -204,6 +207,7 @@ export class PlayerService {
 
 	constructor() {
 		this._playlist = [];
+		this._shuffledPlaylist = []
 		this._index = -1;
 		this._position = 0;
 		this._percentage = 0;
@@ -347,10 +351,8 @@ export class PlayerService {
 	addSong(url: string) {
 		const index = this.playlist.length;
 		const song = this.generateSongFromUrl(url, index);
-		console.log('ADD SONG', song, index);
 		const newPlaylist = this.playlist;
 		newPlaylist.push(song);
-		console.log('ADD SONG', this.playlist, newPlaylist);
 
 		this.playlist = newPlaylist;
 		this.playlist[index].howl = this.createHowlWithBindings(song, index);
@@ -392,14 +394,16 @@ export class PlayerService {
 		}
 	}
 	public playWithOptions(options) {
-		// TODO
-		console.warn('(playWithOptions) NOT IMPLEMENTED', { options });
-		this.play();
+		if (options.index !== undefined ){
+      this.play(options.index);
+    } else {
+		  this.play()
+    }
+
 	}
 
 	public pause(options?: { index?: number; pauseOthers?: boolean }) {
 		if (this.playlist.length === 0) return;
-
 		if (
 			options &&
 			options.index > -1 &&
@@ -663,7 +667,6 @@ export class PlayerService {
 	}
 
 	public setPlaylistFromUrls(urls: string[]) {
-		console.log('RSS set playlist', urls);
 		this.playlist = urls.map((url, index) => {
 			return {
 				title: 'Song ' + index,
@@ -681,6 +684,9 @@ export class PlayerService {
 				howl: null,
 				id: uuidv4(),
 				image: object.image,
+        playlistName: object.playlistName,
+        author: object.author,
+        albumArt: object.albumArt
 			} as Song;
 		});
 	}
@@ -700,6 +706,10 @@ export class PlayerService {
 				const parser = new DOMParser();
 				const dom = parser.parseFromString(r, 'application/xml');
 				const songList = [] as any[];
+				const channel = dom.documentElement.getElementsByTagName('channel').item(0)
+				const playlistName = channel.querySelector('title').textContent
+				const author = channel.getElementsByTagName('itunes:author').item(0).textContent
+				const albumArt = channel.querySelector('image').querySelector('url').textContent
 				dom.documentElement
 					.querySelectorAll('item')
 					.forEach((value, key) => {
@@ -712,7 +722,7 @@ export class PlayerService {
 							.item(0)
 							.getAttribute('href');
 
-						const song = { title, file, image };
+						const song = { title, file, image, playlistName, author, albumArt };
 						songList.push(song);
 					});
 				this.setPlaylistFromObject(songList);

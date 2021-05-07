@@ -19,11 +19,10 @@ export class SimplePlaylist extends GenericVisual {
 	}
 
 	protected createHTMLElements() {
-		super.createHTMLElements();
 		this.div = document.createElement('div');
 		const style = document.createElement('style');
 		this.div.setAttribute('id', 'container');
-		this.list_of_children = [style, this.div];
+		//this.list_of_children = [style, this.div];
 	}
 
 	protected setEmitters() {
@@ -51,9 +50,9 @@ export class SimplePlaylist extends GenericVisual {
 			infoMessage.innerHTML = 'Playlist empty';
 		}
 		this.div.appendChild(ul);
-		this.list_of_children[1] = this.div;
-		super.setInnerHTML();
-		this._shadow.querySelector('style').textContent = this.generateStyle();
+		///this.list_of_children[1] = this.div;
+		//super.setInnerHTML();
+	//	this._shadow.querySelector('style').textContent = this.generateStyle();
 		// this.progressDiv.style.width = 100 * this.percentage + 'px';
 	}
 
@@ -108,7 +107,7 @@ export class SimplePlaylist extends GenericVisual {
 						startSongAgain: false,
 					},
 				});
-				this.playerHTML.processEventPlayRef(event);
+				this.playerHTML.play(event);
 			}
 		});
 
@@ -117,7 +116,7 @@ export class SimplePlaylist extends GenericVisual {
 		pauseButton.setAttribute('value', 'pause');
 		pauseButton.addEventListener('click', () => {
 			if (song.valid) {
-				this.playerHTML.processEventPauseRef(new CustomEvent('pause'));
+				this.playerHTML.pause(new CustomEvent('pause'));
 			}
 		});
 		song.onload = (song: Song) => {

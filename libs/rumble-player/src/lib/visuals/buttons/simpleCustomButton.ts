@@ -13,7 +13,6 @@ export class SimpleCustomButton extends GenericVisual {
 		this.button = document.createElement('input');
 		this.button.setAttribute('type', 'button');
 		this.button.setAttribute('value', this.eventToEmit);
-		this.list_of_children = [this.button];
 	}
 
 	protected setEmitters() {

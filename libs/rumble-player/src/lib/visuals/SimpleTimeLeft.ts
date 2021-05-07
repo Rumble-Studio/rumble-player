@@ -17,7 +17,7 @@ export class SimpleTimeLeft extends GenericVisual {
 		this.time.innerText = this.timeLeft.toString();
 		const style = document.createElement('style');
 		wrapper.appendChild(this.time);
-		this.list_of_children = [style, wrapper];
+		//this.list_of_children = [style, wrapper];
 	}
 
 	protected setListeners() {
@@ -34,7 +34,7 @@ export class SimpleTimeLeft extends GenericVisual {
 				timeLeft >= 0
 					? 'Time Left : ' + Math.round(timeLeft).toString()
 					: 'Time Left : N/A';
-			this._shadow.querySelector('style').textContent = this.generateStyle();
+			//this._shadow.querySelector('style').textContent = this.generateStyle();
 		}
 	};
 	generateStyle() {

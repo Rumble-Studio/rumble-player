@@ -17,7 +17,7 @@ export class SimpleTimeSpent extends GenericVisual {
 		this.time.innerText = this.timeLeft.toString();
 		const style = document.createElement('style');
 		wrapper.appendChild(this.time);
-		this.list_of_children = [style, wrapper];
+		//this.list_of_children = [style, wrapper];
 	}
 
 	protected setEmitters() {
@@ -35,7 +35,7 @@ export class SimpleTimeSpent extends GenericVisual {
 				position >= 0
 					? 'Time Spent : ' + Math.round(position).toString()
 					: 'Time Spent : N/A';
-			this._shadow.querySelector('style').textContent = this.generateStyle();
+			//this._shadow.querySelector('style').textContent = this.generateStyle();
 		}
 	};
 	generateStyle() {
