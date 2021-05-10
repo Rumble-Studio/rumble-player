@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
 	declarations: [AppComponent, PlayerComponent],
@@ -14,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 		BrowserModule,
 		ReactiveFormsModule,
 		FormsModule,
+		MatDialogModule,
 		AppRoutingModule,
 		BrowserAnimationsModule,
 		MatIconModule,

@@ -12,8 +12,8 @@ export interface Song {
 	loaded: boolean;
 	valid: boolean;
 	image?: string | null;
-  author?: string;
-  albumArt?: string;
+	author?: string;
+	albumArt?: string;
 	playlistName?: string;
 	position?: number | null; // current seeking of position of the howl
 	onload?: (song: Song) => void;
@@ -77,18 +77,18 @@ export class PlayerService {
 	loop = false;
 	// Wether or not to shuffle the playlist
 	_shuffle = false;
+	get shuffle() {
+		return this._shuffle;
+	}
 	set shuffle(value: boolean) {
-	  if(!this.playlist || this.playlist.length===0) return
+		if (!this.playlist || this.playlist.length === 0) return;
 		this._shuffle = value;
 		if (!value) {
-			this._shuffledPlaylist = Object.assign([],this._playlist)
+			this._shuffledPlaylist = Object.assign([], this._playlist);
 		} else {
 			this.shufflePlaylist();
 		}
 		this.emit(playerServiceEventType.newPlaylist);
-	}
-	get shuffle() {
-		return this._shuffle;
 	}
 
 	// Wether or not to shuffle the playlist
@@ -129,6 +129,7 @@ export class PlayerService {
 	}
 	set volume(level: number) {
 		if (level <= 1 && level >= 0) {
+			this._volume = level;
 			if (this._isPlaying) {
 				this._playlist[this.index].howl.volume(level);
 			}
@@ -207,7 +208,7 @@ export class PlayerService {
 
 	constructor() {
 		this._playlist = [];
-		this._shuffledPlaylist = []
+		this._shuffledPlaylist = [];
 		this._index = -1;
 		this._position = 0;
 		this._percentage = 0;
@@ -323,7 +324,7 @@ export class PlayerService {
 			},
 		});
 		song.howl = howl;
-		return song
+		return song;
 	}
 
 	preloadPlaylist() {
@@ -382,9 +383,9 @@ export class PlayerService {
 			return;
 		}
 		console.log(song);
-    this.isPlaying=true
+		this.isPlaying = true;
 
-    // Check if howl is already playing
+		// Check if howl is already playing
 		if (song.valid) {
 			if (song.howl.playing()) {
 				return Promise.resolve(indexToPlay);
@@ -395,12 +396,11 @@ export class PlayerService {
 		}
 	}
 	public playWithOptions(options) {
-		if (options.index !== undefined ){
-      this.play(options.index);
-    } else {
-		  this.play()
-    }
-
+		if (options.index !== undefined) {
+			this.play(options.index);
+		} else {
+			this.play();
+		}
 	}
 
 	public pause(options?: { index?: number; pauseOthers?: boolean }) {
@@ -447,7 +447,7 @@ export class PlayerService {
 			const song = this.playlist[index];
 			if (song.howl && song.valid) {
 				song.howl.stop();
-				this.isPlaying=false
+				this.isPlaying = false;
 				this.emit(playerServiceEventType.stop);
 			}
 		} else {
@@ -455,8 +455,8 @@ export class PlayerService {
 			this.playlist.forEach((song: Song) => {
 				if (song.howl && song.valid) {
 					song.howl.stop();
-          this.isPlaying=false
-          this.emit(playerServiceEventType.stop);
+					this.isPlaying = false;
+					this.emit(playerServiceEventType.stop);
 				}
 			});
 		}
@@ -468,7 +468,7 @@ export class PlayerService {
 			return;
 		}
 
-    // remember value before stopping
+		// remember value before stopping
 		const isPlaying = this._isPlaying;
 		this.stop();
 		// if no other song is valid we stop
@@ -477,22 +477,20 @@ export class PlayerService {
 			return;
 		}
 
-
-    if (this.index + 1 >= this.playlist.length) {
+		if (this.index + 1 >= this.playlist.length) {
 			this.index = 0;
 		} else {
 			this.index += 1;
 		}
 
-
-    // re-use value from before stop
+		// re-use value from before stop
 		if (!this.playlist[this.index].valid) {
 			this.next();
 			return;
 		}
-    if (isPlaying) {
-		  console.log('will play')
-      this.emit(playerServiceEventType.play)
+		if (isPlaying) {
+			console.log('will play');
+			this.emit(playerServiceEventType.play);
 			this.play();
 		}
 		const length = this.playlist.length;
@@ -685,12 +683,12 @@ export class PlayerService {
 				howl: null,
 				id: uuidv4(),
 				image: object.image,
-        playlistName: object.playlistName,
-        author: object.author,
-        albumArt: object.albumArt
+				playlistName: object.playlistName,
+				author: object.author,
+				albumArt: object.albumArt,
 			} as Song;
 		});
-		console.log('PLAYLIST READY', this.playlist.length)
+		console.log('PLAYLIST READY', this.playlist.length);
 	}
 	private generateSongFromUrl(url: string, index: number) {
 		return {
@@ -708,11 +706,14 @@ export class PlayerService {
 				const parser = new DOMParser();
 				const dom = parser.parseFromString(r, 'application/xml');
 				const songList = [] as any[];
-				const channel = dom.documentElement.getElementsByTagName('channel').item(0)
-				const playlistName = channel.querySelector('title').textContent
-				const author = channel.getElementsByTagName('itunes:author').item(0).textContent
+				const channel = dom.documentElement
+					.getElementsByTagName('channel')
+					.item(0);
+				const playlistName = channel.querySelector('title').textContent;
+				const author = channel.getElementsByTagName('itunes:author').item(0)
+					.textContent;
 				//const albumArt = channel.querySelector('image').querySelector('url').textContent
-				let albumArt = this.extractImage(channel)
+				let albumArt = this.extractImage(channel);
 				dom.documentElement
 					.querySelectorAll('item')
 					.forEach((value, key) => {
@@ -724,11 +725,18 @@ export class PlayerService {
 						// 	.getElementsByTagName('itunes:image')
 						// 	.item(0)
 						// 	.getAttribute('href');
-            let image = this.extractImage(value)
-            if (image === null && albumArt) image=albumArt
-            if (albumArt===null && image) albumArt = image
+						let image = this.extractImage(value);
+						if (image === null && albumArt) image = albumArt;
+						if (albumArt === null && image) albumArt = image;
 
-						const song = { title, file, image, playlistName, author, albumArt };
+						const song = {
+							title,
+							file,
+							image,
+							playlistName,
+							author,
+							albumArt,
+						};
 						songList.push(song);
 					});
 				this.setPlaylistFromObject(songList);
@@ -738,37 +746,33 @@ export class PlayerService {
 			});
 	}
 
-	private extractImage(elt: Element){
-	  try {
-      const simpleImage = elt.querySelector('image')
+	private extractImage(elt: Element) {
+		try {
+			const simpleImage = elt.querySelector('image');
 
-      if (simpleImage ){
-        const url = simpleImage.querySelector('url')
-        if (url) {
-          return url.textContent
-        }
-
-      }
-    }
-    catch (e) {
-      console.warn(e)
-    }
-    try{
-      const itunesImage = elt.getElementsByTagName('itunes:image')
-      if (itunesImage){
-        const img = itunesImage.item(0)
-        if (img){
-          const url = img.getAttribute('href')
-          return url
-        }
-      }
-
-    }
-    catch (e) {
-      console.warn(e)
-    }
-    return null
-  }
+			if (simpleImage) {
+				const url = simpleImage.querySelector('url');
+				if (url) {
+					return url.textContent;
+				}
+			}
+		} catch (e) {
+			console.warn(e);
+		}
+		try {
+			const itunesImage = elt.getElementsByTagName('itunes:image');
+			if (itunesImage) {
+				const img = itunesImage.item(0);
+				if (img) {
+					const url = img.getAttribute('href');
+					return url;
+				}
+			}
+		} catch (e) {
+			console.warn(e);
+		}
+		return null;
+	}
 
 	async download(index?: number) {
 		const indexToDowload = index || this.index;
@@ -795,7 +799,7 @@ export class PlayerService {
 			array[randomIndex] = temporaryValue;
 		}
 		this._shuffledPlaylist = array;
-		console.log('shuffling', this._shuffledPlaylist.slice(0, 10));
+		// console.log('shuffling', this._shuffledPlaylist.slice(0, 10));
 		// return newArray;
 	}
 
