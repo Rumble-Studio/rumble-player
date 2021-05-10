@@ -33,6 +33,16 @@ A highly customizable audio player, exposing a powerfull for more control and fl
 -  6 Default layout
 -  Comprehensive API Through the player service
 
+
+## Live Demo 
+We made this podcast loader demo to showcase the power of rumble player, just pass it the RSS Feed URL of a podcast, and it will
+load the whole including episodes image
+
+
+![](rp.gif)
+
+[Click here to preview the demo](#https://rpdemo-1.web.app)
+
 # Documentation
 
 ###Quick-Start
@@ -178,23 +188,26 @@ const onPause = (event: playerServiceEvent) => {
 	const { percentage, index } = event.state;
 	// Do something
 };
+
+// In order to subscribe to event we will use a PlayerHTML instance
+const playerHTML = new playerHTML()
+playerHTML.setPlayerService(player)
+
 // Add event listener to call each time event occurs
-player.onEvent('play', onPlay);
+playerHTML.addEventListener('play', onPlay);
 
-// Add event listener to call first time event occurs
-player.onceEvent('pause', onPause);
 
-// Remove event listener
-player.removeEvent('play', onPlay);
-
-// Remove all play listeners
-player.flushListeners('play');
-
-// Remove all event listeners
-player.flushListeners();
 ```
 
+
+
 ### Complete API
+
+The Lib exposes two classes : PlayerHTNL and PlayerService.
+as showed above.
+Use the PlayerService in order to load audios and control it. If you also need to subscribe to the player events,
+then you should also use PlayerHTML since it let's you subscribe to the player events using normal dom listeners.
+All you have to do is use our predefined events name. you will find below a complete list of those events.
 
 #### Properties
 
@@ -217,12 +230,13 @@ player.flushListeners();
 complete list of events :
 
 -  `play`
--  ` pause`
+-  `pause`
 -  `stop`
 -  `next`
 -  `prev`
 -  `end`
 -  `newPlaylist`
+-  `newPosition`
 -  `loaderror`
 -  `playerror`
 
@@ -244,10 +258,6 @@ complete list of events :
 -  **`next()`**: play next song in the playlist , if last song it will loop and play first one
 -  **`prev()`**: play previous song in the playlist if actual song has not played more than 2 seconds, otherwise will rewind to the beginning of actual playing song. if last song it will loop backward and play first one
 -  **`stop([index]: number)`**: stop the song at index, otherwise will stop the actual playing
--  **`onEvent(name: string, callback :(state: playerServiceEvent) => void)`**: callback to call each time name event occurs
--  **`onceEvent(name: string, callback :(state: playerServiceEvent) => void)`**: callback to call first time name event occurs
--  **`removeEvent(name?: string, callback :(state: playerServiceEvent) => void)`**: callback to remove from name event listeners
--  **`flushListeners(name?:string)`**: remove all event listeners callback
 
 -  **`seekPerPercentage(percentage: number, [index: number])`**: seek the song at index in the playlist to percentage, by default will seek the actual playing song
 -  **`seekPerPosition(position: number, [index: number])`**: seek the song at index in the playlist to position, by default will seek the actual playing song

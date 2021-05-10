@@ -1,6 +1,8 @@
 .playlist-container{
   width: 100%;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
 }
 .playlist-header{
   width: 100%;
