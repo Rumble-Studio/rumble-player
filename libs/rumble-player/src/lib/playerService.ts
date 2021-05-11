@@ -87,6 +87,13 @@ export class PlayerService {
 			this._shuffledPlaylist = Object.assign([], this._playlist);
 		} else {
 			this.shufflePlaylist();
+			while (
+				this._shuffledPlaylist.every(
+					(value1, index1) => this._playlist[index1] === value1
+				)
+			) {
+				this.shufflePlaylist();
+			}
 		}
 		this.emit(playerServiceEventType.newPlaylist);
 	}
