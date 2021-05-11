@@ -1,4 +1,3 @@
-export * from './lib/rp';
 export * from './lib/PlayerService';
 export * from './lib/GenericVisual';
 export * from './lib/PlayerHTML';
