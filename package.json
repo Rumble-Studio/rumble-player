@@ -44,7 +44,7 @@
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "nx test rp; nx test demo-angular; nx test demo-react && pretty-quick --staged --detectOpenHandles"
+			"pre-commit": "nx test rumble-player; nx test demo-angular; nx test demo-react && pretty-quick --staged --detectOpenHandles"
 		}
 	},
 	"private": true,
