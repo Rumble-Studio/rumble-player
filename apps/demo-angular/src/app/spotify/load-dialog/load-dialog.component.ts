@@ -1,23 +1,19 @@
-import { Component, Inject} from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-class DialogData {
-}
+class DialogData {}
 
 @Component({
-  selector: 'rumble-player-load-dialog',
-  templateUrl: './load-dialog.component.html',
-  styleUrls: ['./load-dialog.component.scss']
+	selector: 'rumble-player-load-dialog',
+	templateUrl: './load-dialog.component.html',
+	styleUrls: ['./load-dialog.component.scss'],
 })
-export class LoadDialogComponent  {
-  link = '';
+export class LoadDialogComponent {
+	link = '';
 
-  constructor(
-    public dialogRef: MatDialogRef<LoadDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+	constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) {}
 
-
-  onChange($event) {
-    this.link = $event.target.value
-  }
+	onChange($event) {
+		this.link = $event.target.value;
+	}
 }

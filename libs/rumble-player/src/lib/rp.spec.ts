@@ -58,51 +58,6 @@ describe('Player Service', () => {
 		expect(service).toBeDefined();
 	});
 
-	it('should load a single song from url', () => {
-		const service = new PlayerService();
-		expect(service.playlist.length).toEqual(0);
-		service.setPlaylistFromUrls([songURL]);
-		expect(service.playlist.length).toEqual(1);
-	});
-
-	it('should add song from ', () => {
-		const service = new PlayerService();
-		expect(service.playlist.length).toEqual(0);
-		service.setPlaylistFromUrls([songURL]);
-		expect(service.playlist.length).toEqual(1);
-		service.addSong(songURL);
-		expect(service.playlist.length).toEqual(2);
-	});
-
-	it('should load multiple songs from urls', () => {
-		const service = new PlayerService();
-		expect(service.playlist.length).toEqual(0);
-		service.setPlaylistFromUrls([songURL, songURL]);
-		expect(service.playlist.length).toEqual(2);
-	});
-
-	it('should  single song from object', () => {
-		const service = new PlayerService();
-		expect(service.playlist.length).toEqual(0);
-		const song = {
-			file: songURL,
-			image: '',
-		};
-		service.setPlaylistFromObject([song]);
-		expect(service.playlist.length).toEqual(1);
-	});
-
-	it('should multiple songs from objects', () => {
-		const service = new PlayerService();
-		expect(service.playlist.length).toEqual(0);
-		const song = {
-			file: songURL,
-			image: '',
-		};
-		service.setPlaylistFromObject([song, song, song]);
-		expect(service.playlist.length).toEqual(3);
-	});
-
 	it('should play', () => {
 		const service = new PlayerService();
 		service.setPlaylistFromUrls([songURL, songURL]);
@@ -179,7 +134,56 @@ describe('Player Service', () => {
 		service.prev();
 		expect(service.index).not.toEqual(index);
 	});
+});
 
+describe('Playlist loading', () => {
+	it('should load a single song from url', () => {
+		const service = new PlayerService();
+		expect(service.playlist.length).toEqual(0);
+		service.setPlaylistFromUrls([songURL]);
+		expect(service.playlist.length).toEqual(1);
+	});
+
+	it('should add song from ', () => {
+		const service = new PlayerService();
+		expect(service.playlist.length).toEqual(0);
+		service.setPlaylistFromUrls([songURL]);
+		expect(service.playlist.length).toEqual(1);
+		service.addSong(songURL);
+		expect(service.playlist.length).toEqual(2);
+	});
+
+	it('should load multiple songs from urls', () => {
+		const service = new PlayerService();
+		expect(service.playlist.length).toEqual(0);
+		service.setPlaylistFromUrls([songURL, songURL]);
+		expect(service.playlist.length).toEqual(2);
+	});
+
+	it('should  single song from object', () => {
+		const service = new PlayerService();
+		expect(service.playlist.length).toEqual(0);
+		const song = {
+			file: songURL,
+			image: '',
+		};
+		service.setPlaylistFromObject([song]);
+		expect(service.playlist.length).toEqual(1);
+	});
+
+	it('should multiple songs from objects', () => {
+		const service = new PlayerService();
+		expect(service.playlist.length).toEqual(0);
+		const song = {
+			file: songURL,
+			image: '',
+		};
+		service.setPlaylistFromObject([song, song, song]);
+		expect(service.playlist.length).toEqual(3);
+	});
+});
+
+describe('Player properties', () => {
 	it('should shuffle', () => {
 		const service = new PlayerService();
 		service.setPlaylistFromUrls([songURL, songURL, songURL, songURL]);
@@ -213,17 +217,47 @@ describe('Player Service', () => {
 		service.rate = 5;
 		expect(service.rate).toEqual(0.5);
 	});
-
-	it('should work', () => {
-		const service = new PlayerService();
-		expect(service).toBeDefined();
-	});
 });
 
-// it('should load songs from RSS FEED', () => {
-//
-//   const service = new PlayerService()
-//   expect(service.playlist.length).toEqual(0)
-//   service.setPLaylistFromRSSFeedURL(rssURL)
-//   console.log(service.playlist.length)
-// });
+describe('Seeking behaviors', () => {
+	it('should change the position when seeking', async () => {
+		const service = new PlayerService();
+		service.setPlaylistFromUrls([songURL, songURL]);
+		validate(service);
+		expect(service.isPlaying).toEqual(false);
+		play(service);
+		expect(service.isPlaying).toEqual(true);
+
+		PlayerService.prototype.seekPerPosition = (position) => {
+			service.position = position;
+		};
+
+		service.pause();
+		const timeToSeek = 40;
+		service.seekPerPosition(timeToSeek);
+		expect(service.position).toEqual(timeToSeek);
+	});
+
+	it('should not change the playing status when seeking', async () => {
+		const service = new PlayerService();
+		service.setPlaylistFromUrls([songURL, songURL]);
+		validate(service);
+		expect(service.isPlaying).toEqual(false);
+		play(service);
+		expect(service.isPlaying).toEqual(true);
+
+		PlayerService.prototype.seekPerPosition = (position) => {
+			service.position = position;
+		};
+
+		// seek while playing
+		service.seekPerPosition(6);
+		expect(service.isPlaying).toEqual(true);
+
+		// seek while in pause
+		pause(service);
+		expect(service.isPlaying).toEqual(false);
+		service.seekPerPosition(30);
+		expect(service.isPlaying).toEqual(false);
+	});
+});

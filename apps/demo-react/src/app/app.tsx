@@ -1,8 +1,9 @@
 import * as React from 'react';
 import {
-	RumblePlayerService,
-	HTMLRumblePlayer,
+	PlayerService,
+	PlayerHTML,
 	GenericVisual,
+	RumbleConfigs,
 } from '@rumble-player/player';
 
 interface IProps {
@@ -12,7 +13,7 @@ interface IProps {
 interface IState {
 	isPlaying?: boolean;
 	index?: number;
-	player?: RumblePlayerService;
+	player?: PlayerService;
 	position?: number;
 	visualChildren?: GenericVisual[];
 }
@@ -56,21 +57,18 @@ export default class Player extends React.Component<IProps, IState> {
 			player: this.player,
 		};
 	}
-	private containerRef = React.createRef<HTMLRumblePlayer>();
-	private player = new RumblePlayerService();
-	private playerHTML = new HTMLRumblePlayer();
+	private containerRef = React.createRef<PlayerHTML>();
+	private player = new PlayerService();
+	private playerHTML = new PlayerHTML();
 
 	componentDidMount() {
-		this.playerHTML = new HTMLRumblePlayer();
-		this.player = new RumblePlayerService();
-		this.playerHTML.setPlayer(this.player);
-		this.playerHTML.loadConfig('config6');
-		(this.containerRef.current as HTMLRumblePlayer).replaceWith(
-			this.playerHTML
-		);
-		this.player.setPLaylistFromRSSFeedURL(
-			'https://feeds.buzzsprout.com/159584.rss'
-		);
+		this.playerHTML = new PlayerHTML();
+		this.player = new PlayerService();
+		this.playerHTML.setPlayerService(this.player);
+		// this.playerHTML.loadConfig('config6');
+		(this.containerRef.current as PlayerHTML).replaceWith(this.playerHTML);
+
+		RumbleConfigs.defaultConfig(this.player, this.playerHTML);
 
 		this.interval = setInterval(this.updateStyle, 10);
 	}
@@ -120,7 +118,7 @@ export default class Player extends React.Component<IProps, IState> {
 				<br />
 				<hr />
 				<rumble-player
-					ref={this.containerRef as React.RefObject<HTMLRumblePlayer>}
+					ref={this.containerRef as React.RefObject<PlayerHTML>}
 				/>
 				<hr />
 				{player ? (

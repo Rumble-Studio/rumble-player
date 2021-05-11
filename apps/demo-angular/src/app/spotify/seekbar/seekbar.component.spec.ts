@@ -11,8 +11,6 @@ describe('SeekbarComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			declarations: [SeekbarComponent],
-			imports: [RouterTestingModule],
-			schemas: [CUSTOM_ELEMENTS_SCHEMA],
 		}).compileComponents();
 	});
 

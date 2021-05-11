@@ -4,13 +4,13 @@ import { v4 as uuidv4 } from 'uuid';
 export const UPDATE_DELAY = 100;
 
 export interface Song {
-	id: string; // unique id to identify the song even when we add new song to the playlist
-	title: string;
-	file: string;
-	howl: Howl | null;
-	duration: number | null;
-	loaded: boolean;
-	valid: boolean;
+	id?: string; // unique id to identify the song even when we add new song to the playlist
+	title?: string;
+	file?: string;
+	howl?: Howl | null;
+	duration?: number | null;
+	loaded?: boolean;
+	valid?: boolean;
 	image?: string | null;
 	author?: string;
 	albumArt?: string;

@@ -33,11 +33,10 @@ A highly customizable audio player, exposing a powerfull for more control and fl
 -  6 Default layout
 -  Comprehensive API Through the player service
 
+## Live Demo
 
-## Live Demo 
 We made this podcast loader demo to showcase the power of rumble player, just pass it the RSS Feed URL of a podcast, and it will
 load the whole including episodes image
-
 
 ![](rp.gif)
 
@@ -190,16 +189,12 @@ const onPause = (event: playerServiceEvent) => {
 };
 
 // In order to subscribe to event we will use a PlayerHTML instance
-const playerHTML = new playerHTML()
-playerHTML.setPlayerService(player)
+const playerHTML = new playerHTML();
+playerHTML.setPlayerService(player);
 
 // Add event listener to call each time event occurs
 playerHTML.addEventListener('play', onPlay);
-
-
 ```
-
-
 
 ### Complete API
 
@@ -568,3 +563,6 @@ Template parse errors:
 2. If 'rumble-player-player' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<rumble-player-player></rumble-player-player>
 
 https://stackoverflow.com/questions/39428132/custom-elements-schema-added-to-ngmodule-schemas-still-showing-error
+
+if test fail to run don't showing circular JSON error message :
+https://stackoverflow.com/questions/63895685/unhandledpromiserejectionwarning-typeerror-converting-circular-structure-to-js

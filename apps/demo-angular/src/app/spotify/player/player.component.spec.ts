@@ -11,8 +11,6 @@ describe('PlayerComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			declarations: [PlayerComponent],
-			imports: [RouterTestingModule],
-			schemas: [CUSTOM_ELEMENTS_SCHEMA],
 		}).compileComponents();
 	});
 

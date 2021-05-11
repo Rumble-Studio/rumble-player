@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { PlayerBridgeService } from '../player-bridge.service';
 import { Song } from '@rumble-player/player';
+import { Howl } from 'howler';
 
 @Component({
 	selector: 'rumble-player-playlist-item',
@@ -16,8 +17,22 @@ import { Song } from '@rumble-player/player';
 })
 export class PlaylistItemComponent implements AfterViewInit {
 	@ViewChild('container') container: ElementRef<HTMLDivElement> | undefined;
+
 	@Input() index: number;
-	@Input() song: Song;
+	@Input() song: Song = {
+		title: '',
+		file: '',
+		id: '',
+		valid: false,
+		loaded: false,
+		duration: 0,
+		howl: null,
+		image: '',
+		author: '',
+		albumArt: '',
+		playlistName: '',
+		position: null,
+	};
 	@Input() header: boolean;
 	constructor(public bridge: PlayerBridgeService) {}
 

@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { ControlComponent } from './control.component';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { MatIconModule } from '@angular/material/icon';
 
 describe('ControlComponent', () => {
 	let component: ControlComponent;
@@ -11,8 +11,7 @@ describe('ControlComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			declarations: [ControlComponent],
-			imports: [RouterTestingModule],
-			schemas: [CUSTOM_ELEMENTS_SCHEMA],
+			imports: [MatIconTestingModule, MatIconModule],
 		}).compileComponents();
 	});
 

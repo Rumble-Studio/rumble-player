@@ -3,6 +3,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { PlaylistComponent } from './playlist.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { PlaylistItemComponent } from '../playlist-item/playlist-item.component';
 
 describe('PlaylistComponent', () => {
 	let component: PlaylistComponent;
@@ -10,9 +13,8 @@ describe('PlaylistComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [PlaylistComponent],
-			imports: [RouterTestingModule],
-			schemas: [CUSTOM_ELEMENTS_SCHEMA],
+			declarations: [PlaylistComponent, PlaylistItemComponent],
+			imports: [MatIconModule, MatIconTestingModule],
 		}).compileComponents();
 	});
 

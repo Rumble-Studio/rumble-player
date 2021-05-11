@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 import { ControlMenuComponent } from './control-menu.component';
+import { MatIconModule } from '@angular/material/icon';
 
 describe('ControlMenuComponent', () => {
 	let component: ControlMenuComponent;
@@ -11,8 +11,7 @@ describe('ControlMenuComponent', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			declarations: [ControlMenuComponent],
-			imports: [RouterTestingModule],
-			schemas: [CUSTOM_ELEMENTS_SCHEMA],
+			imports: [MatIconTestingModule, MatIconModule],
 		}).compileComponents();
 	});
 
