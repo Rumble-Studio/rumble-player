@@ -9,7 +9,7 @@ jobs:
          - name: Install deps
            uses: actions/checkout@v2
          - run: npm install --legacy-peer-deps
-         - run: npm test
+         - run: nx test rumble-player
          - name: Create pull request
            uses: peter-evans/create-pull-request@v3
            with:
