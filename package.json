@@ -21,7 +21,7 @@
 		"start": "ng serve",
 		"build": "ng build",
 		"test": "ng test rumble-player --detectOpenHandles",
-		"test:all": "nx test rumble-player  && nx test demo-angular",
+		"test:all": "nx test rumble-player",
 		"lint": "nx workspace-lint && ng lint",
 		"e2e": "ng e2e",
 		"affected:apps": "nx affected:apps",
