@@ -553,6 +553,24 @@ interface playerServiceEvent {
 	state: playerState;
 }
 ```
+### Testing
+
+When testing  you will have to be very careful  whether you want to import the library from local monorepo or from the
+published npm version. in tsconfig.base.json, compilerOptions.path you will find two values :
+
+`"@rumble-player/rp": ["libs/rumble-player/src/index.ts"],
+"@rumble-player/player": ["node_modules/@rumble-player/player/src/index.ts"]`
+
+the first one refers to the local lib and the latter to the one installed through npm
+
+so let's say you want to import playerService, it would be :
+
+````typescript
+import { PlayerService } from '@rumble-player/rp'; // to import from local
+import { PlayerService } from '@rumble-player/player'; // import from npm package
+````
+
+This is very important detail as github actions might not be able to recognize the local imports
 
 ### Known issues
 

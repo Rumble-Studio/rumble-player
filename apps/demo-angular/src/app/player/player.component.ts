@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import {
-	RumbleConfigs,
-	PlayerHTML,
-	PlayerService,
+  RumbleConfigs,
+  PlayerHTML, PlayerService
+  //PlayerService,
 } from '@rumble-player/player';
 
 import { fakePlaylist } from '../../config/dummyAudioData.config';
