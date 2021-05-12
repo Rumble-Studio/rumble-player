@@ -20,7 +20,7 @@
 		"nx": "nx",
 		"start": "ng serve",
 		"build": "ng build",
-		"test": "ng test rumble-player && ng test demo-angular --detectOpenHandles",
+		"test": "ng test rumble-player && ng test demo-angular && ng test demo-react --detectOpenHandles",
 		"test:all": "nx test rumble-player",
 		"lint": "nx workspace-lint && ng lint",
 		"e2e": "ng e2e",
