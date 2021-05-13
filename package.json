@@ -20,7 +20,7 @@
 		"nx": "nx",
 		"start": "ng serve",
 		"build": "ng build",
-		"test": "ng test service && ng test dom && ng test rumble-player && ng test demo-angular && ng test demo-react ",
+		"test": "nx test service; nx test dom; nx test rumble-player; nx test demo-angular; nx test demo-react",
 		"test:all": "nx test rumble-player",
 		"lint": "nx workspace-lint && ng lint",
 		"e2e": "ng e2e",
