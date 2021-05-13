@@ -28,6 +28,8 @@
 		},
 		"demo-react": { "tags": [] },
 		"demo-react-e2e": { "tags": [], "implicitDependencies": ["demo-react"] },
-		"rumble-player": { "tags": [] }
+		"rumble-player": { "tags": [] },
+		"dom": { "tags": [] },
+		"service": { "tags": [] }
 	}
 }

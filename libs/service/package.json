@@ -1,0 +1,17 @@
+{
+	"name": "@rumble-player/service",
+	"version": "0.0.1",
+  "description": "Highly customizable open source audio player created at Rumble Studio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rumble-Studio/rumble-player.git"
+  },
+  "keywords": [
+    "audio",
+    "podcast",
+    "player",
+    "rumble studio"
+  ],
+  "author": "Rumble Studio TEAM",
+  "license": "MIT"
+}

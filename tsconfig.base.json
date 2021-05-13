@@ -15,8 +15,18 @@
 		"skipDefaultLibCheck": true,
 		"baseUrl": ".",
 		"paths": {
-			"@rumble-player/rp": ["libs/rumble-player/src/index.ts"],
-			"@rumble-player/player": ["node_modules/@rumble-player/player/src/index.ts"]
+			"@rp/player": ["libs/rumble-player/src/index.ts"],
+			"@rp/service": ["libs/service/src/index.ts"],
+			"@rp/dom": ["libs/dom/src/index.ts"],
+			"@rumble-player/player": [
+				"node_modules/@rumble-player/player/src/index.ts"
+			],
+			"@rumble-player/dom": [
+        "node_modules/@rumble-player/dom/src/index.ts"
+      ],
+			"@rumble-player/service": [
+        "node_modules/@rumble-player/service/src/index.ts"
+      ]
 		}
 	},
 	"exclude": ["node_modules", "tmp"]

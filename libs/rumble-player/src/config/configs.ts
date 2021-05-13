@@ -9,7 +9,6 @@ import { SimpleBackwardButton } from '../lib/visuals/buttons/simpleBackwardButto
 import { SimpleForwardButton } from '../lib/visuals/buttons/simpleForwardButton';
 import { LinearBar } from '../lib/visuals/linear/LinearBar';
 import { SimpleImage } from '../lib/visuals/SimpleImage';
-import { MultiLinearBar } from '../lib/visuals/linear/MultiLinearBar';
 import { SimpleMultiLinearBar } from '../lib/visuals/linear/SimpleMultiLinearBar';
 
 export function defaultConfig(

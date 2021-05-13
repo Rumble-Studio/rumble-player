@@ -55,7 +55,10 @@
 							"apps/demo-angular/src/favicon.ico",
 							"apps/demo-angular/src/assets"
 						],
-						"styles": ["./node_modules/@angular/material/prebuilt-themes/indigo-pink.css", "apps/demo-angular/src/styles.scss"],
+						"styles": [
+							"./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+							"apps/demo-angular/src/styles.scss"
+						],
 						"scripts": []
 					},
 					"configurations": {
@@ -278,6 +281,70 @@
 						"packageJson": "libs/rumble-player/package.json",
 						"main": "libs/rumble-player/src/index.ts",
 						"assets": ["libs/rumble-player/*.md"]
+					}
+				}
+			}
+		},
+		"dom": {
+			"root": "libs/dom",
+			"sourceRoot": "libs/dom/src",
+			"projectType": "library",
+			"architect": {
+				"lint": {
+					"builder": "@nrwl/linter:eslint",
+					"options": {
+						"lintFilePatterns": ["libs/dom/**/*.ts"]
+					}
+				},
+				"test": {
+					"builder": "@nrwl/jest:jest",
+					"outputs": ["coverage/libs/dom"],
+					"options": {
+						"jestConfig": "libs/dom/jest.config.js",
+						"passWithNoTests": true
+					}
+				},
+				"build": {
+					"builder": "@nrwl/node:package",
+					"outputs": ["{options.outputPath}"],
+					"options": {
+						"outputPath": "dist/libs/dom",
+						"tsConfig": "libs/dom/tsconfig.lib.json",
+						"packageJson": "libs/dom/package.json",
+						"main": "libs/dom/src/index.ts",
+						"assets": ["libs/dom/*.md"]
+					}
+				}
+			}
+		},
+		"service": {
+			"root": "libs/service",
+			"sourceRoot": "libs/service/src",
+			"projectType": "library",
+			"architect": {
+				"lint": {
+					"builder": "@nrwl/linter:eslint",
+					"options": {
+						"lintFilePatterns": ["libs/service/**/*.ts"]
+					}
+				},
+				"test": {
+					"builder": "@nrwl/jest:jest",
+					"outputs": ["coverage/libs/service"],
+					"options": {
+						"jestConfig": "libs/service/jest.config.js",
+						"passWithNoTests": true
+					}
+				},
+				"build": {
+					"builder": "@nrwl/node:package",
+					"outputs": ["{options.outputPath}"],
+					"options": {
+						"outputPath": "dist/libs/service",
+						"tsConfig": "libs/service/tsconfig.lib.json",
+						"packageJson": "libs/service/package.json",
+						"main": "libs/service/src/index.ts",
+						"assets": ["libs/service/*.md"]
 					}
 				}
 			}
