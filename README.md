@@ -1,4 +1,4 @@
-# RumblePlayer by [Rumble Studio](#https://rumble.studio)
+# RumblePlayer by [Rumble Studio](https://rumble.studio)
 
 ## Player As a Service
 
@@ -43,7 +43,7 @@ load the whole including episodes image
 
 ![](rp.gif)
 
-[Click here to preview the demo](#https://rpdemo-1.web.app)
+[Click here to preview the demo](https://rpdemo-1.web.app)
 
 # Documentation
 
