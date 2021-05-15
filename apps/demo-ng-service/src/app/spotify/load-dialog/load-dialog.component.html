@@ -1,0 +1,10 @@
+<div mat-dialog-content>
+  <p>Load new Playlist from RSS FEED URL</p>
+  <mat-form-field>
+    <mat-label>RSS FEED link</mat-label>
+    <input matInput (change)='onChange($event)'>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="link" >Load</button>
+</div>

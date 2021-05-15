@@ -6,5 +6,6 @@ module.exports = {
 		'<rootDir>/libs/dom',
 		'<rootDir>/libs/configs',
 		'<rootDir>/libs/service',
+		'<rootDir>/apps/demo-ng-service',
 	],
 };

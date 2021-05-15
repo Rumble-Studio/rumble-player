@@ -1,0 +1,61 @@
+.playlist-container{
+  width: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+}
+.playlist-header{
+  width: 100%;
+  display: flex;
+  height: 250px;
+  padding-left: 30px;
+}
+.art{
+  max-height: 250px;
+  max-width: 2500px;
+  margin : 10px;
+  cursor: pointer;
+}
+.album-details{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: white;
+  padding-left: 30px;
+}
+
+.playlist-body{
+  padding-left: 30px;
+  padding-top: 20px;
+  width: 100%;
+  height: 600px;
+}
+
+.playlist-container-1{
+  cursor: pointer;
+  padding: 30px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.art-1{
+  max-height: 500px;
+  max-width: 500px;
+  margin : 10px
+}
+.album-details-2 {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-color: transparent;
+  color: white;
+  height: 100px;
+  width: 200px;
+  right: 50px;
+  top: 100px;
+  padding-left: 30px;
+}

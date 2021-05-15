@@ -25,47 +25,43 @@ A highly customizable audio player, exposing a powerfull for more control and fl
 -  Seamless integration in Vanilla JS and React/Angular or any other NodeJS framework
 -  Single audio file or playlist
 -  Accept all audio codecs / formats
--  Support Album Art Picture
--  Playlist from podcast formatted RSS Feed
+-  Built in playlist support
+-  Load Playlist from podcast formatted RSS Feed
+-  Load Playlist from an array of MP3 files URI
+-  Load Playlist with Album Picture and Artist/Album name
 -  Auto Caching : Song are Loaded and Cached automatically
 -  A Service for Managing player Across all application
 -  Comprehensive API Through the player service
--  6 Default layout
--  Comprehensive API Through the player service
+-  Subscribe to Player events
+-  Optional default HTML implementation
+
 
 ## Live Demo
-
 We made this podcast loader demo to showcase the power of rumble player, just pass it the RSS Feed URL of a podcast, and it will
 load the whole including episodes image
+
 
 ![](rp.gif)
 
 [Click here to preview the demo](#https://rpdemo-1.web.app)
 
-# Documentation
+# Examples Usage
+Several ways to get started depending on your needs:
 
-###Quick-Start
 
-Several options to get up and running:
-
--  Clone the repo: `git clone https://github.com/Rumble-Studio/rumble-player.git`
--  Install with [npm](https://www.npmjs.com/package/howler): `npm install @rumble-player/player`
--  Install with [Yarn](https://yarnpkg.com/en/package/howler): `yarn add @rumble-player/player`
-
-## Examples Usage
-
-###Most basic example
+## Method 1:
+##### Most basic example using playerService
 
 #### Using Vanilla JS
 
 ```html
 // load the lib
-<script src="https://unpkg.com/@rumble-player/player" />
+<script src="https://unpkg.com/@rumble-player/service" />
 <script>
-	import { RumblePlayerService } from '@rumble-player/player';
+	import { PlayerService } from '@rumble-player/service';
 
 	// create the service
-	let player = new RumblePlayerService();
+	let player = new PlayerService();
 
 	// load a song
 	player.addSong('song file uri');
@@ -77,27 +73,31 @@ Several options to get up and running:
 
 That is it, you can play your audio tracks, subscribe to playing events
 
+### For a JS framework ( React or Angular ):
+-  Install with [npm](https://www.npmjs.com/package/howler): `npm install @rumble-player/service`
+
+
 #### As a dependency using React:
 
 in main.tsx or main.js:
 
 ```javascript
-import '@rumble-player/player';
+import '@rumble-player/service';
 ```
 
 in your component
 
 ```typescript jsx
-import { RumblePlayerService } from '@rumble-player/player';
+import { PlayerService } from '@rumble-player/service';
 import { useEffect } from 'react';
 
 // Using Class Component
 class MyComponent extends React.Component {
 	// Player Service
-	private player = new RumblePlayerService();
+	private player = new PlayerService();
 
 	componentDidMount() {
-		this.player = new RumblePlayerService();
+		this.player = new PlayerService();
 		// Load a song
 		this.player.addSong('song file uri');
 		// Load a song
@@ -108,9 +108,9 @@ class MyComponent extends React.Component {
 // Using function component
 
 function MyComponent() {
-	const player = new RumblePlayerService();
+	const player = new PlayerService();
 	useEffect(() => {
-		player = new RumblePlayerService();
+		player = new PlayerService();
 		// Load a song
 		player.addSong('song file uri');
 		// Load a song
@@ -121,21 +121,21 @@ function MyComponent() {
 
 #### As a dependency using Angular:
 
-in main.tsx:
+in main.ts:
 
 ```javascript
-import '@rumble-player/player';
+import '@rumble-player/service';
 ```
 
 in your component class
 
 ```typescript
-import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/player';
+import { PlayerService } from '@rumble-player/service';
 export class PlayerComponent implements AfterViewInit {
-	public player: RumblePlayerService;
+	public player: PlayerService;
 
 	constructor() {
-		this.player = new RumblePlayerService(); // instanciate player service
+		this.player = new PlayerService(); // instanciate player service
 	}
 	ngOnInit() {
 		// Load a song
@@ -157,20 +157,27 @@ this applies to both VanillaJS / Angular / React or any other JS Front Framework
 player.setPlaylistFromUrls(['song 1', 'song 2']);
 // load a playlist from RSS FEED
 player.setPLaylistFromRSSFeedURL('rss feed url');
+
 // load playlist with song urls and image art
+
 const playlist = [
 	{
 		title: 'Track 1',
 		file: 'file 1 url',
-		image: 'image 1 url',
+		image: 'song 1 picture url',
+    albumArt: 'album 1 picture url',
+    playlistNAme: 'album 1 name'
 	},
 	{
 		title: 'Track 2',
 		file: 'file 2 url',
-		image: 'image 2 url',
+    image: 'song 2 picture url',
+    albumArt: 'album 2 picture url',
+    playlistNAme: 'album 2 name'
 	},
 ];
 player.setPlaylistFromObject(playlist);
+
 ```
 
 ##### Subscribe to events
@@ -179,90 +186,102 @@ Find the complete list of events and data passed in the API section below.
 
 ```javascript
 // functions to be called each time an event occurs
-const onPlay = (event: playerServiceEvent) => {
-	const { percentage, index } = event.state;
-	// Do something
-};
-const onPause = (event: playerServiceEvent) => {
-	const { percentage, index } = event.state;
+
+const onEvent = (event: playerServiceEvent) => {
+	// whenver something happens it emit the details below
+	const { percentage, index, playing, position } = event.state;
+	
+	// there 10 type of events, find the complete list in API section
+	const eventType:  playerServiceEventType = event.type
 	// Do something
 };
 
-// In order to subscribe to event we will use a PlayerHTML instance
-const playerHTML = new playerHTML();
-playerHTML.setPlayerService(player);
 
 // Add event listener to call each time event occurs
-playerHTML.addEventListener('play', onPlay);
+// you can add as much as listeners as you need
+const player = new playerService()
+player.addNewOnCallback(onEvent)
+
+
+
 ```
 
-### Complete API
 
-The Lib exposes two classes : PlayerHTNL and PlayerService.
-as showed above.
-Use the PlayerService in order to load audios and control it. If you also need to subscribe to the player events,
-then you should also use PlayerHTML since it let's you subscribe to the player events using normal dom listeners.
-All you have to do is use our predefined events name. you will find below a complete list of those events.
+## Method 2:
+##### Using both playerService and PlayerHTML
 
-#### Properties
+-  Install with [npm](https://www.npmjs.com/package/howler): `npm install @rumble-player/dom`
 
--  `autoPlayNext boolean [true]`
-   if true, automatically play next song in playlist when actual song ends and loop entire playlist
--  `isPlaying : private boolean [false]`
-   true if there is a song playing
--  `autoPlay : boolean [true]`
-   automatically play first song on playlist load
--  `loop : boolean [false]`
-   loop playing song
--  `rate : number 1`
-   Playback speed, value between 0 and 4, 1 being the normal speed
--  `volume : number [1]`
-   playback volume between 0 and 1.
+For this method we will use the @rumble-player/dom library, it brings more compared to the first one when
+it comes to events subscriptions, since here we can subscribe to the player events using the traditional DOM
+eventListeners add and remove methods. Check the code snippets below :
 
--  **`positionUpdateCallbacks: ((position: number) => void)[]`**callback to call each time playing progress, with position in seconds
--  **`percentageUpdateCallbacks: ((percentage: number) => void)[]`**callback to call each time playing progress, with percentage played
+#### Using Vanilla JS
 
-complete list of events :
+```html
+// load the lib
+<script src="https://unpkg.com/@rumble-player/dom" /> 
+```
 
--  `play`
--  `pause`
--  `stop`
--  `next`
--  `prev`
--  `end`
--  `newPlaylist`
--  `newPosition`
--  `loaderror`
--  `playerror`
+#### Using Angular
+in main.ts :
 
-#### Methods
+```javascript
+import '@rumble-player/dom';
+```
 
--  **`volume([level: number])`**: Get/Set volume level with a value between 0 and 1
--  **`index([index: number])`**: Get/set the index of playing head in playlist
--  **`playlist(): <Song>[]`**: Get the playlist
-   Get more details on Song in the Interface section
 
--  **`percentage(): number`**: Get the percentage played of the actual playing song
--  **`position(): number`**: Get the duration played of the actual playing song
--  **`getRank(song: Song): number`**: Get the index in the playlist of the actually playing song
--  **`getSong(index: number, [instanciateHowlIfMissing = true]): Song`**: Get the song at index in the playlist. the instanciateHowlIfMissing parameter forces the loading of the song if not yet
--  **`preloadPlaylist()`**: Forces the player to load every track in the playlist
--  **`addSong(songUrl: string)`**: Add a new song in the playlist
--  **`play([index]: number): Promise<number>`**: play the song at index in the playlist, default plays the first song
--  **`pause([options: { index?: number; pauseOthers?: boolean }])`**: pauses song at index, if pauseOthers will also pause all the song in the playlist. by default it will pause everything
--  **`next()`**: play next song in the playlist , if last song it will loop and play first one
--  **`prev()`**: play previous song in the playlist if actual song has not played more than 2 seconds, otherwise will rewind to the beginning of actual playing song. if last song it will loop backward and play first one
--  **`stop([index]: number)`**: stop the song at index, otherwise will stop the actual playing
+#### Using React
+in main.tsx or main.js:
 
--  **`seekPerPercentage(percentage: number, [index: number])`**: seek the song at index in the playlist to percentage, by default will seek the actual playing song
--  **`seekPerPosition(position: number, [index: number])`**: seek the song at index in the playlist to position, by default will seek the actual playing song
--  **`getSongTimeLeft([index: number])`**: Get The ETA of song at index in the playlist , default will return the ETA of actual playing song
--  **`getSongTotalTime([index: number])`**: Get The total duration of song at index in the playlist , default will return the total duration of actual playing song
--  **`setPlaylistFromUrls(urls: string[])`**: Set new playlist from song urls
--  **`setPlaylistFromObject(data: any[])`**: Set new playlist from song including more details. Each element in data is an object {title: songTitle, image: imageUrl, file: songUrl}
--  **`setPLaylistFromRSSFeedURL(url: string)`**: Set new playlist from podcast formatted RSS FEED
+```javascript
+import '@rumble-player/dom';
+```
 
-## Custom element integration
+
+```javascript
+
+// We also import the playerHTML class
+import { PlayerService, PlayerHTML } from '@rumble-player/dom';
+
+	// create the service
+	let player = new PlayerService();
+
+  // create the playerHTML
+  let playerHTML = new PlayerHTML();
+
+  // This step is essential In order to subscribe to events
+	playerHTML.setPlayerService(player)
+
+
+  // functions to be called each time an event occurs
+
+  const onPlay = (event: playerServiceEvent) => {
+    const { percentage, index } = event.state;
+    // Do something whenever a song is played
+  };
+  const onPause = (event: playerServiceEvent) => {
+    const { percentage, index } = event.state;
+    // Do something else whenever a song is paused
+  };
+  
+
+  // Add event listener to call each time event occurs
+  playerHTML.addEventListener('play', onPlay);
+  playerHTML.addEventListener('pause', onPause);
+```
+
+As you can see, this library contains the features of the one in Method 1, but also had a class playerHTML
+which enables us to subscribe and subscribe to events using the traditional way.
+
+Find the available methods of playerHTML in the API section
+
+
+## Method 3
+##### Custom element integration
+
+-  Install with [npm](https://www.npmjs.com/package/howler): `npm install @rumble-player/player`
+
 
 ### How to add rumble-player basic components
 
@@ -287,14 +306,14 @@ To add a play button:
 
 ```typescript
 import { SimplePlayButton } from '@rumble-player/player';
-import { RumblePlayerService } from './playerService';
-import { HTMLRumblePlayer } from './playerHTML';
+import { PlayerService } from './playerService';
+import { PlayerHTML } from './playerHTML';
 // The player service
-const player = new RumblePlayerService();
+const player = new PlayerService();
 // the button
 const play = new SimplePlayButton();
 // The player UI Container
-playerHTML = new HTMLRumblePlayer();
+playerHTML = new PlayerHTML();
 // add the button to the player UI Layout
 playerHTML.setVisualChildren([play]);
 
@@ -394,17 +413,17 @@ you will find the definition of these layout configuration in src/config/config.
 // load the lib
 <script src="https://unpkg.com/@rumble-player/player" />
 <script>
-	import { HTMLRumblePlayer, RumblePlayerService } from '@rumble-player/player';
+	import { PlayerHTML, PlayerService } from '@rumble-player/player';
 
 	let container = document.getElementById('rs-player-id')
 	// create the player custom element
-	let player = new HTMLRumblePlayer()
+	let player = new PlayerHTML()
 	//add it to the container
 	container.appendChild(player)
 	// create the service
-	let service = new RumblePlayerService()
+	let service = new PlayerService()
 	// set the service to the player
-	player.setPlayer(service)
+	player.setPlayerService(service)
 	// load a layout config
 	player.loadConfig('config6')
 	load a playlist
@@ -423,26 +442,26 @@ import '@rumble-player/player';
 in your component
 
 ```typescript jsx
-import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/player';
+import { PlayerService, PlayerHTML } from '@rumble-player/player';
 
 export default class MyComponent extends React.Component {
 	// HTML Player container
-	private containerRef = React.createRef<HTMLRumblePlayer>();
+	private containerRef = React.createRef<PlayerHTML>();
 
 	// Player Service
-	private player = new RumblePlayerService();
+	private player = new PlayerService();
 	// Player html custom element
-	private playerHTML = new HTMLRumblePlayer();
+	private playerHTML = new PlayerHTML();
 
 	componentDidMount() {
-		this.playerHTML = new HTMLRumblePlayer();
-		this.player = new RumblePlayerService();
+		this.playerHTML = new PlayerHTML();
+		this.player = new PlayerService();
 		// Set the service to the player
 		this.playerHTML.setPlayer(this.player);
 		// Load layout config number 6
 		this.playerHTML.loadConfig('config6');
 		// Insert the HTML player into DOM
-		(this.containerRef.current as HTMLRumblePlayer).replaceWith(
+		(this.containerRef.current as PlayerHTML).replaceWith(
 			this.playerHTML
 		);
 		// Load playlist from RSS
@@ -451,7 +470,7 @@ export default class MyComponent extends React.Component {
 	render() {
 		return (
 			<rumble-player
-				ref={this.containerRef as React.RefObject<HTMLRumblePlayer>}
+				ref={this.containerRef as React.RefObject<PlayerHTML>}
 			/>
 		);
 	}
@@ -496,18 +515,18 @@ in your template
 in your component class
 
 ```typescript
-import { RumblePlayerService, HTMLRumblePlayer } from '@rumble-player/player';
+import { PlayerService, PlayerHTML } from '@rumble-player/player';
 export class PlayerComponent implements AfterViewInit {
-	public player: RumblePlayerService;
+	public player: PlayerService;
 
 	@ViewChild('playerHTML')
-	playerHTML: ElementRef<HTMLRumblePlayer> | undefined; // to access the custom element
+	playerHTML: ElementRef<PlayerHTML> | undefined; // to access the custom element
 
 	public eventsHistory: string[];
 	public RSSLink: string;
 
 	constructor() {
-		this.player = new RumblePlayerService(); // instanciate player service
+		this.player = new PlayerService(); // instanciate player service
 		this.RSSLink = 'rss feed url';
 	}
 
@@ -538,7 +557,7 @@ Each visual inherits from The GenericVisual class within src/lib/visuals.
 You can create as much as Visual you want in order to customize and add new features to the player
 Just dont forget to make it extend Generic Visual and define the it's custom element
 
-### Interface
+## Interfaces
 
 ```typescript
 interface playerState {
@@ -552,35 +571,87 @@ interface playerServiceEvent {
 	type: playerServiceEventType;
 	state: playerState;
 }
+
+interface Song {
+  title?: string; // song title
+  file?: string; // song file URI
+  loaded?: boolean; // is True when song is loaded
+  valid?: boolean; // is True when file URI points to a valid audio file
+  image?: string | null; // song image URI
+  author?: string;  // For podcasts : author
+  albumArt?: string; // album picture URI
+  playlistName?: string; // album name
+  position?: number | null; // current seeking of position of the howl
+}
+
 ```
-### Testing
 
-When testing  you will have to be very careful  whether you want to import the library from local monorepo or from the
-published npm version. in tsconfig.base.json, compilerOptions.path you will find two values :
 
-`"@rumble-player/rp": ["libs/rumble-player/src/index.ts"],
-"@rumble-player/player": ["node_modules/@rumble-player/player/src/index.ts"]`
+## Complete API
 
-the first one refers to the local lib and the latter to the one installed through npm
+##### PlayerService and PlayerHTML share the same public properties and methods
 
-so let's say you want to import playerService, it would be :
+The Lib exposes two classes : PlayerHTNL and PlayerService.
+as showed above.
+Use the PlayerService in order to load audios and control it. If you also need to subscribe to the player events,
+then you should also use PlayerHTML since it let's you subscribe to the player events using normal dom listeners.
+All you have to do is use our predefined events name. you will find below a complete list of those events.
 
-````typescript
-import { PlayerService } from '@rumble-player/rp'; // to import from local
-import { PlayerService } from '@rumble-player/player'; // import from npm package
-````
+#### Properties
 
-This is very important detail as github actions might not be able to recognize the local imports
 
-### Known issues
+-  `autoPlayNext boolean [true]`
+   if true, automatically play next song in playlist when actual song ends and loop entire playlist
+-  `isPlaying : private boolean [false]`
+   true if there is a song playing
+-  `autoPlay : boolean [true]`
+   automatically play first song on playlist load
+-  `loop : boolean [false]`
+   loop playing song
+-  `rate : number 1`
+   Playback speed, value between 0 and 4, 1 being the normal speed
+-  `volume : number [1]`
+   playback volume between 0 and 1.
 
-Template parse errors:
-'rumble-player-player' is not a known element:
 
-1. If 'rumble-player-player' is an Angular component, then verify that it is part of this module.
-2. If 'rumble-player-player' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. ("[ERROR ->]<rumble-player-player></rumble-player-player>
+complete list of events :
 
-https://stackoverflow.com/questions/39428132/custom-elements-schema-added-to-ngmodule-schemas-still-showing-error
+-  `play`
+-  `pause`
+-  `stop`
+-  `next`
+-  `prev`
+-  `seek`
+-  `endOfSong`
+-  `newIndex`
+-  `newPlaylist`
+-  `newPosition`
+-  `loaderror`
+-  `playerror`
 
-if test fails showing circular JSON error message :
-https://stackoverflow.com/questions/63895685/unhandledpromiserejectionwarning-typeerror-converting-circular-structure-to-js
+#### Methods
+
+-  **`volume([level: number])`**: Get/Set volume level with a value between 0 and 1
+-  **`index([index: number])`**: Get/set the index of playing head in playlist
+-  **`playlist(): <Song>[]`**: Get the playlist
+   Get more details on Song in the Interface section
+
+-  **`percentage(): number`**: Get the percentage played of the actual playing song
+-  **`position(): number`**: Get the duration played of the actual playing song
+-  **`getRank(song: Song): number`**: Get the index in the playlist of the actually playing song
+-  **`getSong(index: number, [instanciateHowlIfMissing = true]): Song`**: Get the song at index in the playlist. the instanciateHowlIfMissing parameter forces the loading of the song if not yet
+-  **`preloadPlaylist()`**: Forces the player to load every track in the playlist
+-  **`addSong(songUrl: string)`**: Add a new song in the playlist
+-  **`play([index]: number): Promise<number>`**: play the song at index in the playlist, default plays the first song
+-  **`pause([options: { index?: number; pauseOthers?: boolean }])`**: pauses song at index, if pauseOthers will also pause all the song in the playlist. by default it will pause everything
+-  **`next()`**: play next song in the playlist , if last song it will loop and play first one
+-  **`prev()`**: play previous song in the playlist if actual song has not played more than 2 seconds, otherwise will rewind to the beginning of actual playing song. if last song it will loop backward and play first one
+-  **`stop([index]: number)`**: stop the song at index, otherwise will stop the actual playing
+
+-  **`seekPerPercentage(percentage: number, [index: number])`**: seek the song at index in the playlist to percentage, by default will seek the actual playing song
+-  **`seekPerPosition(position: number, [index: number])`**: seek the song at index in the playlist to position, by default will seek the actual playing song
+-  **`getSongTimeLeft([index: number])`**: Get The ETA of song at index in the playlist , default will return the ETA of actual playing song
+-  **`getSongTotalTime([index: number])`**: Get The total duration of song at index in the playlist , default will return the total duration of actual playing song
+-  **`setPlaylistFromUrls(urls: string[])`**: Set new playlist from song urls
+-  **`setPlaylistFromObject(data: any[])`**: Set new playlist from song including more details. Each element in data is an object {title: songTitle, image: imageUrl, file: songUrl}
+-  **`setPLaylistFromRSSFeedURL(url: string)`**: Set new playlist from podcast formatted RSS FEED

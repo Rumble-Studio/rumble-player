@@ -3,14 +3,25 @@ import ReactDOM from 'react-dom';
 import '@rumble-player/player';
 
 import { BrowserRouter } from 'react-router-dom';
-
 import App from './app/app';
+import Home from './app/components/spotify/home';
+import Service, { BR } from './Service';
+
+
+
+
+
 
 ReactDOM.render(
 	<React.StrictMode>
 		<BrowserRouter>
-			<App />
+      <Service.Provider value={BR}>
+        <Home />
+      </Service.Provider>
+
 		</BrowserRouter>
 	</React.StrictMode>,
 	document.getElementById('root')
 );
+
+

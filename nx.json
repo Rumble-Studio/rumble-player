@@ -30,6 +30,11 @@
 		"demo-react-e2e": { "tags": [], "implicitDependencies": ["demo-react"] },
 		"rumble-player": { "tags": [] },
 		"dom": { "tags": [] },
-		"service": { "tags": [] }
+		"service": { "tags": [] },
+		"demo-ng-service": { "tags": [] },
+		"demo-ng-service-e2e": {
+			"tags": [],
+			"implicitDependencies": ["demo-ng-service"]
+		}
 	}
 }
