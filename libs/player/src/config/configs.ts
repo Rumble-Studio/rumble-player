@@ -1,5 +1,5 @@
-import { PlayerHTML } from '../lib/PlayerHTML';
-import { PlayerService } from '../lib/PlayerService';
+import { PlayerHTML } from '@rumble-player/dom';
+import { PlayerService } from '@rumble-player/dom';
 import { SimplePlayButton } from '../lib/visuals/buttons/simplePlayButton';
 import { SimplePauseButton } from '../lib/visuals/buttons/simplePauseButton';
 import { SimplePrevButton } from '../lib/visuals/buttons/simplePrevButton';

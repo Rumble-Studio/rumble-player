@@ -1,7 +1,7 @@
 import {
 	playerServiceEvent,
 	PlayerService,
-} from './PlayerService';
+} from '@rumble-player/service';
 
 export class PlayerHTML extends HTMLElement {
 	playerService: PlayerService | null;

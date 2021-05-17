@@ -28,7 +28,7 @@
 		},
 		"demo-react": { "tags": [] },
 		"demo-react-e2e": { "tags": [], "implicitDependencies": ["demo-react"] },
-		"rumble-player": { "tags": [] },
+		"player": { "tags": [] },
 		"dom": { "tags": [] },
 		"service": { "tags": [] },
 		"demo-ng-service": { "tags": [] },

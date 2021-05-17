@@ -1,5 +1,4 @@
 import { GenericVisual } from '../../GenericVisual';
-import { playerServiceEvent } from '../../playerService';
 
 export class SimpleForwardButton extends GenericVisual {
 	protected _kind = 'SimpleForwardButton';

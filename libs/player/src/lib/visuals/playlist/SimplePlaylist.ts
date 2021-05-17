@@ -1,5 +1,5 @@
 import { GenericVisual } from '../../GenericVisual';
-import { playerServiceEvent, Song } from '../../playerService';
+import { playerServiceEvent, Song } from '@rumble-player/dom';
 
 export class SimplePlaylist extends GenericVisual {
 	protected _kind = 'SimplePlaylist';

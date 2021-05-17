@@ -1,4 +1,4 @@
-import { PlayerHTML } from './PlayerHTML';
+import { PlayerHTML } from '@rumble-player/dom';
 
 export class GenericVisual extends HTMLElement {
 	protected _playerHTML: PlayerHTML;

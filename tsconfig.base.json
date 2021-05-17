@@ -15,7 +15,7 @@
 		"skipDefaultLibCheck": true,
 		"baseUrl": ".",
 		"paths": {
-			"@rp/player": ["libs/rumble-player/src/index.ts"],
+			"@rp/player": ["libs/player/src/index.ts"],
 			"@rp/service": ["libs/service/src/index.ts"],
 			"@rp/dom": ["libs/dom/src/index.ts"],
 			"@rumble-player/player": [

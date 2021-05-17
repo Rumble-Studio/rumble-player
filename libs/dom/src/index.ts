@@ -1,2 +1,2 @@
-export * from './lib/playerService';
+export * from '@rumble-player/service';
 export * from './lib/playerHTML';

@@ -253,22 +253,22 @@
 				}
 			}
 		},
-		"rumble-player": {
-			"root": "libs/rumble-player",
-			"sourceRoot": "libs/rumble-player/src",
+		"player": {
+			"root": "libs/player",
+			"sourceRoot": "libs/player/src",
 			"projectType": "library",
 			"architect": {
 				"lint": {
 					"builder": "@nrwl/linter:eslint",
 					"options": {
-						"lintFilePatterns": ["libs/rumble-player/**/*.ts"]
+						"lintFilePatterns": ["libs/player/**/*.ts"]
 					}
 				},
 				"test": {
 					"builder": "@nrwl/jest:jest",
-					"outputs": ["coverage/libs/rumble-player"],
+					"outputs": ["coverage/libs/player"],
 					"options": {
-						"jestConfig": "libs/rumble-player/jest.config.js",
+						"jestConfig": "libs/player/jest.config.js",
 						"passWithNoTests": true
 					}
 				},
@@ -276,11 +276,11 @@
 					"builder": "@nrwl/node:package",
 					"outputs": ["{options.outputPath}"],
 					"options": {
-						"outputPath": "dist/libs/rumble-player",
-						"tsConfig": "libs/rumble-player/tsconfig.lib.json",
-						"packageJson": "libs/rumble-player/package.json",
-						"main": "libs/rumble-player/src/index.ts",
-						"assets": ["libs/rumble-player/*.md"]
+						"outputPath": "dist/libs/player",
+						"tsConfig": "libs/player/tsconfig.lib.json",
+						"packageJson": "libs/player/package.json",
+						"main": "libs/player/src/index.ts",
+						"assets": ["libs/player/*.md"]
 					}
 				}
 			}
