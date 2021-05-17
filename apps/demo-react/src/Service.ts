@@ -14,6 +14,28 @@ export class Bridge {
   public position: BehaviorSubject<number> = new BehaviorSubject(0)
   public playing: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
 
+  get loop(){
+    return this.player.loop
+  }
+  set loop(value){
+    this.player.loop = value
+  }
+
+  get shuffle(){
+    return this.player.shuffle
+  }
+  set shuffle(value){
+    this.player.shuffle = value
+  }
+
+  get volume(){
+    return this.player.volume
+  }
+  set volume(value){
+    this.player.volume = value
+  }
+
+
   constructor() {
     this.player = new PlayerService()
     this.index.next(this.player.index);

@@ -132,24 +132,23 @@
 
 .control-icon{
   height: 100%;
-  margin-top: 40px;
   color: #8d8b8b;
   margin-inline: 25px;
-  font-size: 30px;
+  font-size: x-large;
 }
 .control-icon:hover{
   color: white;
-  font-size: 35px;
-  margin-top: 35px;
   cursor: pointer;
 }
 .bigger{
-  font-size: 50px;
-  margin-top: 20px;
+  height: 100%;
+  color: #8d8b8b;
+  margin-inline: 25px;
 }
 .bigger:hover{
-  font-size: 50px;
-  margin-top: 20px;
+  color: white;
+  cursor: pointer;
+
 }
 .rs-footer-volume{
   flex: 2;

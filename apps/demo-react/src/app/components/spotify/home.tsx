@@ -5,6 +5,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import HomeIcon from '@material-ui/icons/Home';
 
 import Playlist from '../playlist/Playlist';
+import Control from '../controls/control';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {
   //
@@ -51,7 +52,15 @@ export default class Home extends React.Component<IProps, IState>{
           </div>
           <div className='rs-footer'>
             <div className='rs-footer-controls'>
-              <div className='rs-footer-controls-line-1'></div>
+              <div className='rs-footer-controls-line-1'>
+                <Control  task={'shuffle'}/>
+                <Control  task={'rewind'}/>
+                <Control  task={'prev'}/>
+                <Control  task={'play'}/>
+                <Control  task={'next'}/>
+                <Control  task={'forward'}/>
+                <Control  task={'loop'}/>
+              </div>
               <div className='rs-footer-controls-line-1'></div>
             </div>
             <div className='rs-footer-volume'></div>

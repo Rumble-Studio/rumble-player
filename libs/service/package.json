@@ -1,6 +1,6 @@
 {
 	"name": "@rumble-player/service",
-	"version": "0.0.2",
+	"version": "0.0.3",
   "description": "Highly customizable open source audio player created at Rumble Studio",
   "repository": {
     "type": "git",

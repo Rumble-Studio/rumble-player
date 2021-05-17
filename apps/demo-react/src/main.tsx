@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import '@rumble-player/player';
+import '@rumble-player/service';
 
 import { BrowserRouter } from 'react-router-dom';
 import App from './app/app';

@@ -51,6 +51,10 @@ async function urlToFile(
   return new File([buf], filename, { type: mimeType });
 }
 
+function allEqual(arr: Song[]) {
+  return arr.every(song => song.file === arr[0].file);
+}
+
 export class PlayerService {
   // automatically play next song
   autoPlayNext = true;
@@ -90,7 +94,7 @@ export class PlayerService {
       while (
         this._shuffledPlaylist.every(
           (value1, index1) => this._playlist[index1] === value1
-        )
+        ) && !allEqual(this._shuffledPlaylist)
         ) {
         this.shufflePlaylist();
       }
