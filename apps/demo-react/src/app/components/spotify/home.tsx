@@ -6,6 +6,7 @@ import HomeIcon from '@material-ui/icons/Home';
 
 import Playlist from '../playlist/Playlist';
 import Control from '../controls/control';
+import Seekbar from '../seekbar/Seekbar';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {
   //
@@ -61,7 +62,9 @@ export default class Home extends React.Component<IProps, IState>{
                 <Control  task={'forward'}/>
                 <Control  task={'loop'}/>
               </div>
-              <div className='rs-footer-controls-line-1'></div>
+              <div className='rs-footer-controls-line-2'>
+                <Seekbar></Seekbar>
+              </div>
             </div>
             <div className='rs-footer-volume'></div>
 
