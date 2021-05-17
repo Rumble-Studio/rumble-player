@@ -1,0 +1,19 @@
+.barContainer{
+  height: 15px;
+  background-color: blue;
+  width: 100%;
+}
+.barHolder{
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  cursor: pointer;
+}
+
+.bar{
+  height: 100%;
+  width: 70%;
+  background-color: red;
+  opacity: 0.88;
+
+}

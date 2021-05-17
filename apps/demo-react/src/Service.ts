@@ -13,6 +13,8 @@ export class Bridge {
   public percentage: BehaviorSubject<number> = new BehaviorSubject(0)
   public position: BehaviorSubject<number> = new BehaviorSubject(0)
   public playing: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+  public isShuffled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+  public isLooping: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
 
   get loop(){
     return this.player.loop

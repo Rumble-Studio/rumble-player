@@ -315,13 +315,12 @@ const play = new SimplePlayButton();
 // The player UI Container
 playerHTML = new PlayerHTML();
 // add the button to the player UI Layout
-playerHTML.setVisualChildren([play]);
+playerHTML.appendChild(play);
 
 // Finally set the player service to the Player front end
-playerHTML.setPlayer(player);
+playerHTML.setPlayerService(player);
 ```
 
-you can add as much as GenericVisual you , by calling the setVisualChildren of playerHTML
 
 ### Predefined Layout configs
 
@@ -457,7 +456,7 @@ export default class MyComponent extends React.Component {
 		this.playerHTML = new PlayerHTML();
 		this.player = new PlayerService();
 		// Set the service to the player
-		this.playerHTML.setPlayer(this.player);
+		this.playerHTML.setPlayerService(this.player);
 		// Load layout config number 6
 		this.playerHTML.loadConfig('config6');
 		// Insert the HTML player into DOM
@@ -535,7 +534,7 @@ export class PlayerComponent implements AfterViewInit {
 
 		if (this.playerHTML) {
 			// set the the audio service to the custom element
-			this.playerHTML.nativeElement.setPlayer(this.player);
+			this.playerHTML.nativeElement.setPlayerService(this.player);
 
 			// load the  predefined layout configuration  config6
 			this.playerHTML.nativeElement.loadConfig('config6');

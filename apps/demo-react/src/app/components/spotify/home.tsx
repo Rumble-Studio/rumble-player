@@ -3,9 +3,13 @@ import './home.scss'
 import MusicVideoIcon from '@material-ui/icons/MusicVideo';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import HomeIcon from '@material-ui/icons/Home';
-
+import Slider from '@material-ui/core/Slider';
+import VolumeDown from '@material-ui/icons/VolumeDown';
+import VolumeUp from '@material-ui/icons/VolumeUp';
 import Playlist from '../playlist/Playlist';
 import Control from '../controls/control';
+import Seekbar from '../seekbar/Seekbar';
+import Service from '../../../Service';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {
   //
@@ -20,6 +24,7 @@ export default class Home extends React.Component<IProps, IState>{
   constructor(props) {
     super(props);
   }
+  static contextType = Service
 
   render() {
     return (
@@ -61,9 +66,15 @@ export default class Home extends React.Component<IProps, IState>{
                 <Control  task={'forward'}/>
                 <Control  task={'loop'}/>
               </div>
-              <div className='rs-footer-controls-line-1'></div>
+              <div className='rs-footer-controls-line-2'>
+                <Seekbar></Seekbar>
+              </div>
             </div>
-            <div className='rs-footer-volume'></div>
+            <div className='rs-footer-volume'>
+              <VolumeDown color={'primary'}/>
+              <Slider defaultValue={0.70} step={0.01} min={0.01} max={0.99} onChange={(event,value)=>{this.context.volume=value;}}/>
+              <VolumeUp />
+            </div>
 
           </div>
 
