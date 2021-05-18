@@ -5,7 +5,6 @@ import {
 	OnInit,
 	ViewChild,
 } from '@angular/core';
-import { PlayerHTML, PlayerService } from '@rumble-player/player';
 import { MatDialog } from '@angular/material/dialog';
 import { LoadDialogComponent } from './load-dialog/load-dialog.component';
 import { PlayerBridgeService } from './player-bridge.service';

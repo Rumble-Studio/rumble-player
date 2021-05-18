@@ -3,12 +3,10 @@ import {
 	Component,
 	ElementRef,
 	Input,
-	OnInit,
 	ViewChild,
 } from '@angular/core';
 import { PlayerBridgeService } from '../player-bridge.service';
-import { Song } from '@rumble-player/player';
-import { Howl } from 'howler';
+import { Song } from '@rumble-player/service';
 
 @Component({
 	selector: 'rumble-player-playlist-item',

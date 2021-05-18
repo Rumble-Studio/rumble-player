@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {
-	PlayerService,
 	PlayerHTML,
-	GenericVisual,
-	RumbleConfigs,
 } from '@rumble-player/player';
+import { PlayerService } from '@rumble-player/service';
+import { GenericVisual } from '@rumble-player/elements';
+import { RumbleConfig } from '@rumble-player/configs';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {
 	//
 }
@@ -68,7 +69,7 @@ export default class Player extends React.Component<IProps, IState> {
 		// this.playerHTML.loadConfig('config6');
 		(this.containerRef.current as PlayerHTML).replaceWith(this.playerHTML);
 
-		RumbleConfigs.defaultConfig(this.player, this.playerHTML);
+		RumbleConfig.defaultConfig(this.player, this.playerHTML);
 
 		this.interval = setInterval(this.updateStyle, 10);
 	}

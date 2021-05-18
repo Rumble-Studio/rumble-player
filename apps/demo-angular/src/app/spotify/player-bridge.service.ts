@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { PlayerHTML, PlayerService, Song } from '@rumble-player/player';
+import { PlayerHTML } from '@rumble-player/player';
+
 import { BehaviorSubject } from 'rxjs';
+import { PlayerService, Song } from '@rumble-player/service';
 
 @Injectable({
   providedIn: 'root'

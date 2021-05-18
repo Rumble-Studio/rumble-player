@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Service from '../../../Service';
 import './bar.scss'
-import { PlayerHTML } from '@rumble-player/player';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface SProps {

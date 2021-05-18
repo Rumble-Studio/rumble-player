@@ -1,11 +1,10 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import {
-  RumbleConfigs,
-  PlayerHTML, PlayerService
-  //PlayerService,
+  PlayerHTML
 } from '@rumble-player/player';
-
+import {RumbleConfig} from '@rumble-player/configs'
 import { fakePlaylist } from '../../config/dummyAudioData.config';
+import { PlayerService } from '@rumble-player/service';
 
 @Component({
 	selector: 'rumble-player-player',
@@ -76,13 +75,13 @@ export class PlayerComponent implements AfterViewInit {
 		}
 
 		if (this.myCustomContainerDefault) {
-			RumbleConfigs.defaultConfig(
+			RumbleConfig.defaultConfig(
 				this.playerService,
 				this.myCustomContainerDefault.nativeElement
 			);
 		}
 		if (this.myCustomContainerCustom) {
-			RumbleConfigs.customConfig(
+			RumbleConfig.customConfig(
 				this.playerService,
 				this.myCustomContainerCustom.nativeElement
 			);
