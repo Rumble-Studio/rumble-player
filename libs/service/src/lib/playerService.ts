@@ -4,17 +4,17 @@ import { v4 as uuidv4 } from 'uuid';
 export const UPDATE_DELAY = 100;
 
 export interface Song {
-	id?: string; // unique id to identify the song even when we add new song to the playlist
-	title?: string;
-	file?: string;
+	id: string; // unique id to identify the song even when we add new song to the playlist
+	songTitle?: string;
+	file: string;
 	howl?: Howl | null;
 	duration?: number | null;
 	loaded?: boolean;
 	valid?: boolean;
-	image?: string | null;
+	songCover?: string | null;
 	author?: string;
-	albumArt?: string;
-	playlistName?: string;
+	albumCover?: string;
+	albumTitle?: string;
 	position?: number | null; // current seeking of position of the howl
 	onload?: (song: Song) => void;
 }
@@ -665,30 +665,33 @@ export class PlayerService {
 	public setPlaylistFromUrls(urls: string[]) {
 		this.playlist = urls.map((url, index) => {
 			return {
-				title: 'Song ' + index,
+				songTitle: 'Song ' + index,
 				file: url,
 				howl: null,
 				id: uuidv4(),
 			} as Song;
 		});
 	}
-	public setPlaylistFromObject(data: any[]) {
-		this.playlist = data.map((object, index) => {
-			return {
-				title: object.title,
-				file: object.file,
+
+	public setPlaylistFromSongObjects(songs: Partial<Song>[]) {
+		this.playlist = songs.map((songData, index) => {
+			const song:Song =  {
+				songTitle: songData.songTitle||'Song '+index,
+				file: songData.file,
 				howl: null,
-				id: uuidv4(),
-				image: object.image,
-				playlistName: object.playlistName,
-				author: object.author,
-				albumArt: object.albumArt,
-			} as Song;
+				id: songData.id || uuidv4(),
+				songCover: songData.songCover,
+				albumTitle: songData.albumTitle,
+				author: songData.author,
+				albumCover: songData.albumCover,
+			};
+			return song;
 		});
 	}
+
 	private generateSongFromUrl(url: string, index: number) {
 		return {
-			title: 'Song ' + index,
+			songTitle: 'Song ' + index,
 			file: url,
 			howl: null,
 			id: uuidv4(),
@@ -705,37 +708,34 @@ export class PlayerService {
 				const channel = dom.documentElement
 					.getElementsByTagName('channel')
 					.item(0);
-				const playlistName = channel.querySelector('title').textContent;
+				const albumTitle = channel.querySelector('title').textContent;
 				const author = channel.getElementsByTagName('itunes:author').item(0)
 					.textContent;
-				//const albumArt = channel.querySelector('image').querySelector('url').textContent
-				let albumArt = this.extractImage(channel);
+				let albumCover = this.extractImage(channel);
 				dom.documentElement
 					.querySelectorAll('item')
 					.forEach((value, key) => {
-						const title = value.querySelector('title').textContent;
+						const songTitle = value.querySelector('title').textContent;
 						const file = value
 							.querySelector('enclosure')
 							.getAttribute('url');
-						// const image = value
-						// 	.getElementsByTagName('itunes:image')
-						// 	.item(0)
-						// 	.getAttribute('href');
-						let image = this.extractImage(value);
-						if (image === null && albumArt) image = albumArt;
-						if (albumArt === null && image) albumArt = image;
+						let songCover = this.extractImage(value);
 
-						const song = {
-							title,
+						songCover = songCover || albumCover;
+						albumCover = albumCover || songCover;
+
+						const song:Song = {
+							id:uuidv4(),
+							songTitle,
 							file,
-							image,
-							playlistName,
+							songCover,
+							albumTitle,
 							author,
-							albumArt,
+							albumCover,
 						};
 						songList.push(song);
 					});
-				this.setPlaylistFromObject(songList);
+				this.setPlaylistFromSongObjects(songList);
 			})
 			.catch((err) => {
 				console.error(err);
@@ -774,7 +774,7 @@ export class PlayerService {
 		const indexToDowload = index || this.index;
 		const song = this.playlist[indexToDowload];
 		downloadFile(
-			await urlToFile(song.file, song.title, 'application/octet-stream')
+			await urlToFile(song.file, song.songTitle, 'application/octet-stream')
 		);
 	}
 

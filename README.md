@@ -85,6 +85,31 @@ All events will trigger the `on` method in this example (new playlist, play, pau
 
 A list of events is available further.
 
+4) Once you have an Angular service you can inject it in your components:
+
+```typescript
+import { Component } from '@angular/core';
+import { AudioService } from './audio.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  title = 'ng-rumble-player';
+
+  constructor(private audioService:AudioService){
+    ...
+  }
+}
+```
+
+5) Give something to play to your service:
+
+
+ 
+
 ### React
 
 ***not done yet***
