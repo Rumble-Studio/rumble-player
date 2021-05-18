@@ -28,13 +28,27 @@
 		},
 		"demo-react": { "tags": [] },
 		"demo-react-e2e": { "tags": [], "implicitDependencies": ["demo-react"] },
-		"player": { "tags": [] },
+		"player": { "tags": [
+      "scope:player",
+      "scope:service"
+    ] },
 		"dom": { "tags": [] },
-		"service": { "tags": [] },
+		"service": { "tags": [
+      "scope:service"
+    ] },
 		"demo-ng-service": { "tags": [] },
 		"demo-ng-service-e2e": {
 			"tags": [],
 			"implicitDependencies": ["demo-ng-service"]
-		}
+		},
+		"configs": { "tags": [
+      "scope:service",
+      "scope:player",
+      "scope:elements"
+    ] },
+		"elements": { "tags": [
+      "scope:elements",
+      "scope:player"
+    ] }
 	}
 }

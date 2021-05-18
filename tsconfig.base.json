@@ -21,12 +21,12 @@
 			"@rumble-player/player": [
 				"node_modules/@rumble-player/player/src/index.ts"
 			],
-			"@rumble-player/dom": [
-        "node_modules/@rumble-player/dom/src/index.ts"
-      ],
+			"@rumble-player/dom": ["node_modules/@rumble-player/dom/src/index.ts"],
 			"@rumble-player/service": [
-        "node_modules/@rumble-player/service/src/index.ts"
-      ]
+				"node_modules/@rumble-player/service/src/index.ts"
+			],
+			"@rumble-player/configs": ["libs/configs/src/index.ts"],
+			"@rumble-player/elements": ["libs/elements/src/index.ts"]
 		}
 	},
 	"exclude": ["node_modules", "tmp"]
