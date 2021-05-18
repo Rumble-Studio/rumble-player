@@ -6,7 +6,7 @@ import {
 	ViewChild,
 } from '@angular/core';
 import { PlayerBridgeService } from '../player-bridge.service';
-import { Song } from '@rp/service';
+import { Song } from '@rumble-player/service';
 
 @Component({
 	selector: 'rumble-player-playlist',

@@ -1,4 +1,4 @@
-import { GenericVisual } from '@rumble-player/rp';
+import { GenericVisual } from '@rumble-player/elements';
 import style from './styles';
 
 export enum Tasks {

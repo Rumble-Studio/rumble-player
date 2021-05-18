@@ -2,7 +2,6 @@ import {
 	AfterViewInit,
 	Component,
 	ElementRef,
-	OnInit,
 	ViewChild,
 } from '@angular/core';
 import { PlayerBridgeService } from '../player-bridge.service';

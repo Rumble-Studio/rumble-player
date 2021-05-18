@@ -20,7 +20,7 @@
 		"nx": "nx",
 		"start": "ng serve",
 		"build": "ng build",
-		"test": "nx test service; nx test dom; nx test rumble-player; nx test demo-angular; nx test demo-react",
+		"test": "nx test service; nx test player; nx test elements; nx test configs; nx test demo-angular; nx test demo-ng-service; nx test demo-react",
 		"test:all": "nx test rumble-player",
 		"lint": "nx workspace-lint && ng lint",
 		"e2e": "ng e2e",
@@ -44,7 +44,7 @@
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "nx test service; nx test dom; nx test rumble-player; nx test demo-angular; nx test demo-react && pretty-quick --staged"
+			"pre-commit": "nx test service; nx test player; nx test elements; nx test configs; nx test demo-angular; nx test demo-ng-service; nx test demo-react && pretty-quick --staged"
 		}
 	},
 	"private": true,
@@ -62,9 +62,10 @@
 		"@material-ui/core": "^4.11.4",
 		"@material-ui/icons": "^4.11.2",
 		"@nrwl/angular": "^11.4.0",
-		"@rumble-player/dom": "latest",
+		"@rumble-player/configs": "^0.0.5",
+		"@rumble-player/elements": "^0.0.5",
 		"@rumble-player/player": "^1.0.12",
-		"@rumble-player/service": "latest",
+		"@rumble-player/service": "^0.0.5",
 		"core-js": "^3.6.5",
 		"document-register-element": "1.13.1",
 		"howler": "^2.2.1",

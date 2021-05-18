@@ -1,4 +1,4 @@
-import { GenericVisual } from '@rumble-player/player';
+import { GenericVisual } from '@rumble-player/elements';
 
 export class SpotifyPlayButton extends GenericVisual{
   button: HTMLElement;
@@ -9,7 +9,7 @@ export class SpotifyPlayButton extends GenericVisual{
 
     this.button = document.createElement('i')
     this.button.style.color = 'white'
-    
+
     this.button.style.cursor = 'pointer'
 
     this.button.innerHTML = 'play_circle_outline'

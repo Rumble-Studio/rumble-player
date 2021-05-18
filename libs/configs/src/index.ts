@@ -1,2 +1,1 @@
-export * as RumbleConfigs from './lib/configs';
-export { RumbleConfigs };
+export * as RumbleConfig from './lib/configs';
